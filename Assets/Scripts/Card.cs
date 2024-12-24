@@ -1,14 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+[ExecuteAlways] // Ensures the script runs in edit mode
 public class Card : MonoBehaviour
 {
     private CardManager cardManager;
-    
+    public GameObject cardFace;
+    public bool isFaceDown = true;
+
+    private void OnValidate()
+    {
+        if (isFaceDown)
+            cardFace.SetActive(true);
+        else
+            cardFace.SetActive(false);
+    }
     void Start()
     {
-         
         // Find the CardManager in the scene
         cardManager = FindObjectOfType<CardManager>();
     }

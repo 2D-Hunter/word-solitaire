@@ -55,8 +55,15 @@ public class CardManager : MonoBehaviour
             slotToCardMap.Remove(cardSlots[currentSlotIndex]); // Remove mapping
             if (originalPositions.ContainsKey(card))
             {
-                card.DOAnchorPos(originalPositions[card], 0.5f).SetEase(Ease.OutQuad); // Move back to original position
-                card.DORotate(Vector3.zero, 0.5f).SetEase(Ease.OutQuad); // Reset rotation
+                Sequence cardSequence = DOTween.Sequence();
+
+                cardSequence.Append(card.DOAnchorPos(originalPositions[card], 0.3f).SetEase(Ease.OutQuad));
+                cardSequence.Join(card.DOScale(1f, 0.3f).SetEase(Ease.OutBack));
+                cardSequence.Join(card.DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
+
+                //card.DOAnchorPos(originalPositions[card], 0.5f).SetEase(Ease.OutQuad); // Move back to original position
+                //card.Join(card.DOScale(0.83f, 0.2f).SetEase(Ease.OutQuad)); // Reset Scaling
+                //card.DORotate(Vector3.zero, 0.5f).SetEase(Ease.OutQuad); // Reset rotation
             }
         }
         else
@@ -95,8 +102,9 @@ public class CardManager : MonoBehaviour
 
 
                 //Move the card to the slot and with rotation
-                cardSequence.Append(card.DOMove(targetPosition, 0.2f).SetEase(Ease.OutQuad));
-                cardSequence.Join(card.DORotate(targetRotation, 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
+                cardSequence.Append(card.DOMove(targetPosition, 0.3f).SetEase(Ease.OutQuad));
+                cardSequence.Join(card.DOScale(0.83f, 0.3f).SetEase(Ease.OutBack));
+                cardSequence.Join(card.DORotate(targetRotation, 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
 
                 // callback for when the animation is complete
                 cardSequence.OnComplete(() =>
