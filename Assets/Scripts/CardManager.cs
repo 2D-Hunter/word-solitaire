@@ -6,32 +6,27 @@ using DG.Tweening;
 
 public class CardManager : MonoBehaviour
 {
-    public List<RectTransform> cardSlots; // List to store the card slots
-    private Dictionary<RectTransform, Transform> slotToCardMap; // Maps slots to cards
-    private List<bool> isSlotOccupied; // Keeps track of which slots are occupied
-    private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>(); // Tracks original card positions
+    public List<RectTransform> cardSlots;
+    private Dictionary<RectTransform, Transform> slotToCardMap;
+    private List<bool> isSlotOccupied;
+    private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
 
 
     void Start()
     {
-        // Initialize the occupation status of each slot
         isSlotOccupied = new List<bool>(new bool[cardSlots.Count]);
         slotToCardMap = new Dictionary<RectTransform, Transform>();
         originalPositions = new Dictionary<RectTransform, Vector2>();
 
-        // Store original positions after layout calculation
         StartCoroutine(StoreOriginalPositions());
 
 
     }
     IEnumerator StoreOriginalPositions()
     {
-        yield return new WaitForEndOfFrame(); // Wait for layout calculation
-        // Store the original positions of all cards
+        yield return new WaitForEndOfFrame();
         foreach (var card in FindObjectsOfType<Card>())
         {
-            //originalPositions[card.transform] = card.transform.position;
-
             RectTransform cardRect = card.GetComponent<RectTransform>();
             if (cardRect != null)
             {
@@ -44,15 +39,14 @@ public class CardManager : MonoBehaviour
     public void OnCardClicked(RectTransform card)
     {
         Debug.Log("___Card Clicked...");
-        // Check if the card is in a slot
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card);
 
 
         if (currentSlotIndex != -1)
         {
-            // If the card is in a slot, remove it from the slot, return it to its original position
-            isSlotOccupied[currentSlotIndex] = false; // Mark the slot as empty
-            slotToCardMap.Remove(cardSlots[currentSlotIndex]); // Remove mapping
+            // the card is in a slot
+            isSlotOccupied[currentSlotIndex] = false;
+            slotToCardMap.Remove(cardSlots[currentSlotIndex]);
             if (originalPositions.ContainsKey(card))
             {
                 Sequence cardSequence = DOTween.Sequence();
@@ -60,15 +54,11 @@ public class CardManager : MonoBehaviour
                 cardSequence.Append(card.DOAnchorPos(originalPositions[card], 0.3f).SetEase(Ease.OutQuad));
                 cardSequence.Join(card.DOScale(1f, 0.3f).SetEase(Ease.OutBack));
                 cardSequence.Join(card.DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
-
-                //card.DOAnchorPos(originalPositions[card], 0.5f).SetEase(Ease.OutQuad); // Move back to original position
-                //card.Join(card.DOScale(0.83f, 0.2f).SetEase(Ease.OutQuad)); // Reset Scaling
-                //card.DORotate(Vector3.zero, 0.5f).SetEase(Ease.OutQuad); // Reset rotation
             }
         }
         else
         {
-            // If the card is not in a slot, move it to the first available slot
+            // the card is not in a slot
             int emptySlotIndex = -1;
 
             for (int i = 0; i < isSlotOccupied.Count; i++)
@@ -82,31 +72,31 @@ public class CardManager : MonoBehaviour
 
             if (emptySlotIndex != -1)
             {
-                // Mark the slot as occupied and map the card to the slot
                 isSlotOccupied[emptySlotIndex] = true;
                 slotToCardMap[cardSlots[emptySlotIndex]] = card;
 
-                // Get the target position and rotation
+                
                 Vector2 targetPosition = cardSlots[emptySlotIndex].position;
                 Vector3 targetRotation = new Vector3(0, 360, 360);
-                float lateralOffset = cardSlots[emptySlotIndex].position.x;// Decide  the card moves left or right
 
-                // Create a sequence for the animations
+                // decide  the card moves direction depending on target slots
+                float lateralOffset = cardSlots[emptySlotIndex].position.x;
+
+                
                 Sequence cardSequence = DOTween.Sequence();
 
-                //Move the card upward and sideways (left or right)
-                Vector3 upwardPosition = card.position + new Vector3(lateralOffset, 1.7f, 0); // Higher upward movement
+                //1st Move the card upward and sideways (left or right)
+                Vector3 upwardPosition = card.position + new Vector3(lateralOffset, 1.7f, 0);
                 cardSequence.Append(card.DOMove(upwardPosition, 0.05f).SetEase(Ease.OutQuad));
-                //card.DORotate(new Vector3(0, 0, 15), 0.3f).SetEase(Ease.OutQuad).SetRelative(true);
 
 
 
-                //Move the card to the slot and with rotation
+                //move the card to the slot with rotation
                 cardSequence.Append(card.DOMove(targetPosition, 0.3f).SetEase(Ease.OutQuad));
                 cardSequence.Join(card.DOScale(0.83f, 0.3f).SetEase(Ease.OutBack));
                 cardSequence.Join(card.DORotate(targetRotation, 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
 
-                // callback for when the animation is complete
+                // once animation is complete below one will be excute.
                 cardSequence.OnComplete(() =>
                 {
                     Debug.Log("Card has reached the slot.");
@@ -119,17 +109,15 @@ public class CardManager : MonoBehaviour
     public string GetSlotString()
     {
         string slotString = "";
-
-        // Iterate through the slots and build the string
         for (int i = 0; i < cardSlots.Count; i++)
         {
             if (slotToCardMap.ContainsKey(cardSlots[i]))
             {
-                // Get the card's letter from the CardData component
+                
                 CardData cardData = slotToCardMap[cardSlots[i]].GetComponent<CardData>();
                 if (cardData != null)
                 {
-                    slotString += cardData.letter; // Add the letter to the string
+                    slotString += cardData.letter; // adding the letter to the string
                 }
             }
         }

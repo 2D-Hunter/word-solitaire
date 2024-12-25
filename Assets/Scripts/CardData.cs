@@ -1,14 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI; // For UI Text (remove if using TextMesh)
 using TMPro;
-[ExecuteAlways] // Ensures the script runs in edit mode
+[ExecuteAlways]
 public class CardData : MonoBehaviour
 {
     public TextMeshProUGUI letterText;
     public TextMeshProUGUI valueText;
-    public char letter; // Letter assigned to the card
-    public int value; // Value assigned to the card
+    public char letter;
+    public int value;
 
     private static readonly Dictionary<char, int> letterValues = new Dictionary<char, int>
     {
@@ -27,25 +26,8 @@ public class CardData : MonoBehaviour
         {
             return value;
         }
-        return 0; // Default value for invalid characters
+        return 0;
     }
-
-    //private static readonly int[] letterValues =
-    //{
-    //    1, 3, 3, 2, 1, 4, 2, 4, 1, 8,
-    //    5, 1, 3, 1, 1, 3, 10, 1, 1, 1,
-    //    1, 4, 4, 8, 4, 10
-    //};
-    //int GetCardValue(char letter)
-    //{
-    //    char uppercaseLetter = char.ToUpper(letter);
-    //    int index = uppercaseLetter - 'A'; // Convert 'A'-'Z' to 0-25
-    //    if (index >= 0 && index < letterValues.Length)
-    //    {
-    //        return letterValues[index];
-    //    }
-    //    return 0; // Default value for invalid characters
-    //}
 
     private void OnValidate()
     {
