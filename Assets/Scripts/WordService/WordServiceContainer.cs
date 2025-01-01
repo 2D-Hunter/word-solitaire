@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.Design;
 using UnityEngine;
 
 namespace Word
@@ -9,7 +10,6 @@ namespace Word
         private static IWordMatchService _matchService;
         private static ILetterService _letterService;
         private static INetworkService _networkService;
-
         public static IWordDictionaryService DictionaryService { get { return _dictionaryService; } }
         public static IWordMatchService MatchService {  get { return _matchService; } }
         public static ILetterService LetterService { get { return _letterService; } }
@@ -24,9 +24,8 @@ namespace Word
             _matchService = new WordMatchService();
             _letterService  = new ILetterService();
             _networkService = new INetworkService();
+            _dictionaryService.Initialize();
 
-
-            Debug.Log("Hello Service is create");
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Word
 {
@@ -29,7 +30,19 @@ namespace Word
         }
         public void Initialize()
         {
-            
+            TextAsset txtTableInfo = Resources.Load<TextAsset>("TableInfo");
+
+            if (txtTableInfo != null)
+            {
+                // Access the content of the file
+                string fileContent = txtTableInfo.text;
+                WordInfo TablesInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<WordInfo>(fileContent);
+                Debug.Log("File Content: " + fileContent);
+            }
+            else
+            {
+                Debug.LogError("TableInfo file not found in Resources folder!");
+            }
         }
     }
 }

@@ -8,5 +8,6 @@ namespace Word
 {
     public class ILetterService
     {
+
     }
 }
