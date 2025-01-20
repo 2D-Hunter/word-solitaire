@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b178f46b616042298db38521e04a1b9, type: 3}
+  m_Name: Chest_009
+  m_EditorClassIdentifier: 
+  chestName: 009
+  chestSprites:
+  - {fileID: -1451757532, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: 961825546, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -186394239, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -311325832, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -2123362972, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1840127046, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1030325895, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1776838481, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -616518696, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -793457990, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1550308261, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: 1283047101, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: 1992460763, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1912635190, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -138072991, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  - {fileID: -1908785248, guid: 207f2b1d0119a4ccd9ab3d35a8189bf0, type: 3}
+  chestRewards:
+  - reward: {fileID: 11400000, guid: e9b86f298b35e4a079c152a35676720f, type: 2}
+    amount: 450
+  - reward: {fileID: 11400000, guid: 3bf43c098f2ab4324980833b7a0cddcc, type: 2}
+    amount: 3
+  - reward: {fileID: 11400000, guid: 7867925564bf440f6b250a98de747b90, type: 2}
+    amount: 5

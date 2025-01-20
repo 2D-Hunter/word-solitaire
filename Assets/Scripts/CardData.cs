@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
-[ExecuteAlways]
+//[ExecuteAlways]
 public class CardData : MonoBehaviour
 {
+    public static CardData instance;
     public TextMeshProUGUI letterText;
     public TextMeshProUGUI valueText;
     public char letter;
+    public int cardValue = 0;
     public int value;
 
     private static readonly Dictionary<char, int> letterValues = new Dictionary<char, int>
@@ -19,6 +21,21 @@ public class CardData : MonoBehaviour
         { 'U', 1 }, { 'V', 4 }, { 'W', 4 }, { 'X', 8 },
         { 'Y', 4 }, { 'Z', 10 }
     };
+    private void Start()
+    {
+        if (gameObject.tag == "ExtraCard")
+        {
+            char randomLetter = (char)('A' + Random.Range(0, 26));
+            letterText.text = randomLetter.ToString();
+            valueText.text = GetCardValue(randomLetter).ToString();
+            cardValue = GetCardValue(randomLetter);
+        }
+        else
+        {
+            cardValue = GetCardValue(letter);
+        }
+
+    }
     public int GetCardValue(char letter)
     {
         char uppercaseLetter = char.ToUpper(letter);
@@ -31,14 +48,39 @@ public class CardData : MonoBehaviour
 
     private void OnValidate()
     {
-        letterText.text = letter.ToString();
-        valueText.text = GetCardValue(letter).ToString();
+        //if (Card.instance.gameObject.tag != "ExtraCard")
+        //{
+            letterText.text = letter.ToString();
+            valueText.text = GetCardValue(letter).ToString();
+        //}
     }
-    void Start()
-    {
-        letterText.text = letter.ToString();
-        valueText.text = GetCardValue(letter).ToString();
+    //void Start()
+    //{
+    //    Debug.Log("Card");
+    //    instance = this;
+    //    letterText.text = letter.ToString();
+    //    valueText.text = GetCardValue(letter).ToString();
+    //    cardValue = GetCardValue(letter);
+    //    Debug.Log($"{gameObject.name} assigned letter: {letter} assigned value: {cardValue}");
+    //}
+    //public int GetCardValue(char letter)
+    //{
+    //    char uppercaseLetter = char.ToUpper(letter);
+    //    if (letterValues.TryGetValue(uppercaseLetter, out int value))
+    //    {
+    //        return value;
+    //    }
+    //    return 0;
+    //}
 
-        Debug.Log($"{gameObject.name} assigned letter: {letter}");
-    }
+    //void Start()
+    //{
+    //    Debug.Log("Card");
+    //    instance = this;
+    //    char randomLetter = (char)('A' + Random.Range(0, 26));
+    //    letterText.text = randomLetter.ToString();
+    //    valueText.text = GetCardValue(randomLetter).ToString();
+    //    cardValue = GetCardValue(randomLetter);
+    //    Debug.Log($"{gameObject.name} assigned letter: {randomLetter} assigned value: {cardValue}");
+    //}
 }
