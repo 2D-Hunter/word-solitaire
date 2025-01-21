@@ -7,10 +7,11 @@ public class CardManager : MonoBehaviour
 {
     public static CardManager instance;
     public List<Card> allCards;
-
+    public List<Card> allFaceUpCards;
     public List<Card> extraCards;
     public List<Card> rightSideCards;
     public int totalCardToGet;
+    
 
     private void Awake()
     {
@@ -21,6 +22,22 @@ public class CardManager : MonoBehaviour
     public void AddAllCardsToList()
     {
         allCards = FindObjectsOfType<Card>().ToList();
+    }
+    public void UpdateFaceUpCards(Card card, bool isFaceUp)
+    {
+        Debug.Log("Face-up cards: " + isFaceUp);
+        if (isFaceUp)
+        {
+            if (!allFaceUpCards.Contains(card))
+                allFaceUpCards.Add(card);
+        }
+        else
+        {
+            if (allFaceUpCards.Contains(card))
+                allFaceUpCards.Remove(card);
+        }
+
+        
     }
 
 }

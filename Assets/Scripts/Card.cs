@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 using DG.Tweening;
 
 public class Card : MonoBehaviour
 {
+
     public List<Card> belowCards;
     
     public RectTransform rectTransform;
@@ -15,7 +17,7 @@ public class Card : MonoBehaviour
     public bool isFaceUp = false;
 
     
-    public List<Card> allFaceUpCards;
+    
 
     private bool isFlipping = false;
 
@@ -36,12 +38,21 @@ public class Card : MonoBehaviour
         {
             rectTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
         }
+        
     }
     private void Start()
     {
         instance = this;
         slotManager = FindObjectOfType<SlotManager>();
-        
+        if (this.tag != "ExtraCard")
+        {
+            CardManager.instance.UpdateFaceUpCards(this, isFaceUp);
+        }
+        Invoke("AddFaceupExtraCard", 1f);
+    }
+    void AddFaceupExtraCard()
+    {
+        CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[0], true);
     }
 
     public void OnCardClick()
@@ -130,6 +141,8 @@ public class Card : MonoBehaviour
             Debug.Log("______qqq");
             CardManager.instance.extraCards.Remove(eCard);
             CardManager.instance.rightSideCards.Add(eCard);
+            CardManager.instance.allFaceUpCards = CardManager.instance.allFaceUpCards.Except(CardManager.instance.rightSideCards).ToList();
+            CardManager.instance.UpdateFaceUpCards(eCard, eCard.isFaceUp);
         }
         else
         {
@@ -258,7 +271,7 @@ public class Card : MonoBehaviour
         //{
         RectTransform rectTransform = GetComponent<RectTransform>();
         isFaceUp = true;
-
+        
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
@@ -302,6 +315,7 @@ public class Card : MonoBehaviour
                 cardFace.SetActive(!isFaceUp);
                 isFaceUp = true;
             }
+        CardManager.instance.UpdateFaceUpCards(this, isFaceUp);
 
         //}
     }
@@ -365,6 +379,13 @@ public class Card : MonoBehaviour
             var cardToMove = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
             CardManager.instance.rightSideCards.Remove(cardToMove);
             CardManager.instance.extraCards.Add(cardToMove);
+            CardManager.instance.UpdateFaceUpCards(cardToMove, cardToMove.isFaceUp);
+            CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1], true);
+            //if (CardManager.instance.rightSideCards.Count >= 1)
+            //{
+            //    CardManager.instance.currentFaceupExtraCard = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
+            //    CardManager.instance.UpdateFaceUpCards(CardManager.instance.currentFaceupExtraCard, CardManager.instance.currentFaceupExtraCard.isFaceUp);
+            //}
         }
 
 
