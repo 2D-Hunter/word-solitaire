@@ -45,4 +45,9 @@ public class WordValidator : MonoBehaviour
         DictionaryButton.instance.SwapImage();
         return validWords.Contains(word.ToLower());
     }
+
+    public bool isWordValid(string word)
+    {
+      return validWords.Contains(word.ToLower());
+    }
 }

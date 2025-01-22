@@ -31,6 +31,8 @@ public class Card : MonoBehaviour
     private int originalSiblingIndex;
     float flipDuration = 0.1f;
 
+    public CardData cardData;
+
     private void Awake()
     {
         Debug.Log("______this.tag: "+ this.tag);

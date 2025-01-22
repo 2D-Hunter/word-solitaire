@@ -4,7 +4,7 @@ using TMPro;
 //[ExecuteAlways]
 public class CardData : MonoBehaviour
 {
-    public static CardData instance;
+    //public static CardData instance;
     public TextMeshProUGUI letterText;
     public TextMeshProUGUI valueText;
     public char letter;
@@ -34,6 +34,8 @@ public class CardData : MonoBehaviour
         {
             cardValue = GetCardValue(letter);
         }
+        var card = GetComponent<Card>();
+        card.cardData = this;
 
     }
     public int GetCardValue(char letter)

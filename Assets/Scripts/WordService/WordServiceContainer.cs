@@ -10,10 +10,12 @@ namespace Word
         private static IWordMatchService _matchService;
         private static ILetterService _letterService;
         private static INetworkService _networkService;
+        private static IHintService _hintService;
         public static IWordDictionaryService DictionaryService { get { return _dictionaryService; } }
         public static IWordMatchService MatchService {  get { return _matchService; } }
         public static ILetterService LetterService { get { return _letterService; } }
         public static INetworkService NetworkService { get { return _networkService; } }
+        public static IHintService HintService { get { return _hintService; } }
 
         private WordServiceContainer() { }
 
@@ -24,6 +26,7 @@ namespace Word
             _matchService = new WordMatchService();
             _letterService  = new ILetterService();
             _networkService = new INetworkService();
+            _hintService = new HintService();
             _dictionaryService.Initialize();
 
         }
