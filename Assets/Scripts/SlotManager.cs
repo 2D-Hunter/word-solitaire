@@ -99,6 +99,7 @@ public class SlotManager : MonoBehaviour
                 isSlotOccupied[currentSlotIndex] = false;
                 slotToCardMap.Remove(cardSlots[currentSlotIndex]);
                 slotsCard.Remove(card);
+                
                 card.GetComponent<RectTransform>().SetAsLastSibling();
                 Card.instance.FlipImmediateBelowCards();
                 if (originalPositions.ContainsKey(card.GetComponent<RectTransform>()))
@@ -108,6 +109,7 @@ public class SlotManager : MonoBehaviour
 
                     if (card.GetComponent<RectTransform>().tag == "ExtraCard")
                     {
+                        CardManager.instance.rightSideCards.Add(card);
                         cardSequence.Append(card.GetComponent<RectTransform>().DOAnchorPos(originalPositions1[card.GetComponent<RectTransform>()], 0.3f).SetEase(Ease.OutQuad));
                         cardSequence.Join(card.GetComponent<RectTransform>().DOScale(1f, 0.3f).SetEase(Ease.OutBack));
                         cardSequence.Join(card.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
@@ -178,6 +180,7 @@ public class SlotManager : MonoBehaviour
                 card.FlipImmediateBelowCards();
                 //Sequence cardSequence = DOTween.Sequence();
                 slotsCard.Add(card);
+                
 
                 //Vector3 upwardPosition = card.GetComponent<RectTransform>().position + new Vector3(lateralOffset, 4f, 0);
                 //cardSequence.Append(card.GetComponent<RectTransform>().DOMove(upwardPosition, 0.2f).SetEase(Ease.OutQuad));
@@ -197,6 +200,7 @@ public class SlotManager : MonoBehaviour
                 if (card.GetComponent<RectTransform>().tag == "ExtraCard")
                 {
                     height = 800f;
+                    CardManager.instance.rightSideCards.Remove(card);
                 }
                 else
                 {
@@ -223,10 +227,12 @@ public class SlotManager : MonoBehaviour
 
             }
         }
+
         bool allTrue = isSlotOccupied.All(b => b);
         allSlotsOccupied = allTrue;
+        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         
-
+        
         if (WordValidator.instance != null)
         {
             WordValidator.instance.ValidateWord(GetSlotString());
@@ -313,6 +319,7 @@ public class SlotManager : MonoBehaviour
 
             Sequence cardSequence = DOTween.Sequence();
             card.SetAsLastSibling();
+            CardManager.instance.UpdateFaceUpCards(slotsCard[i], isSlotOccupied[i]);
             cardSequence.Append(card.DOPath(path, tweenDuration, PathType.CatmullRom).SetEase(customEase));
             cardSequence.Join(card.DOScale(Hud.instance.hudCard.localScale, tweenDuration));
             cardSequence.Join(card.DORotate(new Vector3(0, 0, 348), tweenDuration, RotateMode.LocalAxisAdd).SetEase(customEase));
@@ -335,6 +342,7 @@ public class SlotManager : MonoBehaviour
         }
         
         slotsCard.Clear();
+
         
     }
     IEnumerator TweenExtraCards()
