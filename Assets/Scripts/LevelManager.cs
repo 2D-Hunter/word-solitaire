@@ -49,8 +49,11 @@ public class LevelManager : MonoBehaviour
                 Debug.Log($"Loading Level: {levelInfo.levelNumber}");
                 //InitManager.instance.currentTarget = levelInfo.levelTarget;
                 if (InitManager.instance != null)
+                {
                     InitManager.instance.levelCompleted = false;
-                InitManager.instance.currentTarget = levelInfo.levelTarget;
+                    InitManager.instance.currentTarget = levelInfo.levelTarget;
+                }
+                    
                 Debug.Log("All Cards: "+ CardManager.instance.allCards.Count);
                 CardManager.instance.totalCardToGet = CardManager.instance.allCards.Count - (CardManager.instance.extraCards.Count + CardManager.instance.rightSideCards.Count);
             }

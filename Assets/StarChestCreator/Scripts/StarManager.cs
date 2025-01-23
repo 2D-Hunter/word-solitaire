@@ -37,11 +37,12 @@ public class StarManager : MonoBehaviour
         instance = this;
         LoadStars(); // Load stars from saved data
         UpdateUI();  // Update the UI to reflect current star progress
+        InstantiateStars();
     }
 
     void Start()
     {
-        InstantiateStars(); // Instantiate the star objects but keep them hidden initially
+         // Instantiate the star objects but keep them hidden initially
     }
 
     // Instantiate the star objects but do not activate them yet
@@ -52,6 +53,7 @@ public class StarManager : MonoBehaviour
             GameObject star = Instantiate(starPrefab, starParent);
             star.SetActive(false); // Keep stars hidden until needed
         }
+            Debug.Log("UpdateStarDisplay33333:" + starParent.childCount);
     }
 
     // Hide all instantiated stars
@@ -189,14 +191,15 @@ public class StarManager : MonoBehaviour
     // Update the star display based on the remaining time
     public static void UpdateStarDisplay()
     {
-        if (instance == null) return;
+            //if (instance == null) return;
 
-        // Get the remaining time from GameTimeManager
-        float remainingTime = GameTimeManager.GetRemainingTime();
-
+            // Get the remaining time from GameTimeManager
+            //float remainingTime = GameTimeManager.GetRemainingTime();
+            
         // Calculate the number of stars based on the remaining time
-        int starCount = instance.CalculateStars(remainingTime);
-        instance.ShowStarsWithDelay(starCount);
+        int starCount = instance.CalculateStars(50);
+            Debug.Log("UpdateStarDisplay: "+starCount);
+            instance.ShowStarsWithDelay(starCount);
     }
 
     // Calculate the number of stars based on remaining time thresholds
@@ -222,18 +225,25 @@ public class StarManager : MonoBehaviour
     // Coroutine to activate stars one by one with a delay
     private IEnumerator ActivateStarsWithDelay(int starCount, float delay)
     {
-        for (int i = 0; i < starCount; i++)
+            
+            for (int i = 0; i < starCount; i++)
         {
-            if (i < starParent.childCount)
+                Debug.Log("UpdateStarDisplay33333: " + starParent.childCount);
+                if (i < starParent.childCount)
             {
-                // Get the star object and activate it
-                Transform star = starParent.GetChild(i);
+                    
+                    // Get the star object and activate it
+                    Transform star = starParent.GetChild(i);
                 PositionStar(star.gameObject, i, starCount); // Position the star in the UI
                 star.gameObject.SetActive(true); // Show the star
                 yield return new WaitForSeconds(delay);  // Wait before showing the next star
             }
         }
-    }
+            StarManager.instance.HideStars();
+
+            // 3. Call the function from MenuManager to handle currency flying and chest logic
+            MenuManager.instance.StartCoroutine(MenuManager.instance.HandleCurrencyFlyAndChest());
+        }
 
     // Position the stars horizontally in the star bar container
     private void PositionStar(GameObject star, int index, int totalStars)

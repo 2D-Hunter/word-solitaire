@@ -292,6 +292,7 @@ public class SlotManager : MonoBehaviour
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
+        Appreciations.instance.ShowAppreciation();
 
         CardManager.instance.totalCardToGet -= GetSlotString().Length;
         targetAchieve = GetSlotString().Length;

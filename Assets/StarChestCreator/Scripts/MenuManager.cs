@@ -36,14 +36,15 @@ public class MenuManager : MonoBehaviour
     }
     private void Start()
     {
-        StartCoroutine(HandleCurrencyFlyAndChest());
+            //StarManager.UpdateStarDisplay();
+            StartCoroutine(HandleCurrencyFlyAndChest());
     }
 
         // Transition to the menu screen while stars are flying
         public IEnumerator HandleCurrencyFlyAndChest()
     {
         SwitchToMenuScreen();
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(1f);
 
         // Calculate collected stars
         int starsCollected = StarManager.instance.GetCollectedStars(false);

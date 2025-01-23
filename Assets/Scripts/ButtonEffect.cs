@@ -21,6 +21,6 @@ public class ButtonEffect : MonoBehaviour
 
     public void OnButtonRelease()
     {
-        transform.DOScale(originalScale, animationDuration).SetEase(Ease.OutBounce);
+        transform.DOScale(originalScale, animationDuration).SetEase(Ease.OutBack);
     }
 }
