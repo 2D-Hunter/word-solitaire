@@ -19,6 +19,18 @@ public class CardManager : MonoBehaviour
         instance = this;
         
     }
+    private void Start()
+    {
+        MakeRandomCardWild();
+    }
+    void MakeRandomCardWild()
+    {
+        if (extraCards.Count == 0) return;
+        int randomIndex = Random.Range(0, extraCards.Count);
+        Card randomCard = extraCards[randomIndex];
+        randomCard.SetAsWild();
+        Debug.Log("The wild card is: " + randomCard.name);
+    }
     public void AddAllCardsToList()
     {
         allCards = FindObjectsOfType<Card>().ToList();

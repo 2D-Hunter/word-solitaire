@@ -13,7 +13,7 @@ public class InitManager:MonoBehaviour
     public bool levelCompleted = false;
 
     public LevelData levelData;
-
+    public bool backFromLevelCompletion = false;
 
     private void Awake()
     {

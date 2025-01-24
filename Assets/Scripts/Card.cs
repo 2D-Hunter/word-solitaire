@@ -15,9 +15,9 @@ public class Card : MonoBehaviour
     private SlotManager slotManager;
     public GameObject cardFace;
     public bool isFaceUp = false;
+    private bool isWildCard = false;
 
-    
-    
+
 
     private bool isFlipping = false;
 
@@ -39,6 +39,7 @@ public class Card : MonoBehaviour
         if(this.tag == "ExtraCard")
         {
             rectTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
+            int randomIndex = Random.Range(0, CardManager.instance.extraCards.Count);
         }
         
     }
@@ -51,6 +52,17 @@ public class Card : MonoBehaviour
             CardManager.instance.UpdateFaceUpCards(this, isFaceUp);
         }
         Invoke("AddFaceupExtraCard", 1f);
+
+    }
+    public void SetAsWild()
+    {
+        isWildCard = true;
+        //rectTransform.GetChild(3).gameObject.SetActive(true);
+        Debug.Log(gameObject.name + " is now a Wild card!");
+    }
+    public bool IsWildCard()
+    {
+        return isWildCard;
     }
     void AddFaceupExtraCard()
     {
@@ -332,7 +344,18 @@ public class Card : MonoBehaviour
             {
                 eCard.GetComponent<RectTransform>().GetChild(i).localRotation = Quaternion.Euler(0, 180, 0);
             }
-            eCard.cardFace.SetActive(false);
+                
+            if(eCard.isWildCard)
+            {
+                eCard.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
+                eCard.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(true);
+            }
+            else
+            {
+                eCard.cardFace.SetActive(false);
+            }
+                
+
         }
         else
         {
@@ -343,6 +366,10 @@ public class Card : MonoBehaviour
                 eCard.GetComponent<RectTransform>().GetChild(i).localRotation = Quaternion.Euler(0, 0, 0);
             }
             eCard.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(true);
+            if (eCard.isWildCard)
+            {
+                eCard.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(false);
+            }
         }
 
 

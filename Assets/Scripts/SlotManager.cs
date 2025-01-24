@@ -120,6 +120,7 @@ public class SlotManager : MonoBehaviour
                             card.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
                             card.GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
                             card.GetComponent<RectTransform>().GetChild(1).localRotation = Quaternion.Euler(0, -180, 0);
+                            card.GetComponent<RectTransform>().GetChild(3).localRotation = Quaternion.Euler(0, -180, 0);
 
                         });
                     }

@@ -37,7 +37,11 @@ public class MenuManager : MonoBehaviour
     private void Start()
     {
             //StarManager.UpdateStarDisplay();
-            StartCoroutine(HandleCurrencyFlyAndChest());
+            if(InitManager.instance.levelCompleted)
+            {
+                StartCoroutine(HandleCurrencyFlyAndChest());
+            }
+                
     }
 
         // Transition to the menu screen while stars are flying

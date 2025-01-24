@@ -61,4 +61,9 @@ public class HintService : IHintService
         foundWord = null;
         return false;
     }
+
+    public void OnWildClick(Card wildCard, string slotString)
+    {
+        throw new NotImplementedException();
+    }
 }
