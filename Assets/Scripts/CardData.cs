@@ -7,7 +7,14 @@ public class CardData : MonoBehaviour
     //public static CardData instance;
     public TextMeshProUGUI letterText;
     public TextMeshProUGUI valueText;
-    public char letter;
+    public char letter
+    {
+        get { return letterText.text[0]; }
+        set
+        {
+            letterText.text = value.ToString();
+        }
+    }
     public int cardValue = 0;
     public int value;
 

@@ -1,105 +1,53 @@
-{
-  "wordInfo":
+
   {
-     "wordStartWithA":
+     "wordInfo":
 	 [
+
 		{
-		  "wordlength":1,
-		  "isRemote":false,
-		  "fileName":""
-		},
-	    {
-		  "wordlength":2,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 2,
+			"isRemote": false,
+			"fileName": "words_2"
 		},
 		{
-		  "wordlength":3,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 3,
+			"isRemote": false,
+			"fileName": "words_3"
 		},
 		{
-		  "wordlength":4,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 4,
+			"isRemote": false,
+			"fileName": "words_4"
 		},
 		{
-		  "wordlength":5,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 5,
+			"isRemote": false,
+			"fileName": "words_5"
 		},
 		{
-		  "wordlength":6,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 6,
+			"isRemote": false,
+			"fileName": "words_6"
 		},
 		{
-		  "wordlength":7,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 7,
+			"isRemote": false,
+			"fileName": "words_7"
 		},
 		{
-		  "wordlength":8,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 8,
+			"isRemote": false,
+			"fileName": "words_8"
 		},
-		
+
 		{
-		  "wordlength":9,
-		  "isRemote":false,
-		  "fileName":""
-		}
-		
-	 ],
-	 "wordStartWithB":
-	 [
-		{
-		  "wordlength":1,
-		  "isRemote":false,
-		  "fileName":""
-		},
-	    {
-		  "wordlength":2,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":3,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":4,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":5,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":6,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":7,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		{
-		  "wordlength":8,
-		  "isRemote":false,
-		  "fileName":""
-		},
-		
-		{
-		  "wordlength":9,
-		  "isRemote":false,
-		  "fileName":""
+			"wordlength": 9,
+			"isRemote": false,
+			"fileName": "words_9"
 		}
 		
 	 ]
   }
-}
+
+
+
+ 

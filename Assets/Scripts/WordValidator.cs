@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Word;
 
 public class WordValidator : MonoBehaviour
 {
@@ -38,16 +39,17 @@ public class WordValidator : MonoBehaviour
             return false;
         }
         
-        GameManager.instance.isValidWord = validWords.Contains(word.ToLower());
+        GameManager.instance.isValidWord = WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
         Debug.Log("_________________isValidWord: " + GameManager.instance.isValidWord);
         GreenTabHandler.instance.HandleGreenTab(createdWord);
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
-        return validWords.Contains(word.ToLower());
+        return WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
+         //validWords.Contains(word.ToLower());
     }
 
     public bool isWordValid(string word)
     {
-      return validWords.Contains(word.ToLower());
+      return WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
     }
 }

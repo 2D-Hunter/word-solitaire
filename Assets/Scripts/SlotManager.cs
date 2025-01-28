@@ -6,6 +6,7 @@ using DG.Tweening;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Word;
 
 public class SlotManager : MonoBehaviour
 {
@@ -99,7 +100,11 @@ public class SlotManager : MonoBehaviour
                 isSlotOccupied[currentSlotIndex] = false;
                 slotToCardMap.Remove(cardSlots[currentSlotIndex]);
                 slotsCard.Remove(card);
-                
+                var allwild = slotsCard.FindAll(card => card.IsWildCard() == true);
+                if (allwild.Count > 0)
+                {
+                    WordServiceContainer.HintService.OnWildClick(allwild[0], "");
+                }
                 card.GetComponent<RectTransform>().SetAsLastSibling();
                 Card.instance.FlipImmediateBelowCards();
                 if (originalPositions.ContainsKey(card.GetComponent<RectTransform>()))
@@ -181,6 +186,11 @@ public class SlotManager : MonoBehaviour
                 card.FlipImmediateBelowCards();
                 //Sequence cardSequence = DOTween.Sequence();
                 slotsCard.Add(card);
+                var allwild = slotsCard.FindAll(card=> card.IsWildCard()== true);
+                if (allwild.Count>0)
+                {
+                    WordServiceContainer.HintService.OnWildClick(allwild[0], "");
+                }
                 
 
                 //Vector3 upwardPosition = card.GetComponent<RectTransform>().position + new Vector3(lateralOffset, 4f, 0);

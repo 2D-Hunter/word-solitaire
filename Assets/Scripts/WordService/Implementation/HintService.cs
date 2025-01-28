@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Word;
 
 public class HintService : IHintService
 {
@@ -64,6 +61,44 @@ public class HintService : IHintService
 
     public void OnWildClick(Card wildCard, string slotString)
     {
-        throw new NotImplementedException();
+        Debug.Log("OnWildClick ");
+        var slotCards = SlotManager.instance.slotsCard;
+        string cardtext = null;
+        string cardsChars = null;
+        for (int i = 0; i<slotCards.Count; i++)
+        {
+            Card card = slotCards[i];
+           
+            
+            if (card != null) {
+                if(card.IsWildCard())
+                {
+                    cardtext = "*";
+                }
+                else
+                {
+                    cardtext = card.cardData.letterText.text;
+                }
+                cardsChars += cardtext;
+            }
+        }
+        Debug.Log("cardsChars >>>>>>>>>>>>>>>>>> " + cardsChars);
+        var matchWords =    WordServiceContainer.DictionaryService.FindMatches(cardsChars);
+        if(matchWords != null && matchWords.Count>0)
+        {
+            var word = matchWords[0];
+            int indexofWild = cardsChars.IndexOf("*");
+            var cardChar = word[indexofWild];
+            wildCard.cardData.letter = cardChar;
+        }
+        else
+        {
+           // wildCard.cardData.letter = "*";
+        }
+        /*foreach (string match in matchWords)
+        {
+            Debug.Log("Math found <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"+match);
+        }*/
+
     }
 }
