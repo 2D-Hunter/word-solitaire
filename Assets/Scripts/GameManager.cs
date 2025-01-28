@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public bool isValidWord = false;
     public int totalPoint = 0;
     public GameObject backButton;
-    
+    public string hintText;
 
 
     private void Awake()

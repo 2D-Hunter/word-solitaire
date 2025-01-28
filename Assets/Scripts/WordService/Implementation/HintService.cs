@@ -20,6 +20,7 @@ public class HintService : IHintService
         {
             List<Card> cards = new List<Card>();
             Debug.Log($"hello valid word found please high light card {foundValidWorld}");
+            GameManager.instance.hintText = "Try "+"'"+foundValidWorld+"'";
             for (int i = 0; i < foundValidWorld.Length; i++)
             {
               var card =   allOpenCards.Find(objCard => objCard.cardData.letterText.text.ToLower() == foundValidWorld[i].ToString().ToLower());

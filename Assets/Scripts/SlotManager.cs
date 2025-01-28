@@ -49,6 +49,9 @@ public class SlotManager : MonoBehaviour
      Vector3 endScale = new Vector3(0.83f, 0.83f, 0.83f);
 
     int lastFilledSlot = -1;
+
+    public GameObject trailEffectPrefab;
+    private GameObject activeTrail_WildCard;
     private void Awake()
     {
         instance = this;
@@ -80,6 +83,7 @@ public class SlotManager : MonoBehaviour
 
     public void OnCardClicked(Card card)
     {
+        
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
 
@@ -131,6 +135,7 @@ public class SlotManager : MonoBehaviour
                     }
                     else
                     {
+                        Debug.Log(" ++++++11 ");
                         cardSequence.Append(card.GetComponent<RectTransform>().DOAnchorPos(originalPositions[card.GetComponent<RectTransform>()], 0.2f).SetEase(Ease.OutQuad));
                         cardSequence.Join(card.GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
                         cardSequence.Join(card.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
@@ -217,22 +222,50 @@ public class SlotManager : MonoBehaviour
                 {
                     height = 400f;
                 }
+                if (card.isWildCard)
+                {
+                    activeTrail_WildCard = Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
+                }
+                //ParticleSystem trailEffect = activeTrail_WildCard.GetComponent<ParticleSystem>();
+                //if (trailEffect != null)
+                //{
+                //    trailEffect.Play();
+                //}
 
-                    float apexY = Mathf.Max(startPos.y, targetPosition.y) + height;
+                float apexY = Mathf.Max(startPos.y, targetPosition.y) + height;
                 verticalMotion.Append(cardRect.DOAnchorPosY(apexY, animDuration/2).SetEase(Ease.OutQuad));
 
                 verticalMotion.Append(cardRect.DOMove(targetPosition, animDuration ).SetEase(Ease.OutQuad));
 
                 cardRect.DOScale(startScale, animDuration / 4).SetEase(Ease.OutQuad);
                 cardRect.DOScale(endScale, animDuration).SetEase(Ease.InOutQuad);
-
+                
                 verticalMotion.Play();
+                verticalMotion.OnUpdate(() =>
+                {
+                    if(card.isWildCard)
+                    {
+                        if (activeTrail_WildCard != null)
+                        {
+                            activeTrail_WildCard.transform.position = cardRect.position;
+                        }
+                    }
+                    
+                });
 
                 cardRect.DORotate(new Vector3(0, 0, 360), animDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear);
 
                 verticalMotion.OnComplete(() =>
                 {
                     Debug.Log("Card reached the slot with projectile motion!");
+                    if (activeTrail_WildCard != null)
+                    {
+                        if (card.isWildCard)
+                        {
+                            Destroy(activeTrail_WildCard, 0.3f); // Add a delay if needed for particles to finish
+                            activeTrail_WildCard = null;
+                        }
+                    }
                 });
 
 
@@ -255,7 +288,7 @@ public class SlotManager : MonoBehaviour
         {
             Debug.LogError("Script instance is null!");
         }
-            
+        RemoveCardsButton.instance.SwapImage(); 
     }
 
     public string GetSlotString()
@@ -300,9 +333,12 @@ public class SlotManager : MonoBehaviour
     {
         GetSlotString();
         GameManager.instance.isValidWord = false;
+        SlotManager.instance.isSlotOccupied[0] = false;
+        RemoveCardsButton.instance.SwapImage();
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
+        
         Appreciations.instance.ShowAppreciation();
 
         CardManager.instance.totalCardToGet -= GetSlotString().Length;
@@ -354,8 +390,8 @@ public class SlotManager : MonoBehaviour
         }
         
         slotsCard.Clear();
-
         
+
     }
     IEnumerator TweenExtraCards()
     {

@@ -6,7 +6,7 @@ namespace FortuneWheel
 {
     public class GameController : MonoBehaviour
     {
-        private static GameController _ins;
+        public static GameController _ins;
         public static GameController ins
         {
             get
@@ -109,13 +109,14 @@ namespace FortuneWheel
 
         private void Awake()
         {
+            Debug.Log("GameController");
             if (_ins == null)
                 _ins = this;
 
             //UI declerations
             previousGold = totalGold;
-            totalGoldText.text = totalGold.ToString();
-            turnCostText.text = turnCost.ToString();
+            //totalGoldText.text = totalGold.ToString();
+            //turnCostText.text = turnCost.ToString();
 
             GetPlayerProgress();
             CreateWheel();
@@ -123,10 +124,12 @@ namespace FortuneWheel
 
         public void CreateWheel()
         {
+            
             float startingAngle = 0;
 
             for (int i = 0; i < PiecesOfWheel.Length; i++)
             {
+                Debug.Log("CreateWheel");
                 GameObject pieceObj = Instantiate(piecePrefab, Vector3.zero, new Quaternion(0, 0, 0, 0), wheelParent.transform);
 
                 pieceObj.transform.name = "Piece " + (i + 1);
@@ -139,7 +142,7 @@ namespace FortuneWheel
 
         public void TurnWheel()
         {
-            turnButton.interactable = false;
+            //turnButton.interactable = false;
 
             if (totalGold >= turnCost) // If player has enough gold to turn the wheel
             {
@@ -200,6 +203,7 @@ namespace FortuneWheel
 
         private void ClaimTurnCost()
         {
+
             previousGold = totalGold;   //Set prev value for flipping uı animation
             totalGold -= turnCost;      // Decrease cost for the turn
             StartCoroutine(UpdateRewardAmount());
@@ -360,7 +364,7 @@ namespace FortuneWheel
             }
 
             rewardMultiplier = 1;   //Reset for next rewards
-            turnButton.interactable = true; //Now player can turn wheel again
+            //turnButton.interactable = true; //Now player can turn wheel again
             StartCoroutine(UpdateRewardAmount());
         }
 
@@ -500,7 +504,7 @@ namespace FortuneWheel
             }
 
             PlayerPrefs.Save();
-            StartCoroutine(UpdateRewardAmount());
+            //StartCoroutine(UpdateRewardAmount());
         }
 
 

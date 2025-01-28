@@ -16,8 +16,12 @@ namespace FortuneWheel
             if (collision.transform.tag == "PinPoint")
             {
                 anim.SetBool("isPlay", true);
-                GameController.ins.rewardImageHeader.sprite = GameController.ins.PiecesOfWheel[collision.transform.parent.GetComponent<PieceObject>().index].rewardIcon;
-                GameController.ins.rewardTextHeader.text = GameController.ins.PiecesOfWheel[collision.transform.parent.GetComponent<PieceObject>().index].rewardAmount.ToString();
+                if(Menu.instance.isFortuneWheelOpened)
+                {
+                    GameController.ins.rewardImageHeader.sprite = GameController.ins.PiecesOfWheel[collision.transform.parent.GetComponent<PieceObject>().index].rewardIcon;
+                    GameController.ins.rewardTextHeader.text = GameController.ins.PiecesOfWheel[collision.transform.parent.GetComponent<PieceObject>().index].rewardAmount.ToString();
+                }
+                
             }
         }
 
