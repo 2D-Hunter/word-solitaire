@@ -15,7 +15,7 @@ public class Card : MonoBehaviour
     private SlotManager slotManager;
     public GameObject cardFace;
     public bool isFaceUp = false;
-    private bool isWildCard = false;
+    public bool isWildCard = false;
 
 
 
@@ -69,7 +69,7 @@ public class Card : MonoBehaviour
         CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[0], true);
     }
 
-    public void OnCardClick()
+    public void OnCardClick(Card card)
     {
         SlotManager.instance.goingBack = false;
         if (InitManager.instance != null)

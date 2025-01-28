@@ -37,10 +37,14 @@ public class MenuManager : MonoBehaviour
     private void Start()
     {
             //StarManager.UpdateStarDisplay();
-            if(InitManager.instance.levelCompleted)
+            if(InitManager.instance)
             {
-                StartCoroutine(HandleCurrencyFlyAndChest());
+                if (InitManager.instance.levelCompleted)
+                {
+                    StartCoroutine(HandleCurrencyFlyAndChest());
+                }
             }
+            
                 
     }
 

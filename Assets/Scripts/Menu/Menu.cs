@@ -13,6 +13,9 @@ public class Menu : MonoBehaviour
     public TextMeshProUGUI currentLevel;
     public TextMeshProUGUI currentLevelShadow;
 
+    public GameObject fortuneWheel = null;
+    public bool isFortuneWheelOpened = false;
+
 
     private void Awake()
     {
@@ -25,5 +28,9 @@ public class Menu : MonoBehaviour
     {
         goalPopup.SetActive(true);
         GoalPopup.instance.ShowPopup();
+    }
+    public void ShowFortuneWheel()
+    {
+        fortuneWheel.SetActive(true);
     }
 }
