@@ -42,6 +42,7 @@ public class LevelManager : MonoBehaviour
         {
             levels[levelIndex].SetActive(true);
             CardManager.instance.AddAllCardsToList();
+            CardManager.instance.AddTotalCardsToClearInList();
             if (levelData != null && levelIndex < levelData.levels.Length)
             {
                 var levelInfo = levelData.levels[levelIndex];

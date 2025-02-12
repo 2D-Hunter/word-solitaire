@@ -12,6 +12,7 @@ public class GoalPopup : MonoBehaviour
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupObj = null;
+    public GameObject outOfHeartsPopup = null;
 
     public CanvasGroup playBtn = null;
     public RectTransform playBtnRectTransform = null;
@@ -20,6 +21,8 @@ public class GoalPopup : MonoBehaviour
     public TextMeshProUGUI currentLevelShadow;
     public TextMeshProUGUI goal;
     public TextMeshProUGUI goalShadow;
+    public GameObject heartHud = null;
+    public GameObject coinHud = null;
 
     private void Awake()
     {
@@ -28,6 +31,7 @@ public class GoalPopup : MonoBehaviour
     }
     private void SetInit()
     {
+        coinHud.SetActive(false);
         bg.alpha = 0;
         popup.alpha = 0;
         playBtn.alpha = 0;
@@ -46,7 +50,7 @@ public class GoalPopup : MonoBehaviour
     {
         SetInit();
 
-        bg.DOFade(0.4f, 0.6f).SetEase(Ease.OutBack);
+        bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupObj.DOAnchorPosY(0, 0.4f).SetEase(Ease.OutBack);
 
@@ -56,18 +60,34 @@ public class GoalPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
-        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
+        if (HeartManager.instance.CanPlay())
+        {
+            bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
+            popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
+            popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
+        }
+        else
+        {
+            outOfHeartsPopup.SetActive(true);
+            OutOfHeartsPopup.instance.ShowPopup();
+        }
+        
+    }
+    public void OnTapClose()
+    {
+        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => gameObject.SetActive(false));
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
     }
-    void RemoveThis()
+    public void RemoveThis()
     {
-        if(Menu.instance.overlayPanel.activeSelf)
+        if (Menu.instance.overlayPanel.activeSelf)
         {
             //Initiate.Fade("Game", Color.black, 1f);
             SceneManager.LoadScene("Game");
         }
         gameObject.SetActive(false);
+        
     }
     public void StartGame()
     {

@@ -14,6 +14,7 @@ public class InitManager:MonoBehaviour
 
     public LevelData levelData;
     public bool backFromLevelCompletion = false;
+    public int brillianceScore = 0;
 
     private void Awake()
     {
@@ -21,6 +22,11 @@ public class InitManager:MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
         }
     }
     private void Start()

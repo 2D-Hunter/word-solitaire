@@ -7,7 +7,7 @@ public class Splash : MonoBehaviour
 {
     void Start()
     {
-        Invoke("LoadMenu", 3f);
+        Invoke("LoadMenu", 0f);
     }
     void LoadMenu()
     {

@@ -41,7 +41,8 @@ public class MenuManager : MonoBehaviour
             {
                 if (InitManager.instance.levelCompleted)
                 {
-                    StartCoroutine(HandleCurrencyFlyAndChest());
+                    Debug.Log("");
+                    //StartCoroutine(HandleCurrencyFlyAndChest());
                 }
             }
             

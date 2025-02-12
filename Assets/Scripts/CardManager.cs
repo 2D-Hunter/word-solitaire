@@ -10,7 +10,10 @@ public class CardManager : MonoBehaviour
     public List<Card> allFaceUpCards;
     public List<Card> extraCards;
     public List<Card> rightSideCards;
+    public List<Card> totalCardsToClear;
     public int totalCardToGet;
+
+    public GameObject cardContainer = null;
     
 
     private void Awake()
@@ -35,9 +38,13 @@ public class CardManager : MonoBehaviour
     {
         allCards = FindObjectsOfType<Card>().ToList();
     }
+    public void AddTotalCardsToClearInList()
+    {
+        totalCardsToClear.AddRange(cardContainer.GetComponentsInChildren<Card>());
+    }
     public void UpdateFaceUpCards(Card card, bool isFaceUp)
     {
-        Debug.Log("Face-up cards: " + isFaceUp);
+        //Debug.Log("Face-up cards: " + isFaceUp);
         if (isFaceUp)
         {
             if (!allFaceUpCards.Contains(card))

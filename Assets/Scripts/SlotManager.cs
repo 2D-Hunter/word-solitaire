@@ -14,8 +14,8 @@ public class SlotManager : MonoBehaviour
     public List<RectTransform> cardSlots;
     private Dictionary<RectTransform, Transform> slotToCardMap;
     public List<bool> isSlotOccupied;
-    private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
-    private Dictionary<RectTransform, Vector2> originalPositions1 = new Dictionary<RectTransform, Vector2>();
+    //private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
+    //private Dictionary<RectTransform, Vector2> originalPositions1 = new Dictionary<RectTransform, Vector2>();
     public List<Card> slotsCard;
     public Vector2 finalPos;
     private int targetAchieve;
@@ -52,6 +52,9 @@ public class SlotManager : MonoBehaviour
 
     public GameObject trailEffectPrefab;
     private GameObject activeTrail_WildCard;
+    private int extraCardCount = 0;
+    private int cardCount = 0;
+    private StarProgressBar starProgressBar;
     private void Awake()
     {
         instance = this;
@@ -61,9 +64,10 @@ public class SlotManager : MonoBehaviour
         
         isSlotOccupied = new List<bool>(new bool[cardSlots.Count]);
         slotToCardMap = new Dictionary<RectTransform, Transform>();
-        originalPositions = new Dictionary<RectTransform, Vector2>();
+        //originalPositions = new Dictionary<RectTransform, Vector2>();
 
         StartCoroutine(StoreOriginalPositions());
+        starProgressBar = FindObjectOfType<StarProgressBar>();
 
 
     }
@@ -75,8 +79,9 @@ public class SlotManager : MonoBehaviour
             RectTransform cardRect = card.GetComponent<RectTransform>();
             if (cardRect != null)
             {
-                originalPositions[cardRect] = cardRect.anchoredPosition;
-                Debug.Log("+++++++::: " + originalPositions[cardRect]);
+                //originalPositions[cardRect] = cardRect.anchoredPosition;
+                //Debug.Log("+++++++::: " + originalPositions[cardRect]);
+                card.originalPosition = cardRect.anchoredPosition;
             }
         }
     }
@@ -92,62 +97,25 @@ public class SlotManager : MonoBehaviour
         {
             //card going back to place
             Debug.Log("___currentSlotIndex: " + currentSlotIndex + "____"+ (GetSlotString().Length-1));
-            if (currentSlotIndex == GetSlotString().Length-1)
-            {
+            //if (currentSlotIndex == GetSlotString().Length-1)
+            //{
                 if (card.transform.tag == "ExtraCard")
                 {
                     GameObject slotsContainer = GameObject.Find("UI-Panel/Extra Cards");
                     slotsContainer.transform.SetAsLastSibling();
                 }
 
+            ResetAfterCardBack(card);
+            slotsCard.Remove(card);
 
-                isSlotOccupied[currentSlotIndex] = false;
-                slotToCardMap.Remove(cardSlots[currentSlotIndex]);
-                slotsCard.Remove(card);
-                var allwild = slotsCard.FindAll(card => card.IsWildCard() == true);
-                if (allwild.Count > 0)
-                {
-                    WordServiceContainer.HintService.OnWildClick(allwild[0], "");
-                }
-                card.GetComponent<RectTransform>().SetAsLastSibling();
-                Card.instance.FlipImmediateBelowCards();
-                if (originalPositions.ContainsKey(card.GetComponent<RectTransform>()))
-                {
-                    goingBack = true;
-                    Sequence cardSequence = DOTween.Sequence();
-
-                    if (card.GetComponent<RectTransform>().tag == "ExtraCard")
-                    {
-                        CardManager.instance.rightSideCards.Add(card);
-                        cardSequence.Append(card.GetComponent<RectTransform>().DOAnchorPos(originalPositions1[card.GetComponent<RectTransform>()], 0.3f).SetEase(Ease.OutQuad));
-                        cardSequence.Join(card.GetComponent<RectTransform>().DOScale(1f, 0.3f).SetEase(Ease.OutBack));
-                        cardSequence.Join(card.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
-                        //card.GetComponent<Image>().sprite = Resources.Load<Sprite>("FaceUpCard_1");
-                        cardSequence.OnComplete(() =>
-                        {
-                            Debug.Log("Card has reached the slot.");
-                            card.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
-                            card.GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
-                            card.GetComponent<RectTransform>().GetChild(1).localRotation = Quaternion.Euler(0, -180, 0);
-                            card.GetComponent<RectTransform>().GetChild(3).localRotation = Quaternion.Euler(0, -180, 0);
-
-                        });
-                    }
-                    else
-                    {
-                        Debug.Log(" ++++++11 ");
-                        cardSequence.Append(card.GetComponent<RectTransform>().DOAnchorPos(originalPositions[card.GetComponent<RectTransform>()], 0.2f).SetEase(Ease.OutQuad));
-                        cardSequence.Join(card.GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
-                        cardSequence.Join(card.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
-                    }
-
-                }
-            }
-            else
+            card.GetComponent<RectTransform>().SetAsLastSibling();
+            card.FlipImmediateBelowCards();
+            if (card.GetComponent<Card>() != null)
             {
-                Debug.Log("No true boolean found in the list.");
+                goingBack = true;
+                Sequence cardSequence = DOTween.Sequence();
+                card.MoveBackToOriginalPosition();
             }
-            
         }
         else
         {
@@ -169,11 +137,12 @@ public class SlotManager : MonoBehaviour
             if (emptySlotIndex != -1)
             {
                     RectTransform cardRect = card.GetComponent<RectTransform>();
-                    if (cardRect != null)
-                    {
-                        originalPositions1[cardRect] = cardRect.anchoredPosition;
-                        Debug.Log("+++++++::: " + originalPositions1[cardRect]);
-                    }
+                if (cardRect != null && card.tag == "ExtraCard")
+                {
+                    //originalPositions1[cardRect] = cardRect.anchoredPosition;
+                    //Debug.Log("+++++++::: " + originalPositions1[cardRect]);
+                        card.originalPosition = cardRect.anchoredPosition;
+                }
 
                 isSlotOccupied[emptySlotIndex] = true;
                 slotToCardMap[cardSlots[emptySlotIndex]] = card.GetComponent<RectTransform>();
@@ -196,13 +165,6 @@ public class SlotManager : MonoBehaviour
                 {
                     WordServiceContainer.HintService.OnWildClick(allwild[0], "");
                 }
-                
-
-                //Vector3 upwardPosition = card.GetComponent<RectTransform>().position + new Vector3(lateralOffset, 4f, 0);
-                //cardSequence.Append(card.GetComponent<RectTransform>().DOMove(upwardPosition, 0.2f).SetEase(Ease.OutQuad));
-                ////cardSequence.Append(card.GetComponent<RectTransform>().DOScale(1.25f, 0.2f));
-
-
                 for (int i = 0; i < card.GetComponent<RectTransform>().childCount; i++)
                 {
                     card.GetComponent<RectTransform>().GetChild(i).localRotation = Quaternion.Euler(0, 0, 0);
@@ -226,11 +188,6 @@ public class SlotManager : MonoBehaviour
                 {
                     activeTrail_WildCard = Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
                 }
-                //ParticleSystem trailEffect = activeTrail_WildCard.GetComponent<ParticleSystem>();
-                //if (trailEffect != null)
-                //{
-                //    trailEffect.Play();
-                //}
 
                 float apexY = Mathf.Max(startPos.y, targetPosition.y) + height;
                 verticalMotion.Append(cardRect.DOAnchorPosY(apexY, animDuration/2).SetEase(Ease.OutQuad));
@@ -271,24 +228,43 @@ public class SlotManager : MonoBehaviour
 
             }
         }
-
+        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
+        AAA();
+    }
+    public void AAA()
+    {
         bool allTrue = isSlotOccupied.All(b => b);
         allSlotsOccupied = allTrue;
-        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
-        
         
         if (WordValidator.instance != null)
         {
             WordValidator.instance.ValidateWord(GetSlotString());
             GetSlotPoints();
-
-
+            
         }
         else
         {
             Debug.LogError("Script instance is null!");
         }
-        RemoveCardsButton.instance.SwapImage(); 
+        RemoveCardsButton.instance.SwapImage();
+
+    }
+
+    public void ResetAfterCardBack(Card card)
+    {
+        int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
+        if(currentSlotIndex != -1)
+        {
+            isSlotOccupied[currentSlotIndex] = false;
+            slotToCardMap.Remove(cardSlots[currentSlotIndex]);
+
+            var allwild = slotsCard.FindAll(card => card.IsWildCard() == true);
+            if (allwild.Count > 0)
+            {
+                WordServiceContainer.HintService.OnWildClick(allwild[0], "");
+            }
+        }
+        
     }
 
     public string GetSlotString()
@@ -326,25 +302,51 @@ public class SlotManager : MonoBehaviour
             }
         }
         Debug.Log("____________Points: " + points);
-        return points;
+        return points*GameManager.instance.scoreMultiplier;
     }
 
     public IEnumerator SubmitWord()
     {
         GetSlotString();
         GameManager.instance.isValidWord = false;
-        SlotManager.instance.isSlotOccupied[0] = false;
+        isSlotOccupied[0] = false;
         RemoveCardsButton.instance.SwapImage();
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
-        
         Appreciations.instance.ShowAppreciation();
-
-        CardManager.instance.totalCardToGet -= GetSlotString().Length;
+        ScoreManager.instance.AddScore(GetSlotPoints());
+        if (starProgressBar != null)
+        {
+            starProgressBar.UpdateStarBar(GetSlotPoints());
+        }
+        for (int i = slotsCard.Count - 1; i >= 0; i--)
+        {
+            Card card1 = slotsCard[i];
+            if(card1.tag == "ExtraCard" || card1.tag == "WildCard")
+            {
+                extraCardCount++;
+            }
+            else
+            {
+                //cardCount++;
+            }
+        }
+        
+        CardManager.instance.totalCardToGet -= (GetSlotString().Length) - extraCardCount;
+        //CardManager.instance.totalCardToGet -= cardCount;
         targetAchieve = GetSlotString().Length;
+        extraCardCount = 0;
+        Debug.Log("CardManager.instance.totalCardToGet... " + CardManager.instance.totalCardToGet);
         if (CardManager.instance.totalCardToGet <= 0)
         {
+            Debug.Log("Game Completed...");
+            if (starProgressBar != null)
+            {
+                int prevBrillanceScore = PlayerPrefs.GetInt("BrillianceScore");
+                InitManager.instance.brillianceScore = prevBrillanceScore + starProgressBar.CalculateBrillianceScore();
+                PlayerPrefs.SetInt("BrillianceScore", InitManager.instance.brillianceScore);
+            }
             InitManager.instance.levelCompleted = true;
             StartCoroutine(TweenExtraCards());
         }
@@ -371,17 +373,24 @@ public class SlotManager : MonoBehaviour
             cardSequence.Append(card.DOPath(path, tweenDuration, PathType.CatmullRom).SetEase(customEase));
             cardSequence.Join(card.DOScale(Hud.instance.hudCard.localScale, tweenDuration));
             cardSequence.Join(card.DORotate(new Vector3(0, 0, 348), tweenDuration, RotateMode.LocalAxisAdd).SetEase(customEase));
-
+            //Debug.Log("scoreText.text: " + scoreText.text);
             cardSequence.OnComplete(() =>
             {
                 card.gameObject.SetActive(false);
                 Debug.Log("InitManager.instance.currentTarget: "+ InitManager.instance.currentTarget);
                 if(InitManager.instance.currentTarget > 0)
                 {
-                    InitManager.instance.currentTarget--;
-                    LevelManager.instance.UpdateLevelUI(LevelManager.instance.levelData.levels[InitManager.instance.currentLevel - 1].levelNumber, InitManager.instance.currentTarget);
-                    Debug.Log("InitManager.instance.currentTarget Hud.instance.DecreaseTarget");
-                    Hud.instance.DecreaseTarget();
+                    Debug.Log("card.tag: " + card.tag);
+                    if(card.tag != "ExtraCard")
+                    {
+                        Debug.Log("card.tag inside: ");
+                        InitManager.instance.currentTarget--;
+                        LevelManager.instance.UpdateLevelUI(LevelManager.instance.levelData.levels[InitManager.instance.currentLevel - 1].levelNumber, InitManager.instance.currentTarget);
+                        Debug.Log("InitManager.instance.currentTarget Hud.instance.DecreaseTarget");
+                        Hud.instance.DecreaseTarget();
+                    }
+                        
+                    
                 }
                 
             });
@@ -442,6 +451,7 @@ public class SlotManager : MonoBehaviour
             yield return new WaitForSeconds(delayBetweenTweens);
 
         }
+
         StartCoroutine(LoadMenu());
     }
 

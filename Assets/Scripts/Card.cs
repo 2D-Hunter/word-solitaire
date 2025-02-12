@@ -11,12 +11,12 @@ public class Card : MonoBehaviour
     public List<Card> belowCards;
     
     public RectTransform rectTransform;
-    public static Card instance;
+    //public static Card instance;
     private SlotManager slotManager;
     public GameObject cardFace;
     public bool isFaceUp = false;
     public bool isWildCard = false;
-
+    public bool switchToFaceDown = false;
 
 
     private bool isFlipping = false;
@@ -33,6 +33,9 @@ public class Card : MonoBehaviour
 
     public CardData cardData;
 
+    public Vector2 originalPosition;
+    Sequence cardSequence;
+
     private void Awake()
     {
         Debug.Log("______this.tag: "+ this.tag);
@@ -45,7 +48,8 @@ public class Card : MonoBehaviour
     }
     private void Start()
     {
-        instance = this;
+        //instance = this;
+         cardSequence = DOTween.Sequence();
         slotManager = FindObjectOfType<SlotManager>();
         if (this.tag != "ExtraCard")
         {
@@ -53,6 +57,51 @@ public class Card : MonoBehaviour
         }
         Invoke("AddFaceupExtraCard", 1f);
 
+    }
+    public void MoveBackToOriginalPosition()
+    {
+        
+        if (this.tag == "ExtraCard")
+        {
+            CardManager.instance.rightSideCards.Add(this);
+            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.3f).SetEase(Ease.OutQuad));
+            cardSequence.Join(GetComponent<RectTransform>().DOScale(1f, 0.3f).SetEase(Ease.OutBack));
+            cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
+            cardSequence.OnComplete(() =>
+            {
+                Debug.Log("Card has reached back into the original position.");
+                GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
+                GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
+                GetComponent<RectTransform>().GetChild(1).localRotation = Quaternion.Euler(0, -180, 0);
+                GetComponent<RectTransform>().GetChild(3).localRotation = Quaternion.Euler(0, -180, 0);
+
+            });
+        }
+        else
+        {
+            GetComponent<RectTransform>().DOKill();
+            Debug.Log("cardSequence121212");
+            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.2f).SetEase(Ease.OutQuad));
+            cardSequence.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
+            cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
+            .OnComplete(() =>
+             {
+                 Debug.Log("sendBackAll000");
+                   RemoveCardsButton.instance.sendBackAll = false;
+             });
+            Invoke("SetFaceOfCard", 0.1f);
+            
+            
+        }
+    }
+    void SetFaceOfCard()
+    {
+        Debug.Log("sendBackAll111: "+ RemoveCardsButton.instance.sendBackAll);
+        if (belowCards.Count == 0 && RemoveCardsButton.instance.sendBackAll)
+        {
+            GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(true);
+            isFaceUp = false;
+        }
     }
     public void SetAsWild()
     {
@@ -71,6 +120,7 @@ public class Card : MonoBehaviour
 
     public void OnCardClick(Card card)
     {
+        RemoveCardsButton.instance.sendBackAll = false;
         SlotManager.instance.goingBack = false;
         if (InitManager.instance != null)
             if (InitManager.instance.levelCompleted) return;
@@ -94,7 +144,8 @@ public class Card : MonoBehaviour
         else
         {
             if (!isFaceUp) return;
-            
+            isFlipping = false;
+            Debug.Log("isFlipping000: " + isFlipping);
             slotManager.OnCardClicked(this);
             Debug.Log($"Card {name} was clicked!");
             Debug.Log("SlotManager.instance.goingBack: "+ SlotManager.instance.goingBack);
@@ -123,7 +174,7 @@ public class Card : MonoBehaviour
             eCard.isFaceUp = true;
 
             originalSiblingIndex = rectTransform.GetSiblingIndex();
-            Sequence flipSequence = DOTween.Sequence();
+            
             rectTransform.SetAsLastSibling();
             if (CardManager.instance.rightSideCards.Count == 0)
                 moveDistance = 200;
@@ -131,7 +182,14 @@ public class Card : MonoBehaviour
                 moveDistance = 220;
             if (CardManager.instance.rightSideCards.Count >= 2)
                 moveDistance = 240;
+<<<<<<< HEAD
+            
+            
+
+            
+=======
             rectTransform.DOAnchorPosX(moveDistance, 0.3f);
+>>>>>>> parent of 6e7cadd (In-app)
             
 
             if (CardManager.instance.rightSideCards.Count >= 1)
@@ -139,6 +197,9 @@ public class Card : MonoBehaviour
                 GameManager.instance.ShowBackButton();
             }
 
+<<<<<<< HEAD
+            FlipExtraCard(rectTransform, eCard);
+=======
             rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
@@ -152,6 +213,7 @@ public class Card : MonoBehaviour
                         //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
                     });
             });
+>>>>>>> parent of 6e7cadd (In-app)
             Debug.Log("______qqq");
             CardManager.instance.extraCards.Remove(eCard);
             CardManager.instance.rightSideCards.Add(eCard);
@@ -163,8 +225,30 @@ public class Card : MonoBehaviour
             //SlotManager.instance.OnCardClicked(rectTransform);
         }
     }
+    private void FlipExtraCard(RectTransform rectTransform, Card eCard)
+    {
+        rectTransform.DOKill();
 
-    
+        Sequence sequence = DOTween.Sequence();
+
+        rectTransform.DOAnchorPosX(moveDistance, 0.3f);
+        rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
+        .OnComplete(() =>
+        {
+            Debug.Log("Half flip");
+                //isFaceUp = true;
+                UpdateCardFlipping(true, eCard);
+            rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
+                .OnComplete(() =>
+                {
+                    Debug.Log("Half flip-2");
+                    isFlipping = false;
+                        //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
+                    });
+        });
+
+    }
+
 
     public void FlipImmediateBelowCards()
     {
@@ -189,16 +273,18 @@ public class Card : MonoBehaviour
             //}
             if (overlapsWithTappedCard && !overlapsWithOtherCards && isFaceUp)
             {
+                Debug.Log("____FlipImmediateBelowCards-11");
                 Debug.Log($"Flipping immediate below card: {belowCard.name}");
-                belowCard.FlipCard();
+                belowCard.FlipCard(belowCard);
 
                  //belowCard.FlipImmediateBelowCards();
             }
             else
             {
+                Debug.Log("____FlipImmediateBelowCards-22");
                 Debug.Log($"Card {belowCard.name} is blocked or not directly below.");
                 if(SlotManager.instance.goingBack && belowCard.isFaceUp)
-                    belowCard.FlipCard();
+                    belowCard.FlipCard(belowCard);
             }
         }
     }
@@ -273,25 +359,27 @@ public class Card : MonoBehaviour
         return new Rect(corners[0].x, corners[0].y, width, height);
         
     }
-    public void FlipCard()
+    public void FlipCard(Card card)
     {
-        Debug.Log("belowCard.Count: " + belowCards.Count);
-        Debug.Log("isFaceUp: " + isFaceUp);
+        Debug.Log("card.belowCards.Count: " + card.belowCards.Count);
+        Debug.Log("card.belowCards.Count: " + belowCards.Count);
+        Debug.Log("isFlipping: " + isFlipping);
         if (isFlipping) return;
         //if (isFaceUp) return; 
-        isFlipping = true;
+        //isFlipping = true;
         float flipDuration = 0.2f;
         //for (int i = 0; i < belowCards.Count; i++)
         //{
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        isFaceUp = true;
-        
+            RectTransform rectTransform = card.GetComponent<RectTransform>();
+
+        //isFaceUp = true;
+        card.isFaceUp = true;
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
 
                     //isFaceUp = true;
-                    UpdateCardFlipping();
+                    UpdateCardFlipping(card);
                 rectTransform.DORotate(new Vector3(0, -90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                     .OnComplete(() =>
                     {
@@ -301,14 +389,14 @@ public class Card : MonoBehaviour
             });
         //}
     }
-    private void UpdateCardFlipping()
+    private void UpdateCardFlipping(Card card)
     {
 
         //cardFace.SetActive(!isFaceUp);
 
         //for (int i = 0; i < belowCards.Count; i++)
         //{
-            RectTransform rectTransform = GetComponent<RectTransform>();
+            RectTransform rectTransform = card.GetComponent<RectTransform>();
 
             if (SlotManager.instance.goingBack)
             {
@@ -317,8 +405,8 @@ public class Card : MonoBehaviour
                 {
                     rectTransform.GetChild(j).localRotation = Quaternion.Euler(0, 0, 0);
                 }
-                cardFace.SetActive(isFaceUp);
-                isFaceUp = false;
+                card.cardFace.SetActive(card.isFaceUp);
+                card.isFaceUp = false;
             }
             else
             {
