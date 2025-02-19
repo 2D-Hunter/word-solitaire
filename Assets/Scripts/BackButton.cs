@@ -10,15 +10,16 @@ public class BackButton : MonoBehaviour
     //public TextMeshProUGUI coinText;
     //public TextMeshProUGUI shadowText;
     private RectTransform rectTransform;
+    public GameObject coinAnim1;
+    public RectTransform parentPanel;
+    int counter;
 
-<<<<<<< HEAD
     private void Awake()
     {
         
         //coinText.text = shadowText.text = counter.ToString();
     }
-=======
->>>>>>> parent of 6e7cadd (In-app)
+
     void Start()
     {
         instance = this;
@@ -40,7 +41,7 @@ public class BackButton : MonoBehaviour
     {
         if (CardManager.instance.rightSideCards.Count > 1)
         {
-<<<<<<< HEAD
+
             // Instantiate UI prefab under the parent
             GameObject newUIElement = Instantiate(coinAnim1, parentPanel);
             TextMeshProUGUI[] textComponents = newUIElement.GetComponentsInChildren<TextMeshProUGUI>();
@@ -86,10 +87,9 @@ public class BackButton : MonoBehaviour
     void UpdateText()
     {
         //coinText.text = shadowText.text = counter.ToString();
-=======
-            Card.instance.FlipCardBack();
-        }
 
->>>>>>> parent of 6e7cadd (In-app)
+            //Card.instance.FlipCardBack();
+        
+
     }
 }

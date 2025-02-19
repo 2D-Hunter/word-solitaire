@@ -56,7 +56,7 @@ public class Shop : MonoBehaviour
     }
     public void BuyProduct(string productId)
     {
-        IAPManager.instance.BuyProduct(productId);
+        //IAPManager.instance.BuyProduct(productId);
     }
 
     public void ShowPopup()

@@ -182,14 +182,13 @@ public class Card : MonoBehaviour
                 moveDistance = 220;
             if (CardManager.instance.rightSideCards.Count >= 2)
                 moveDistance = 240;
-<<<<<<< HEAD
+
             
             
 
             
-=======
+
             rectTransform.DOAnchorPosX(moveDistance, 0.3f);
->>>>>>> parent of 6e7cadd (In-app)
             
 
             if (CardManager.instance.rightSideCards.Count >= 1)
@@ -197,9 +196,7 @@ public class Card : MonoBehaviour
                 GameManager.instance.ShowBackButton();
             }
 
-<<<<<<< HEAD
             FlipExtraCard(rectTransform, eCard);
-=======
             rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
@@ -213,7 +210,6 @@ public class Card : MonoBehaviour
                         //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
                     });
             });
->>>>>>> parent of 6e7cadd (In-app)
             Debug.Log("______qqq");
             CardManager.instance.extraCards.Remove(eCard);
             CardManager.instance.rightSideCards.Add(eCard);

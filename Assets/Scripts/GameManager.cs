@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     public RectTransform uiContainer;
     public GameObject levelUpPrefab;
     private GameObject currentLevelupUI;
+    public GameObject moreCards;
+    public GameObject endGame;
 
 
     private void Awake()
@@ -55,7 +57,7 @@ public class GameManager : MonoBehaviour
         }
 
     }
-<<<<<<< HEAD
+
     public void ShowMoreCardsToBuy()
     {
         moreCards.SetActive(true);
@@ -89,6 +91,4 @@ public class GameManager : MonoBehaviour
             currentLevelupUI = null;
         }
     }
-=======
->>>>>>> parent of 6e7cadd (In-app)
 }
