@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        Invoke("ToggleLevelup", 1f);
+        //Invoke("ToggleLevelup", 1f);
     }
 
 
