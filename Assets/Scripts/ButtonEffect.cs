@@ -4,8 +4,8 @@ using DG.Tweening;
 
 public class ButtonEffect : MonoBehaviour
 {
-    private float scaleDownFactor = 0.95f;
-    private float animationDuration = 0.2f;
+    private float scaleDownFactor = 0.9f;
+    private float animationDuration = 0.1f;
 
     private Vector3 originalScale;
 
@@ -16,11 +16,11 @@ public class ButtonEffect : MonoBehaviour
 
     public void OnButtonPress()
     {
-        transform.DOScale(originalScale * scaleDownFactor, animationDuration).SetEase(Ease.OutQuad);
+        transform.DOScale(originalScale * scaleDownFactor, animationDuration);
     }
 
     public void OnButtonRelease()
     {
-        transform.DOScale(originalScale, animationDuration).SetEase(Ease.OutBack);
+        transform.DOScale(originalScale, 0.3f).SetEase(Ease.OutElastic);
     }
 }

@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Shop : MonoBehaviour
 {
     public RectTransform[] images; // Assign 4 UI Image RectTransforms
-    private float scaleUpSize = 1.1f; // How much to scale up
+    private float scaleUpSize = 0.85f; // How much to scale up
     private float scaleDuration = 0.2f; // Duration of scale animation
     private float waitTime = 5f; // Delay between animations
     // Start is called before the first frame update
@@ -51,12 +51,13 @@ public class Shop : MonoBehaviour
 
             // Scale up and down animation
             selectedImage.DOScale(scaleUpSize, scaleDuration).SetEase(Ease.OutBack)
-                .OnComplete(() => selectedImage.DOScale(0.8f, 0.5f).SetEase(Ease.InElastic));
+                .OnComplete(() => selectedImage.DOScale(0.75f, 0.5f).SetEase(Ease.InElastic));
         }
     }
     public void BuyProduct(string productId)
     {
-        //IAPManager.instance.BuyProduct(productId);
+        Debug.Log("Buy Product Product ID: "+productId);
+
     }
 
     public void ShowPopup()

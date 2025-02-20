@@ -21,8 +21,6 @@ public class GoalPopup : MonoBehaviour
     public TextMeshProUGUI currentLevelShadow;
     public TextMeshProUGUI goal;
     public TextMeshProUGUI goalShadow;
-    public GameObject heartHud = null;
-    public GameObject coinHud = null;
 
     private void Awake()
     {
@@ -31,7 +29,6 @@ public class GoalPopup : MonoBehaviour
     }
     private void SetInit()
     {
-        coinHud.SetActive(false);
         bg.alpha = 0;
         popup.alpha = 0;
         playBtn.alpha = 0;

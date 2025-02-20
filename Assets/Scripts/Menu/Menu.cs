@@ -26,8 +26,7 @@ public class Menu : MonoBehaviour
     }
     public void ShowGoalPopup()
     {
-        goalPopup.SetActive(true);
-        GoalPopup.instance.ShowPopup();
+        PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
     }
     public void ShowFortuneWheel()
     {
