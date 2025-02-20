@@ -31,4 +31,17 @@ public class Menu : MonoBehaviour
     {
         fortuneWheel.SetActive(true);
     }
+
+    public void JoinUs()
+    {
+        Application.ExternalCall("JoinUs");
+    }
+    public void Invite()
+    {
+        Application.ExternalCall("Invite");
+    }
+    public void Share()
+    {
+        Application.ExternalCall("Share");
+    }
 }
