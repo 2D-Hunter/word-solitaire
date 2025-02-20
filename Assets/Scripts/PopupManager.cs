@@ -43,8 +43,8 @@ public class PopupManager : MonoBehaviour
         }
         else
         {
-            Destroy(prefab);
-            prefab = null;
+            Destroy(currentPopup);
+            currentPopup = null;
         }
     }
 }

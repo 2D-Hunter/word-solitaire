@@ -42,6 +42,7 @@ public class GoalPopup : MonoBehaviour
     private void Start()
     {
         popupObj.anchoredPosition = new Vector2(0, -350f);
+        ShowPopup();
     }
     public void ShowPopup()
     {
@@ -49,10 +50,10 @@ public class GoalPopup : MonoBehaviour
 
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
-        popupObj.DOAnchorPosY(0, 0.4f).SetEase(Ease.OutBack);
+        popupObj.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
 
-        playBtn.DOFade(1f, 0.4f).SetEase(Ease.OutBack).SetDelay(0.15f);
-        playBtnRectTransform.DOScale(1f, 0.4f).SetEase(Ease.OutBack).SetDelay(0.15f);
+        playBtn.DOFade(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
+        playBtnRectTransform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
 
     }
     public void ClosePopup()
@@ -72,7 +73,7 @@ public class GoalPopup : MonoBehaviour
     }
     public void OnTapClose()
     {
-        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => gameObject.SetActive(false));
+        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup));
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
     }

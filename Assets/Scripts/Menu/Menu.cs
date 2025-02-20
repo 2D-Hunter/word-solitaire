@@ -8,7 +8,6 @@ public class Menu : MonoBehaviour
     public static Menu instance;
     public LevelData levelData;
 
-    public GameObject goalPopup;
     public GameObject overlayPanel;
     public TextMeshProUGUI currentLevel;
     public TextMeshProUGUI currentLevelShadow;
