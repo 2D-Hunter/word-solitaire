@@ -89,7 +89,7 @@ public class Shop : MonoBehaviour
     }
     public void ClosePopup()
     {
-        ShopManager.instance.ToggleShop();
+        PopupManager.instance.ToggleShop();
     }
 
 }

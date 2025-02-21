@@ -12,7 +12,6 @@ public class GoalPopup : MonoBehaviour
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupObj = null;
-    public GameObject outOfHeartsPopup = null;
 
     public CanvasGroup playBtn = null;
     public RectTransform playBtnRectTransform = null;
@@ -22,6 +21,12 @@ public class GoalPopup : MonoBehaviour
     public TextMeshProUGUI goal;
     public TextMeshProUGUI goalShadow;
 
+    public CanvasGroup[] stars = null;
+    public RectTransform[] starsRectTransform = null;
+
+    float delay = 0f;
+    float delayIncrement = 0.1f;
+
     private void Awake()
     {
         instance = this;
@@ -29,6 +34,14 @@ public class GoalPopup : MonoBehaviour
     }
     private void SetInit()
     {
+        foreach (var star in stars)
+        {
+            star.alpha = 0;
+        }
+        foreach (var rt in starsRectTransform)
+        {
+            rt.localScale = Vector3.zero;
+        }
         bg.alpha = 0;
         popup.alpha = 0;
         playBtn.alpha = 0;
@@ -54,7 +67,25 @@ public class GoalPopup : MonoBehaviour
 
         playBtn.DOFade(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
         playBtnRectTransform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
+        Invoke("AppearStars", 0.3f);
 
+    }
+    void AppearStars()
+    {
+        float delay = 0.1f;
+        for (int i = 0; i < stars.Length; i++)
+        {
+            stars[i].DOFade(1f, 0.3f)
+                .SetEase(Ease.OutBack)
+                .SetDelay(delay);
+
+            // Scale Up
+            starsRectTransform[i].DOScale(0.9f, 0.3f)
+                .SetEase(Ease.OutBack)
+                .SetDelay(delay);
+
+            delay += delayIncrement; // Increase delay for next button
+        }
     }
     public void ClosePopup()
     {
@@ -66,8 +97,7 @@ public class GoalPopup : MonoBehaviour
         }
         else
         {
-            outOfHeartsPopup.SetActive(true);
-            OutOfHeartsPopup.instance.ShowPopup();
+            PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
         }
         
     }

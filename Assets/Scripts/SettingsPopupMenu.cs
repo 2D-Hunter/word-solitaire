@@ -6,9 +6,9 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-public class SettingsPopupGame : MonoBehaviour
+public class SettingsPopupMenu : MonoBehaviour
 {
-    public static SettingsPopupGame instance;
+    public static SettingsPopupMenu instance;
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupRectTransform = null;
@@ -18,7 +18,7 @@ public class SettingsPopupGame : MonoBehaviour
     public RectTransform[] btnsRectTransform = null;
 
     float delay = 0f;
-    float delayIncrement = 0.15f; // Adjust delay between each button if needed
+    float delayIncrement = 0.1f; // Adjust delay between each button if needed
 
 
     private void Awake()
@@ -87,7 +87,28 @@ public class SettingsPopupGame : MonoBehaviour
     }
     void RemoveThis()
     {
-        gameObject.SetActive(false);
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+    }
+
+    public void Share()
+    {
+        Application.ExternalCall("Share");
+    }
+    public void JoinUs()
+    {
+        Application.ExternalCall("JoinUs");
+    }
+    public void Support()
+    {
+
+    }
+    public void PrivacyPolicy()
+    {
+
+    }
+    public void DeleteAccount()
+    {
+
     }
 
 }

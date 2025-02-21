@@ -7,8 +7,13 @@ public class PopupManager : MonoBehaviour
     public static PopupManager instance;
 
     public GameObject goalPopup;
+    public GameObject settingPopupMenu;
+    public GameObject shop;
+    public GameObject heartsFullPopup;
+    public GameObject outOfHeartsPopup;
 
     private GameObject currentPopup;
+    private GameObject currentPopup2;
     public RectTransform uiContainer;
 
     private void Awake()
@@ -45,6 +50,18 @@ public class PopupManager : MonoBehaviour
         {
             Destroy(currentPopup);
             currentPopup = null;
+        }
+    }
+    public void ToggleShop()
+    {
+        if (currentPopup2 == null)
+        {
+            currentPopup2 = Instantiate(shop, uiContainer);
+        }
+        else
+        {
+            Destroy(currentPopup2);
+            currentPopup2 = null;
         }
     }
 }

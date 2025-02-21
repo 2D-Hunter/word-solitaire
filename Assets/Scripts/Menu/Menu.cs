@@ -44,4 +44,21 @@ public class Menu : MonoBehaviour
     {
         Application.ExternalCall("Share");
     }
+    
+    public void OpenSettingsPopupMenu()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+    }
+    public void OpenShop()
+    {
+        PopupManager.instance.ToggleShop();
+    }
+    public void TapOnHeartHud()
+    {
+        if(HeartManager.instance.currentHearts >= 5)
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
+        }
+        
+    }
 }

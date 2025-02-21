@@ -132,7 +132,7 @@ public class OutOfHeartsPopup : MonoBehaviour
         }
         else
         {
-            ShopManager.instance.ToggleShop();
+            PopupManager.instance.ToggleShop();
         }
     }
 
