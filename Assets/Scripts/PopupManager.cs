@@ -11,9 +11,16 @@ public class PopupManager : MonoBehaviour
     public GameObject shop;
     public GameObject heartsFullPopup;
     public GameObject outOfHeartsPopup;
+    public GameObject deleteAccountPopup;
+    public GameObject loading;
+    public GameObject accountDeletedPopup;
+    public GameObject privacyPolicy;
+    public GameObject feedbackPopup;
+    public GameObject feedbackSubmitted;
 
     private GameObject currentPopup;
     private GameObject currentPopup2;
+    private GameObject currentPopup3;
     public RectTransform uiContainer;
 
     private void Awake()
@@ -62,6 +69,18 @@ public class PopupManager : MonoBehaviour
         {
             Destroy(currentPopup2);
             currentPopup2 = null;
+        }
+    }
+    public void ToggleMessage(GameObject prefab)
+    {
+        if (currentPopup3 == null)
+        {
+            currentPopup3 = Instantiate(prefab, uiContainer);
+        }
+        else
+        {
+            Destroy(currentPopup3);
+            currentPopup3 = null;
         }
     }
 }

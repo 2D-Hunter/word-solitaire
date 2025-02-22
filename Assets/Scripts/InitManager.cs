@@ -16,6 +16,8 @@ public class InitManager:MonoBehaviour
     public LevelData levelData;
     public bool backFromLevelCompletion = false;
     public int brillianceScore = 0;
+    public bool deleteData = false;
+    public bool feedbackSubmitted = false;
 
     private void Awake()
     {

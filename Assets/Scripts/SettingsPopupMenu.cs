@@ -40,6 +40,7 @@ public class SettingsPopupMenu : MonoBehaviour
             btnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         }
         popupRectTransform.anchoredPosition = new Vector2(0, -350);
+        
 
     }
     private void Start()
@@ -98,17 +99,20 @@ public class SettingsPopupMenu : MonoBehaviour
     {
         Application.ExternalCall("JoinUs");
     }
-    public void Support()
+    public void Feedback()
     {
-
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+        PopupManager.instance.TogglePopup(PopupManager.instance.feedbackPopup);
     }
     public void PrivacyPolicy()
     {
-
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+        PopupManager.instance.TogglePopup(PopupManager.instance.privacyPolicy);
     }
     public void DeleteAccount()
     {
-
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+        PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
     }
 
 }

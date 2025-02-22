@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Menu : MonoBehaviour
@@ -15,13 +16,14 @@ public class Menu : MonoBehaviour
     public GameObject fortuneWheel = null;
     public bool isFortuneWheelOpened = false;
 
-
     private void Awake()
     {
         instance = this;
         if(InitManager.instance)
             currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[InitManager.instance.currentLevel - 1].levelNumber.ToString();
         overlayPanel.SetActive(false);
+
+        
     }
     public void ShowGoalPopup()
     {

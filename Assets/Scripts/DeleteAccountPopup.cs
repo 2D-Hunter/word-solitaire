@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 using System;
 
 
-public class HeartsFullPopup : MonoBehaviour
+public class DeleteAccountPopup : MonoBehaviour
 {
-    public static HeartsFullPopup instance;
+    public static DeleteAccountPopup instance;
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupRectTransform = null;
@@ -22,10 +22,6 @@ public class HeartsFullPopup : MonoBehaviour
     float delay = 0f;
     float delayIncrement = 0.15f;
 
-    private float origScaleAmount = 1f;
-    private float scaleAmount = 1.1f;
-    private float duration = 0.1f;
-    public RectTransform heart;
 
     public Button[] buttons = null;
 
@@ -54,7 +50,6 @@ public class HeartsFullPopup : MonoBehaviour
     {
         popupRectTransform.anchoredPosition = new Vector2(0, -350f);
         ShowPopup();
-        Invoke("StartHeartBeat", 2f);
     }
     public void ShowPopup()
     {
@@ -99,20 +94,27 @@ public class HeartsFullPopup : MonoBehaviour
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
 
     }
-    void RemoveThis()
+    public void RemoveThis()
     {
-        PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
+        PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
+        
     }
-    void StartHeartBeat()
+    public void TapDelete()
     {
-        Sequence heartbeatSequence = DOTween.Sequence();
-
-        heartbeatSequence.Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // First beat
-                         .Append(heart.DOScale(origScaleAmount, duration).SetEase(Ease.InQuad)) // Back to normal
-                         .Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // Second beat
-                         .Append(heart.DOScale(origScaleAmount, duration).SetEase(Ease.InQuad)) // Back to normal
-                         .AppendInterval(UnityEngine.Random.Range(2f, 5f)) // Wait before next heartbeat
-                         .SetLoops(-1); // Repeat infinitely
+        InitManager.instance.deleteData = true;
+        foreach (var btn in buttons)
+        {
+            btn.enabled = false;
+        }
+        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(ShowLoading);
+        popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
+        popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
+    }
+    void ShowLoading()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
+        PopupManager.instance.TogglePopup(PopupManager.instance.loading);
     }
 
 }
