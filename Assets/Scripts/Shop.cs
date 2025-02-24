@@ -19,6 +19,7 @@ public class Shop : MonoBehaviour
 
     public CanvasGroup header = null;
     public RectTransform headerRectTransform = null;
+    public RectTransform shineEffect = null;
 
     private void Awake()
     {
@@ -37,10 +38,13 @@ public class Shop : MonoBehaviour
             btnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         }
 
+        InvokeRepeating("ShowShineEffect", 5f, 3f);
     }
 
     IEnumerator StartRandomScaling()
     {
+        
+        
         yield return new WaitForSeconds(3f);
         while (true)
         {
@@ -53,6 +57,12 @@ public class Shop : MonoBehaviour
             selectedImage.DOScale(scaleUpSize, scaleDuration).SetEase(Ease.OutBack)
                 .OnComplete(() => selectedImage.DOScale(0.75f, 0.5f).SetEase(Ease.InElastic));
         }
+    }
+    void ShowShineEffect()
+    {
+        shineEffect.anchoredPosition = new Vector2(-400, 0);
+
+        shineEffect.DOAnchorPosX(400, 2f);
     }
     public void BuyProduct(string productId)
     {

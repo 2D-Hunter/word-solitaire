@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         //Invoke("ToggleLevelup", 1f);
+        PopupManager.instance.AssignUIContainer();
     }
 
 
@@ -70,8 +71,7 @@ public class GameManager : MonoBehaviour
     }
     public void ShowSettingsPopupGame()
     {
-        settingsPopupGame.SetActive(true);
-        SettingsPopupGame.instance.ShowPopup();
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
     }
     public void ShowQuitPopup()
     {

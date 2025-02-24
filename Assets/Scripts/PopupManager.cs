@@ -8,6 +8,7 @@ public class PopupManager : MonoBehaviour
 
     public GameObject goalPopup;
     public GameObject settingPopupMenu;
+    public GameObject settingPopupGame;
     public GameObject shop;
     public GameObject heartsFullPopup;
     public GameObject outOfHeartsPopup;
@@ -17,6 +18,7 @@ public class PopupManager : MonoBehaviour
     public GameObject privacyPolicy;
     public GameObject feedbackPopup;
     public GameObject feedbackSubmitted;
+    public GameObject quitPopup;
 
     private GameObject currentPopup;
     private GameObject currentPopup2;
@@ -35,14 +37,13 @@ public class PopupManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        
     }
-    private void Start()
-    {
-        AssignUIContainer();
-    }
+    
 
-    void AssignUIContainer()
+    public void AssignUIContainer()
     {
+        Debug.Log("AssignUIContainer");
         uiContainer = GameObject.Find("UI-Panel").GetComponent<RectTransform>();
     }
 

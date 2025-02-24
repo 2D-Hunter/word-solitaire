@@ -87,7 +87,21 @@ public class SettingsPopupGame : MonoBehaviour
     }
     void RemoveThis()
     {
-        gameObject.SetActive(false);
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
+    }
+
+    public void Share()
+    {
+        Application.ExternalCall("Share");
+    }
+    public void Restart()
+    {
+
+    }
+    public void Quit()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
+        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
     }
 
 }

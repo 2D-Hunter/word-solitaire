@@ -25,6 +25,10 @@ public class Menu : MonoBehaviour
 
         
     }
+    private void Start()
+    {
+        PopupManager.instance.AssignUIContainer();
+    }
     public void ShowGoalPopup()
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);

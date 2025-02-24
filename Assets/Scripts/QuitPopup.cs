@@ -62,6 +62,7 @@ public class QuitPopup : MonoBehaviour
         Debug.Log("Quit Popup Start");
         popupRectTransform.anchoredPosition = new Vector2(0, -350f);
         Invoke("StartHeartBeat", 2f);
+        ShowPopup();
     }
     public void ShowPopup()
     {
@@ -110,7 +111,12 @@ public class QuitPopup : MonoBehaviour
             HeartManager.instance.LoseHeart();
             SceneManager.LoadScene("Menu");
         }
-        gameObject.SetActive(false);
+        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+    }
+    public void Return()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
     }
     public void Quit()
     {
