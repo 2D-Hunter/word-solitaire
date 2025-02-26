@@ -7,12 +7,12 @@ using DG.Tweening;
 public class BackButton : MonoBehaviour
 {
     public static BackButton instance;
-    //public TextMeshProUGUI coinText;
-    //public TextMeshProUGUI shadowText;
+    public TextMeshProUGUI coinText;
+    public TextMeshProUGUI shadowText;
     private RectTransform rectTransform;
     public GameObject coinAnim1;
     public RectTransform parentPanel;
-    int counter;
+    int counter = 10;
 
     private void Awake()
     {
@@ -48,7 +48,7 @@ public class BackButton : MonoBehaviour
 
             if (textComponents.Length >= 2)
             {
-                textComponents[0].text = textComponents[1].text = counter.ToString();
+                textComponents[0].text = textComponents[1].text = "-"+counter.ToString();
             }
             else
             {
@@ -76,7 +76,7 @@ public class BackButton : MonoBehaviour
             CoinManager.instance.SpendCoins(counter);
             
             counter += 5;
-            //UpdateText();
+            UpdateText();
             //var card = CardManager.instance.rightSideCards.RemoveAt(CardManager.instance.rightSideCards.Count-1);
             var card = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
             card.FlipCardBack();
@@ -86,7 +86,7 @@ public class BackButton : MonoBehaviour
     }
     void UpdateText()
     {
-        //coinText.text = shadowText.text = counter.ToString();
+        coinText.text = shadowText.text = counter.ToString();
 
             //Card.instance.FlipCardBack();
         

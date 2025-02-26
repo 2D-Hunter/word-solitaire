@@ -197,19 +197,19 @@ public class Card : MonoBehaviour
             }
 
             FlipExtraCard(rectTransform, eCard);
-            rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
-            .OnComplete(() =>
-            {
+            //rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
+            //.OnComplete(() =>
+            //{
 
-                //isFaceUp = true;
-                UpdateCardFlipping(true, eCard);
-                rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
-                    .OnComplete(() =>
-                    {
-                        isFlipping = false;
-                        //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
-                    });
-            });
+            //    //isFaceUp = true;
+            //    UpdateCardFlipping(true, eCard);
+            //    rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
+            //        .OnComplete(() =>
+            //        {
+            //            isFlipping = false;
+            //            //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
+            //        });
+            //});
             Debug.Log("______qqq");
             CardManager.instance.extraCards.Remove(eCard);
             CardManager.instance.rightSideCards.Add(eCard);
