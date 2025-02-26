@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 using System;
 
 
-public class OutOfHeartsPopup : MonoBehaviour
+public class MoreHeartsPopup : MonoBehaviour
 {
-    public static OutOfHeartsPopup instance;
+    public static MoreHeartsPopup instance;
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupRectTransform = null;
@@ -31,13 +31,26 @@ public class OutOfHeartsPopup : MonoBehaviour
     int coinsRequiredToRefillAll = 1000;
     int coinsRequiredToRefillOne = 300;
 
+    public GameObject obj1, obj2;
+    public GameObject fullObj1, fullObj2;
+
     private void Awake()
     {
         instance = this;
         SetInit();
     }
+    public void HeartsAreFull()
+    {
+        
+        obj1.SetActive(false);
+        obj2.SetActive(false);
+        fullObj1.SetActive(true);
+        fullObj2.SetActive(true);
+    }
     private void SetInit()
     {
+        fullObj1.SetActive(false);
+        fullObj2.SetActive(false);
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)
@@ -94,16 +107,11 @@ public class OutOfHeartsPopup : MonoBehaviour
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
-        
+
     }
     void RemoveThis()
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
-        if (HeartManager.instance.currentHearts > 0)
-        {
-            GoalPopup.instance.RemoveThis();
-            SceneManager.LoadScene("Game");
-        }
     }
     void StartHeartBeat()
     {
@@ -137,5 +145,5 @@ public class OutOfHeartsPopup : MonoBehaviour
         }
     }
 
-    
+
 }

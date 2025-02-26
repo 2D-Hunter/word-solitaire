@@ -11,6 +11,8 @@ public class PopupManager : MonoBehaviour
     public GameObject settingPopupGame;
     public GameObject shop;
     public GameObject heartsFullPopup;
+    public GameObject moreHeartsPopup;
+    public GameObject moreHeartsPopup2;
     public GameObject outOfHeartsPopup;
     public GameObject deleteAccountPopup;
     public GameObject loading;

@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 using System;
 
 
-public class OutOfHeartsPopup : MonoBehaviour
+public class MoreHeartsPopup2 : MonoBehaviour
 {
-    public static OutOfHeartsPopup instance;
+    public static MoreHeartsPopup2 instance;
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupRectTransform = null;
@@ -31,13 +31,27 @@ public class OutOfHeartsPopup : MonoBehaviour
     int coinsRequiredToRefillAll = 1000;
     int coinsRequiredToRefillOne = 300;
 
+    public GameObject obj1, obj2, obj3;
+    public GameObject fullObj1, fullObj2;
+
     private void Awake()
     {
         instance = this;
         SetInit();
     }
+    public void HeartsAreFull()
+    {
+        popupRectTransform.sizeDelta = new Vector2(popupRectTransform.sizeDelta.x, 814.84f);
+        obj1.SetActive(false);
+        obj2.SetActive(false);
+        obj3.SetActive(false);
+        fullObj1.SetActive(true);
+        fullObj2.SetActive(true);
+    }
     private void SetInit()
     {
+        fullObj1.SetActive(false);
+        fullObj2.SetActive(false);
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)
@@ -48,12 +62,12 @@ public class OutOfHeartsPopup : MonoBehaviour
         {
             btnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         }
-        popupRectTransform.anchoredPosition = new Vector2(0, -350);
+        popupRectTransform.anchoredPosition = new Vector2(0, 0);
 
     }
     private void Start()
     {
-        popupRectTransform.anchoredPosition = new Vector2(0, -350f);
+        popupRectTransform.anchoredPosition = new Vector2(0, 0);
         Invoke("StartHeartBeat", 2f);
         ShowPopup();
     }
@@ -66,7 +80,7 @@ public class OutOfHeartsPopup : MonoBehaviour
 
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
-        popupRectTransform.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
+        popupRectTransform.DOAnchorPosY(365, 0.4f).SetEase(Ease.OutBack);
 
         float delay = 0.1f; // Initial delay
 
@@ -93,17 +107,12 @@ public class OutOfHeartsPopup : MonoBehaviour
     {
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
-        popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
-        
+        popupRectTransform.DOAnchorPosY(0, 0.4f).SetEase(Ease.InBack);
+
     }
     void RemoveThis()
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
-        if (HeartManager.instance.currentHearts > 0)
-        {
-            GoalPopup.instance.RemoveThis();
-            SceneManager.LoadScene("Game");
-        }
     }
     void StartHeartBeat()
     {
@@ -137,5 +146,5 @@ public class OutOfHeartsPopup : MonoBehaviour
         }
     }
 
-    
+
 }

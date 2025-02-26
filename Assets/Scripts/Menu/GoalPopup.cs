@@ -97,6 +97,7 @@ public class GoalPopup : MonoBehaviour
         }
         else
         {
+            PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
             PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
         }
         

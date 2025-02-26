@@ -9,7 +9,7 @@ public class HeartUI : MonoBehaviour
     public TextMeshProUGUI heartTextShadow;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI timerTextShadow;
-    private float heartRegenTime = 1800f;
+    private float heartRegenTime = 60f;
 
     private void Update()
     {
@@ -19,9 +19,25 @@ public class HeartUI : MonoBehaviour
         {
             OutOfHeartsPopup.instance.heartText.text = OutOfHeartsPopup.instance.heartTextShadow.text = currentHearts.ToString();
         }
+        else if (MoreHeartsPopup.instance)
+        {
+            MoreHeartsPopup.instance.heartText.text = MoreHeartsPopup.instance.heartTextShadow.text = currentHearts.ToString();
+        }
+        else if (MoreHeartsPopup2.instance)
+        {
+            MoreHeartsPopup2.instance.heartText.text = MoreHeartsPopup2.instance.heartTextShadow.text = currentHearts.ToString();
+        }
 
         if (currentHearts >= HeartManager.instance.maxHearts)
         {
+            if (MoreHeartsPopup.instance)
+            {
+                MoreHeartsPopup.instance.HeartsAreFull();
+            }
+            else if (MoreHeartsPopup2.instance)
+            {
+                MoreHeartsPopup2.instance.HeartsAreFull();
+            }
             timerText.text = timerTextShadow.text = "FULL";
             return;
         }
@@ -39,6 +55,14 @@ public class HeartUI : MonoBehaviour
                 if(OutOfHeartsPopup.instance)
                 {
                     OutOfHeartsPopup.instance.timerText.text = OutOfHeartsPopup.instance.timerTextShadow.text = string.Format("{0:00}:{1:00}", t.Minutes, t.Seconds);
+                }
+                else if (MoreHeartsPopup.instance)
+                {
+                    MoreHeartsPopup.instance.timerText.text = MoreHeartsPopup.instance.timerTextShadow.text = string.Format("{0:00}:{1:00}", t.Minutes, t.Seconds);
+                }
+                else if (MoreHeartsPopup2.instance)
+                {
+                    MoreHeartsPopup2.instance.timerText.text = MoreHeartsPopup2.instance.timerTextShadow.text = string.Format("{0:00}:{1:00}", t.Minutes, t.Seconds);
                 }
             }
             else

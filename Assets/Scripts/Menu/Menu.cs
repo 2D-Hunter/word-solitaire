@@ -61,10 +61,18 @@ public class Menu : MonoBehaviour
     }
     public void TapOnHeartHud()
     {
-        if(HeartManager.instance.currentHearts >= 5)
+        if(HeartManager.instance.currentHearts >= HeartManager.instance.maxHearts)
         {
             PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
         }
-        
+        else if(HeartManager.instance.currentHearts < HeartManager.instance.maxHearts && HeartManager.instance.currentHearts > 1)
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.moreHeartsPopup);
+        }
+        else if (HeartManager.instance.currentHearts <= 1)
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.moreHeartsPopup2);
+        }
+
     }
 }
