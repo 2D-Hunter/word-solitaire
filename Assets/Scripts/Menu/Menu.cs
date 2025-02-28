@@ -75,4 +75,8 @@ public class Menu : MonoBehaviour
         }
 
     }
+    public void OpenDailyRewards()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
+    }
 }

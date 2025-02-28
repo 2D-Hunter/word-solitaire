@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public GameObject overlayPanel;
     public GameObject dictionary = null;
     public bool isValidWord = false;
+    public bool foundValidWord = false;
+    public string hintWord = "";
     public int totalPoint = 0;
     public GameObject backButton;
     public string hintText;

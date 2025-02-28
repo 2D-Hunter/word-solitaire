@@ -55,6 +55,7 @@ public class SlotManager : MonoBehaviour
     private int extraCardCount = 0;
     private int cardCount = 0;
     private StarProgressBar starProgressBar;
+    public Card extraCard;
     private void Awake()
     {
         instance = this;
@@ -307,6 +308,11 @@ public class SlotManager : MonoBehaviour
 
     public IEnumerator SubmitWord()
     {
+        
+        
+        GameManager.instance.hintText = "";
+        GameManager.instance.foundValidWord = false;
+        GameManager.instance.hintWord = "";
         GetSlotString();
         GameManager.instance.isValidWord = false;
         isSlotOccupied[0] = false;
@@ -338,6 +344,12 @@ public class SlotManager : MonoBehaviour
         targetAchieve = GetSlotString().Length;
         extraCardCount = 0;
         Debug.Log("CardManager.instance.totalCardToGet... " + CardManager.instance.totalCardToGet);
+
+        if (CardManager.instance.rightSideCards.Count <= 0 && CardManager.instance.extraCards.Count >= 1 && CardManager.instance.totalCardToGet >= 1)
+        {
+            if (extraCard != null)
+                extraCard.OnExtraCardClick();
+        }
         if (CardManager.instance.totalCardToGet <= 0)
         {
             Debug.Log("Game Completed...");

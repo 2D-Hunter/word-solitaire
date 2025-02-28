@@ -16,14 +16,16 @@ public class HintService : IHintService
         }
 
         Debug.Log(charList.Count);
-        if(GenerateWords(charList.ToArray(), 2, out string foundValidWorld))
+        if(GenerateWords(charList.ToArray(), 2, out string foundValidWord))
         {
             List<Card> cards = new List<Card>();
-            Debug.Log($"hello valid word found please high light card {foundValidWorld}");
-            GameManager.instance.hintText = "Try "+"'"+foundValidWorld+"'";
-            for (int i = 0; i < foundValidWorld.Length; i++)
+            Debug.Log($"hello valid word found please high light card {foundValidWord}");
+            GameManager.instance.hintText = "Try " + "'" + foundValidWord + "'";
+            GameManager.instance.foundValidWord = true;
+            GameManager.instance.hintWord = foundValidWord;
+            for (int i = 0; i < foundValidWord.Length; i++)
             {
-              var card =   allOpenCards.Find(objCard => objCard.cardData.letterText.text.ToLower() == foundValidWorld[i].ToString().ToLower());
+              var card =   allOpenCards.Find(objCard => objCard.cardData.letterText.text.ToLower() == foundValidWord[i].ToString().ToLower());
               cards.Add(card);
             }
             Debug.Log(cards.Count);
@@ -34,6 +36,8 @@ public class HintService : IHintService
         {
             callbackHint.Invoke(false, null);
             Debug.Log("No word is valid open Extra card");
+            GameManager.instance.hintText = "Try drawing from the draw pile";
+            GameManager.instance.foundValidWord = false;
         }
     }
 

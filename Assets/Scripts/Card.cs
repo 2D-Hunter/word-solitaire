@@ -159,7 +159,7 @@ public class Card : MonoBehaviour
         }
     }
 
-    private void OnExtraCardClick()
+    public void OnExtraCardClick()
     {
         
         Card eCard = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1];
