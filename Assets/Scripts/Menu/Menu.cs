@@ -15,6 +15,7 @@ public class Menu : MonoBehaviour
 
     public GameObject fortuneWheel = null;
     public bool isFortuneWheelOpened = false;
+    public TextMeshProUGUI giftBoxCountText;
 
     private void Awake()
     {
@@ -22,8 +23,9 @@ public class Menu : MonoBehaviour
         if(InitManager.instance)
             currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[InitManager.instance.currentLevel - 1].levelNumber.ToString();
         overlayPanel.SetActive(false);
-
         
+
+
     }
     private void Start()
     {
@@ -79,4 +81,5 @@ public class Menu : MonoBehaviour
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
     }
+    
 }
