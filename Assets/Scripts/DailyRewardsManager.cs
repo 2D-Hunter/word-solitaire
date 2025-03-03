@@ -71,8 +71,64 @@ public class DailyRewardsManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("CheckTimerOnAppStart: "+"_____");
-            IncreaseAvailableRewards();
+            Debug.Log("1-hour timer: Reward can be collected (no cooldown).");
+
+            // If the timer has completed, increase available rewards
+            if (PlayerPrefs.HasKey(firstRewardKey))
+            {
+                string lastClaimTimeString = PlayerPrefs.GetString(firstRewardKey);
+                if (long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                {
+                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                    long elapsedTime = currentTime - lastClaimTime;
+
+                    if (elapsedTime >= firstRewardCooldown)
+                    {
+                        Debug.Log("1-hour timer already completed. Increasing available rewards.");
+                        IncreaseAvailableRewards(); // Increase available rewards
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Invalid value for key {firstRewardKey}: {lastClaimTimeString}");
+                }
+            }
+        }
+
+        // Check the 12-hour timer (if needed)
+        if (!CanCollectReward(adRewardKey, adRewardCooldown))
+        {
+            long remainingTime = GetRemainingTime(adRewardKey, adRewardCooldown);
+            Debug.Log($"12-hour timer remaining time: {remainingTime}");
+            if (remainingTime <= 0)
+            {
+                IncreaseAvailableRewards(); // Reset available rewards to 5
+            }
+        }
+        else
+        {
+            Debug.Log("12-hour timer: Reward can be collected (no cooldown).");
+            
+            // If the timer has completed, increase available rewards
+            if (PlayerPrefs.HasKey(adRewardKey))
+            {
+                string lastClaimTimeString = PlayerPrefs.GetString(adRewardKey);
+                if (long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                {
+                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                    long elapsedTime = currentTime - lastClaimTime;
+
+                    if (elapsedTime >= adRewardCooldown)
+                    {
+                        Debug.Log("12-hour timer already completed. Increasing available rewards.");
+                        ResetAdRewards(); // Increase available rewards
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Invalid value for key {adRewardKey}: {lastClaimTimeString}");
+                }
+            }
         }
     }
 
@@ -161,7 +217,7 @@ public class DailyRewardsManager : MonoBehaviour
         currentRewardIndex = 0;
         PlayerPrefs.SetInt("CurrentRewardIndex", currentRewardIndex);
         PlayerPrefs.Save();
-        ResetAvailableRewards();
+        IncreaseAvailableRewards();
     }
     
 

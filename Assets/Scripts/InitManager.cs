@@ -18,6 +18,7 @@ public class InitManager:MonoBehaviour
     public int brillianceScore = 0;
     public bool deleteData = false;
     public bool feedbackSubmitted = false;
+    public bool startShopping = false;
 
     private void Awake()
     {

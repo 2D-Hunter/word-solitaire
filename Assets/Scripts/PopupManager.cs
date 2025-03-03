@@ -22,6 +22,7 @@ public class PopupManager : MonoBehaviour
     public GameObject feedbackSubmitted;
     public GameObject quitPopup;
     public GameObject dailyRewardsPopup;
+    public GameObject purchasedItemPopup;
 
     private GameObject currentPopup;
     private GameObject currentPopup2;

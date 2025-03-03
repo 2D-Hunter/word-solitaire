@@ -61,7 +61,22 @@ public class Shop : MonoBehaviour
     public void BuyProduct(string productId)
     {
         Debug.Log("Buy Product Product ID: "+productId);
+        InitManager.instance.startShopping = true;
+        PopupManager.instance.TogglePopup(PopupManager.instance.loading);
+        if (FBPlayerData.instance.BUILD_TYPE == "Unity")
+        {
+            StartCoroutine(GetProductAfterPurchase(productId));
+        }
+        else
+        {
+            Application.ExternalCall("CallInAppPurchase");
+        }
 
+    }
+    IEnumerator GetProductAfterPurchase(string productId)
+    {
+        yield return new WaitForSeconds(3f);
+        FBPlayerData.instance.GetProductsAfterPurchase(productId);
     }
 
     public void ShowPopup()

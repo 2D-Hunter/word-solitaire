@@ -552,7 +552,7 @@ public class DailyRewards : MonoBehaviour
         // Update UI
         adRewardButtons[index].SetActive(false);
         tickMarks[index].SetActive(true);
-
+        lockIcons[index].SetActive(false);
         // Unlock next reward (if exists)
         if (index + 1 < adRewardButtons.Length)
         {
@@ -567,14 +567,42 @@ public class DailyRewards : MonoBehaviour
     // Update the UI based on the current reward state
     public void UpdateUI()
     {
+        Debug.Log("UpdateUI: " + DailyRewardsManager.instance.IsAdRewardInCooldown());
         // Check if ad rewards are in cooldown
         if (DailyRewardsManager.instance.IsAdRewardInCooldown())
         {
             twelveHourTimer.SetActive(true); // Show 12-hour timer
+            //int currentRewardIndex = DailyRewardsManager.instance.GetCurrentRewardIndex();
+            //Debug.Log("_____currentRewardIndex: " + currentRewardIndex);
+            //for (int i = 0; i < adRewardButtons.Length; i++)
+            //{
+            //    if (i < currentRewardIndex) // Already collected
+            //    {
+            //        adRewardButtons[i].SetActive(false);
+            //        tickMarks[i].SetActive(true);
+            //    }
+            //    else if (i == currentRewardIndex) // Next available reward
+            //    {
+            //        adRewardButtons[i].SetActive(true);
+            //        tickMarks[i].SetActive(false);
+            //    }
+            //    else // Locked rewards
+            //    {
+            //        adRewardButtons[i].SetActive(false);
+            //        tickMarks[i].SetActive(false);
+            //    }
+            //}
         }
         else
         {
             twelveHourTimer.SetActive(false);
+            
+            for (int i = 0; i < adRewardButtons.Length; i++)
+            {
+                Debug.Log("UpdateUI: " + i);
+                tickMarks[i].SetActive(false);
+            }
+
         }
 
         // Adjust popup height
@@ -594,6 +622,7 @@ public class DailyRewards : MonoBehaviour
 
         // Check ad rewards availability
         int currentRewardIndex = DailyRewardsManager.instance.GetCurrentRewardIndex();
+        Debug.Log("_____currentRewardIndex: " + currentRewardIndex);
         for (int i = 0; i < adRewardButtons.Length; i++)
         {
             if (i < currentRewardIndex) // Already collected
