@@ -19,6 +19,7 @@ public class Shop : MonoBehaviour
 
     public CanvasGroup header = null;
     public RectTransform headerRectTransform = null;
+    private RectTransform selectedImage;
 
     private void Awake()
     {
@@ -50,7 +51,7 @@ public class Shop : MonoBehaviour
             yield return new WaitForSeconds(waitTime);
 
             int randomIndex = Random.Range(0, images.Length); // Pick a random image
-            RectTransform selectedImage = images[randomIndex];
+            selectedImage = images[randomIndex];
 
             // Scale up and down animation
             selectedImage.DOScale(scaleUpSize, scaleDuration).SetEase(Ease.OutBack)
@@ -69,7 +70,7 @@ public class Shop : MonoBehaviour
         }
         else
         {
-            Application.ExternalCall("CallInAppPurchase");
+            Application.ExternalCall("CallInAppPurchase", productId);
         }
 
     }
@@ -109,6 +110,17 @@ public class Shop : MonoBehaviour
     public void ClosePopup()
     {
         PopupManager.instance.ToggleShop();
+    }
+    private void OnDestroy()
+    {
+        header?.DOKill();
+        headerRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
+        selectedImage?.DOKill();
     }
 
 }

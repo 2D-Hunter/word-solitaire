@@ -23,4 +23,8 @@ public class ButtonEffect : MonoBehaviour
     {
         transform.DOScale(originalScale, 0.3f).SetEase(Ease.OutElastic);
     }
+    private void OnDestroy()
+    {
+        transform?.DOKill();
+    }
 }

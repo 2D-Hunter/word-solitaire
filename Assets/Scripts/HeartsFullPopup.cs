@@ -28,11 +28,14 @@ public class HeartsFullPopup : MonoBehaviour
     public RectTransform heart;
 
     public Button[] buttons = null;
+    private Sequence heartbeatSequence;
+
 
 
     private void Awake()
     {
         instance = this;
+        
         SetInit();
     }
     private void SetInit()
@@ -101,18 +104,33 @@ public class HeartsFullPopup : MonoBehaviour
     }
     void RemoveThis()
     {
+        
         PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
     }
     void StartHeartBeat()
     {
-        Sequence heartbeatSequence = DOTween.Sequence();
-
+        heartbeatSequence = DOTween.Sequence();
         heartbeatSequence.Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // First beat
                          .Append(heart.DOScale(origScaleAmount, duration).SetEase(Ease.InQuad)) // Back to normal
                          .Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // Second beat
                          .Append(heart.DOScale(origScaleAmount, duration).SetEase(Ease.InQuad)) // Back to normal
                          .AppendInterval(UnityEngine.Random.Range(2f, 5f)) // Wait before next heartbeat
                          .SetLoops(-1); // Repeat infinitely
+    }
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
+        if (heartbeatSequence != null && heartbeatSequence.IsActive())
+        {
+            heartbeatSequence.Kill(); // Kill the sequence
+        }
     }
 
 }
