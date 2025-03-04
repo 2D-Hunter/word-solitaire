@@ -22,7 +22,11 @@ public class PurchasedItemPopup : MonoBehaviour
     float delayIncrement = 0.15f;
 
     public GameObject[] purchasedItems;
-    public GameObject sparkle;
+    
+    public GameObject collectBtn;
+
+    public GameObject sparkle = null;
+
 
     private void Awake()
     {
@@ -60,13 +64,15 @@ public class PurchasedItemPopup : MonoBehaviour
     public void ShowPopup()
     {
         SetInit();
-        bg.DOKill();
-        popup.DOKill();
-        popupRectTransform.DOKill();
-
-        bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
-        popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
-        popupRectTransform.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack).OnComplete(ShowSparkle);
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        if(bg != null)
+            bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
+        if (popup != null)
+            popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
+        if (popupRectTransform != null)
+            popupRectTransform.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack).OnComplete(SpawnSparkle);
 
         float delay = 0.1f; // Initial delay
         Debug.Log(bg);
@@ -91,7 +97,7 @@ public class PurchasedItemPopup : MonoBehaviour
             delay += delayIncrement; // Increase delay for next button
         }
     }
-    void ShowSparkle()
+    public void SpawnSparkle()
     {
         sparkle.SetActive(true);
     }
@@ -114,9 +120,7 @@ public class PurchasedItemPopup : MonoBehaviour
     {
         switch(FBPlayerData.instance.productID)
         {
-            case "no_ads_30_days":
-                
-                break;
+            
             case "coins_2000":
                 purchasedItems[0].SetActive(true);
                 CoinManager.instance.AddCoins(2000);
@@ -137,7 +141,24 @@ public class PurchasedItemPopup : MonoBehaviour
                 purchasedItems[4].SetActive(true);
                 CoinManager.instance.AddCoins(70400);
                 break;
+            case "no_ads_30_days":
+                TextMeshProUGUI[] texts = collectBtn.GetComponentsInChildren<TextMeshProUGUI>();
+                for (int i = 0; i < texts.Length; i++)
+                {
+                    texts[i].text = "Close";
+                }
+                purchasedItems[5].SetActive(true);
+
+                DateTime expiryDate = DateTime.UtcNow.AddDays(30);
+                PlayerPrefs.SetString("No_Ads_30_Days", expiryDate.ToString());
+                PlayerPrefs.Save();
+
+
+
+                FBPlayerData.instance.NO_ADS_30_DAYS = true;
+                break;
         }
+        FBPlayerData.instance.SavePlayerData();
     }
     private void OnDestroy()
     {

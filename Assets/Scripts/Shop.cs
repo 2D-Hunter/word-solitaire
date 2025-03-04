@@ -20,6 +20,8 @@ public class Shop : MonoBehaviour
     public CanvasGroup header = null;
     public RectTransform headerRectTransform = null;
     private RectTransform selectedImage;
+    public GameObject noAds30Days = null;
+    public GameObject noAds30Days_lock = null;
 
     private void Awake()
     {
@@ -27,6 +29,19 @@ public class Shop : MonoBehaviour
     }
     private void SetInit()
     {
+        if(FBPlayerData.instance.NO_ADS_30_DAYS)
+        {
+            noAds30Days.SetActive(false);
+            noAds30Days_lock.SetActive(true);
+        }
+        else
+        {
+            noAds30Days.SetActive(true);
+            noAds30Days_lock.SetActive(false);
+        }
+            
+        noAds30Days_lock.SetActive(FBPlayerData.instance.NO_ADS_30_DAYS);
+        if (FBPlayerData.instance.NO_ADS_30_DAYS)
         header.alpha = 0;
         headerRectTransform.anchoredPosition = Vector2.zero;
         foreach (var btn in btns)

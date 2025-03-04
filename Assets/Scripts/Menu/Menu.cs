@@ -15,7 +15,9 @@ public class Menu : MonoBehaviour
 
     public GameObject fortuneWheel = null;
     public bool isFortuneWheelOpened = false;
-    public TextMeshProUGUI giftBoxCountText;
+    //public TextMeshProUGUI giftBoxCountText;
+
+    //public ParticleSystem sparkle_purchasedPopup = null;
 
     private void Awake()
     {

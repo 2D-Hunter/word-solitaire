@@ -1,5 +1,6 @@
 using UnityEngine;
 using SimpleJSON;
+using System;
 
 public class FBPlayerData : MonoBehaviour
 {
@@ -73,7 +74,7 @@ public class FBPlayerData : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+       FBPlayerData.instance.NO_ADS_30_DAYS = !ShouldShowAds();
     }
 
     public void SavePlayerData()
@@ -159,12 +160,10 @@ public class FBPlayerData : MonoBehaviour
         Debug.Log("Get Product After Purchase: " + productId);
         productID = productId;
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
-        
+        PopupManager.instance.ToggleShop();
         switch (productId)
         {
             case "no_ads_30_days":
-                NO_ADS_30_DAYS = true;
-                break;
             case "coins_2000":
             case "coins_6000":
             case "coins_16000":
@@ -227,6 +226,22 @@ public class FBPlayerData : MonoBehaviour
     {
 
         
+    }
+
+    public bool ShouldShowAds()
+    {
+        if (PlayerPrefs.HasKey("No_Ads_30_Days"))
+        {
+            DateTime expiryDate = DateTime.Parse(PlayerPrefs.GetString("No_Ads_30_Days"));
+            Debug.Log("ShouldShowAds: " + DateTime.UtcNow);
+            Debug.Log("ShouldShowAds: " + expiryDate);
+            if (DateTime.UtcNow < expiryDate)
+            {
+                Debug.Log("Ads are disabled until: " + expiryDate);
+                return false; // Don't show ads
+            }
+        }
+        return true; // Show ads
     }
 
 
