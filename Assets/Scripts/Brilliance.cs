@@ -10,7 +10,10 @@ public class Brilliance : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        brillianceScoreTxt.text = brillianceScoreShadowTxt.text = PlayerPrefs.GetInt("BrillianceScore").ToString();
+        if(GameUtils.IsFacebookBuild())
+            brillianceScoreTxt.text = brillianceScoreShadowTxt.text = FBPlayerData.instance.BRILLIANCE.ToString();
+        else
+            brillianceScoreTxt.text = brillianceScoreShadowTxt.text = PlayerPrefs.GetInt("BrillianceScore").ToString();
     }
 
     // Update is called once per frame

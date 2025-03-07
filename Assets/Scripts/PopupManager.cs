@@ -24,6 +24,9 @@ public class PopupManager : MonoBehaviour
     public GameObject quitPopup;
     public GameObject dailyRewardsPopup;
     public GameObject purchasedItemPopup;
+    public GameObject noAdAvailable;
+    public GameObject dictionaryPopup;
+    public GameObject message;
 
     private GameObject currentPopup;
     private GameObject currentPopup2;

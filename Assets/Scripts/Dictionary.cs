@@ -27,7 +27,7 @@ public class Dictionary : MonoBehaviour
         instance = this;
         bg.alpha = 0;
         popup.alpha = 0;
-        popupObj.anchoredPosition = new Vector2(0, -283f);
+        popupObj.anchoredPosition = new Vector2(0, -350f);
         makeWords.SetActive(false);
         wordnikIcon.SetActive(false);
         //gameObject.SetActive(false);
@@ -36,12 +36,12 @@ public class Dictionary : MonoBehaviour
     private void Start()
     {
         //loading.SetActive(false);
-        popupObj.anchoredPosition = new Vector2(0, -283f);
+        popupObj.anchoredPosition = new Vector2(0, -350f);
 
 
 
         //wordnikDefinition.SearchWord(SlotManager.instance.GetSlotString().ToLower());
-
+        ShowPopup();
 
     }
     public void ShowPopup()
@@ -65,7 +65,7 @@ public class Dictionary : MonoBehaviour
         
         bg.DOFade(0.4f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
-        popupObj.DOAnchorPosY(74, 0.4f).SetEase(Ease.OutBack);
+        popupObj.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
         if(GameManager.instance.isValidWord)
         {
             makeWords.SetActive(false);
@@ -89,6 +89,6 @@ public class Dictionary : MonoBehaviour
     }
     void RemoveThis()
     {
-        gameObject.SetActive(false);
+        PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
     }
 }

@@ -15,7 +15,7 @@ public class HintButton : MonoBehaviour
 
     public void OnclickHint()
     {
-        
+        FBPlayerData.instance.VibrationEffect();
         WordServiceContainer.HintService.HintClick((isfound , cards) =>
         {
             if (currentBubble != null)

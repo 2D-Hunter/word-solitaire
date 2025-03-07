@@ -81,6 +81,7 @@ public class SettingsPopupGame : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
@@ -92,14 +93,16 @@ public class SettingsPopupGame : MonoBehaviour
 
     public void Share()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("Share");
     }
     public void Restart()
     {
-
+        FBPlayerData.instance.VibrationEffect();
     }
     public void Quit()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
     }

@@ -1,0 +1,6 @@
+<linker>
+    <assembly fullname="DOTween">
+        <type fullname="DG.Tweening.DOTweenModuleUI" preserve="all"/>
+        <type fullname="DG.Tweening.DOTweenModulePhysics" preserve="all"/>
+    </assembly>
+</linker>

@@ -9,7 +9,7 @@ public class DailyRewardsManager : MonoBehaviour
     public int firstRewardCooldown = 3600;  // 1 hour in seconds (3600)
 
     
-    public int adRewardCooldown = 30;    // 12 hours in seconds (43200)
+    public int adRewardCooldown = 43200;    // 12 hours in seconds (43200)
     public string firstRewardKey = "LastFirstRewardTime";
     public string adRewardKey = "LastAdRewardTime";
     private int currentRewardIndex = 0;   // Tracks the current unlock progress
@@ -17,7 +17,6 @@ public class DailyRewardsManager : MonoBehaviour
     private int availableRewards = 5; // Start with 5 rewards
 
     private bool isTimerReset = false;
-
     private string availableRewardsKey = "AvailableRewards";
 
 
@@ -188,6 +187,7 @@ public class DailyRewardsManager : MonoBehaviour
     // Collect the first reward
     public void CollectFirstReward()
     {
+
         PlayerPrefs.SetString(firstRewardKey, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
         PlayerPrefs.Save();
         DecreaseAvailableRewards();

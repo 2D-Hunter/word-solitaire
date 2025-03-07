@@ -33,7 +33,7 @@ public class CoinManager : MonoBehaviour
     {
         totalCoins += amount;
         SaveCoins();
-        OnCoinsUpdated.Invoke(amount);
+        OnCoinsUpdated.Invoke(totalCoins);
     }
 
     public bool SpendCoins(int amount)
@@ -56,12 +56,29 @@ public class CoinManager : MonoBehaviour
 
     private void SaveCoins()
     {
-        PlayerPrefs.SetInt("total_coins", totalCoins);
-        PlayerPrefs.Save();
+        if(GameUtils.IsFacebookBuild())
+        {
+            FBPlayerData.instance.TOTAL_COINS = totalCoins;
+            FBPlayerData.instance.SavePlayerData();
+        }
+        else
+        {
+            PlayerPrefs.SetInt("total_coins", totalCoins);
+            PlayerPrefs.Save();
+        }
+        
     }
 
     private void LoadCoins()
     {
-        totalCoins = PlayerPrefs.GetInt("total_coins", 1000);
+        if (GameUtils.IsFacebookBuild())
+        {
+            totalCoins = FBPlayerData.instance.TOTAL_COINS;
+        }
+        else
+        {
+            totalCoins = PlayerPrefs.GetInt("total_coins", 1000);
+        }
+        
     }
 }

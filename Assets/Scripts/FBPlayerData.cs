@@ -8,7 +8,7 @@ public class FBPlayerData : MonoBehaviour
     public string productID = "";
 
     [HideInInspector]
-    public string BUILD_TYPE = "Unity"; //Unity, Facebook
+    public string BUILD_TYPE = "Facebook"; //Unity, Facebook
 
     [HideInInspector]
     public bool IsIos = false;
@@ -48,10 +48,14 @@ public class FBPlayerData : MonoBehaviour
     [HideInInspector]
     public int BRILLIANCE = 0;
 
+    public string LAST_REWARD_TIME = "LastFirstRewardTime";
+    public string LAST_AD_REWARD_TIME = "LastAdRewardTime";
+    private string AVAILABLE_REWARDS = "AvailableRewards";
+
 
     private void Awake()
     {
-        BUILD_TYPE = "Unity";
+        BUILD_TYPE = "Facebook";
         TOTAL_COINS = 10;
         //GAME_SOUND = false;
         NO_ADS_30_DAYS = false;
@@ -175,21 +179,26 @@ public class FBPlayerData : MonoBehaviour
         SavePlayerData();
     }
 
-    public void GetRewardAfterVideoAd(string rewardFrom)
+    public void GetRewardAfterVideoAd(string index)
     {
-        Debug.Log("___Reward From: " + rewardFrom);
-        switch (rewardFrom)
+        Debug.Log("___CollectAdReward_AfterRewardAd: " + index);
+        switch (InitManager.instance.currentReward)
         {
             case "100_coins":
             case "150_coins":
             case "250_coins":
             case "1_wild_card":
+                FindObjectOfType<DailyRewards>().CollectAdReward_AfterRewardAd(int.Parse(index));
                 break;
         }
     }
     public void RewardAdNotAvailable()
     {
 
+    }
+    public void VibrationEffect()
+    {
+        Application.ExternalCall("VibrateDevice", "10");
     }
 
     public void ContinueGameAfterInterstitial(string screen)
@@ -225,7 +234,8 @@ public class FBPlayerData : MonoBehaviour
     public void ShowAdsNotAvailable()
     {
 
-        
+        PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
+        PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
     }
 
     public bool ShouldShowAds()
@@ -243,7 +253,9 @@ public class FBPlayerData : MonoBehaviour
         }
         return true; // Show ads
     }
-
-
-
+    public void ShowPurchaseFailed()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.loading);
+        PopupManager.instance.ToggleMessage(PopupManager.instance.message);
+    }
 }

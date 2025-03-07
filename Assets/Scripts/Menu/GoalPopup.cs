@@ -89,6 +89,7 @@ public class GoalPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         if (HeartManager.instance.CanPlay())
         {
             bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
@@ -104,6 +105,7 @@ public class GoalPopup : MonoBehaviour
     }
     public void OnTapClose()
     {
+        FBPlayerData.instance.VibrationEffect();
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup));
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
@@ -115,8 +117,9 @@ public class GoalPopup : MonoBehaviour
             //Initiate.Fade("Game", Color.black, 1f);
             SceneManager.LoadScene("Game");
         }
-        gameObject.SetActive(false);
-        
+        PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
+
+
     }
     public void StartGame()
     {

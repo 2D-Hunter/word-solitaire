@@ -82,6 +82,7 @@ public class SettingsPopupMenu : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
@@ -93,24 +94,29 @@ public class SettingsPopupMenu : MonoBehaviour
 
     public void Share()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("Share");
     }
     public void JoinUs()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("JoinUs");
     }
     public void Feedback()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
         PopupManager.instance.TogglePopup(PopupManager.instance.feedbackPopup);
     }
     public void PrivacyPolicy()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
         PopupManager.instance.TogglePopup(PopupManager.instance.privacyPolicy);
     }
     public void DeleteAccount()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
         PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
     }

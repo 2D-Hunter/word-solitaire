@@ -93,6 +93,7 @@ public class HeartsFullPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         foreach (var btn in buttons)
         {
             btn.enabled = false;
@@ -104,7 +105,7 @@ public class HeartsFullPopup : MonoBehaviour
     }
     void RemoveThis()
     {
-        
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
     }
     void StartHeartBeat()

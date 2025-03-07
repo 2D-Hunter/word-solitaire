@@ -19,6 +19,10 @@ public class Menu : MonoBehaviour
 
     //public ParticleSystem sparkle_purchasedPopup = null;
 
+    public RectTransform settingBtn;
+    public RectTransform heartHud;
+    public RectTransform coinHud;
+
     private void Awake()
     {
         instance = this;
@@ -35,37 +39,47 @@ public class Menu : MonoBehaviour
     }
     public void ShowGoalPopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
+        heartHud.SetAsLastSibling();
+
     }
     public void ShowFortuneWheel()
     {
+        FBPlayerData.instance.VibrationEffect();
         fortuneWheel.SetActive(true);
     }
 
     public void JoinUs()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("JoinUs");
     }
     public void Invite()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("Invite");
     }
     public void Share()
     {
+        FBPlayerData.instance.VibrationEffect();
         Application.ExternalCall("Share");
     }
     
     public void OpenSettingsPopupMenu()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
     }
     public void OpenShop()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.ToggleShop();
     }
     public void TapOnHeartHud()
     {
-        if(HeartManager.instance.currentHearts >= HeartManager.instance.maxHearts)
+        FBPlayerData.instance.VibrationEffect();
+        if (HeartManager.instance.currentHearts >= HeartManager.instance.maxHearts)
         {
             PopupManager.instance.TogglePopup(PopupManager.instance.heartsFullPopup);
         }
@@ -81,6 +95,7 @@ public class Menu : MonoBehaviour
     }
     public void OpenDailyRewards()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
     }
     

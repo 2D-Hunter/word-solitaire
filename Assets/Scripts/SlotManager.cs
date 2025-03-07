@@ -309,7 +309,8 @@ public class SlotManager : MonoBehaviour
     public IEnumerator SubmitWord()
     {
         
-        
+        if(GetSlotString().Length >= 4)
+            Appreciations.instance.ShowAppreciation();
         GameManager.instance.hintText = "";
         GameManager.instance.foundValidWord = false;
         GameManager.instance.hintWord = "";
@@ -320,7 +321,7 @@ public class SlotManager : MonoBehaviour
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
-        Appreciations.instance.ShowAppreciation();
+        
         ScoreManager.instance.AddScore(GetSlotPoints());
         if (starProgressBar != null)
         {

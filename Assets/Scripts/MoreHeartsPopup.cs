@@ -104,6 +104,7 @@ public class MoreHeartsPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
@@ -127,6 +128,7 @@ public class MoreHeartsPopup : MonoBehaviour
 
     public void RefillHearts(int amountToIncreaseBy)
     {
+        FBPlayerData.instance.VibrationEffect();
         int coinsRequired;
         if (amountToIncreaseBy == 1)
             coinsRequired = coinsRequiredToRefillOne;

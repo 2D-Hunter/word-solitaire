@@ -103,6 +103,7 @@ public class PurchasedItemPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         sparkle.SetActive(false);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);

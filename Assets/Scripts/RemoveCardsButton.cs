@@ -27,6 +27,7 @@ public class RemoveCardsButton : MonoBehaviour
     }
     public void OnTapRemoveCards()
     {
+        FBPlayerData.instance.VibrationEffect();
         sendBackAll = true;
         //Debug.Log("SlotManager.instance.slotsCard.Count: "+ SlotManager.instance.slotsCard.Count);
         SlotManager.instance.goingBack = true;

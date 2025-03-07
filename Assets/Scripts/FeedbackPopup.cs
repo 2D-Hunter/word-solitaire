@@ -25,6 +25,8 @@ public class FeedbackPopup : MonoBehaviour
 
     public Button[] buttons = null;
 
+    public TMP_InputField inputField;
+
 
     private void Awake()
     {
@@ -33,6 +35,7 @@ public class FeedbackPopup : MonoBehaviour
     }
     private void SetInit()
     {
+        buttons[0].interactable = false;
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)
@@ -48,8 +51,16 @@ public class FeedbackPopup : MonoBehaviour
     }
     private void Start()
     {
+        inputField.onSelect.AddListener(ForceKeyboard);
         popupRectTransform.anchoredPosition = new Vector2(0, -350f);
         ShowPopup();
+    }
+    void ForceKeyboard(string text)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            inputField.DeactivateInputField();
+            inputField.ActivateInputField();
+#endif
     }
     public void ShowPopup()
     {
@@ -85,6 +96,7 @@ public class FeedbackPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         foreach (var btn in buttons)
         {
             btn.enabled = false;
@@ -96,12 +108,14 @@ public class FeedbackPopup : MonoBehaviour
     }
     public void RemoveThis()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.feedbackPopup);
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
 
     }
     public void Submit()
     {
+        FBPlayerData.instance.VibrationEffect();
         InitManager.instance.feedbackSubmitted = true;
         PopupManager.instance.TogglePopup(PopupManager.instance.feedbackPopup);
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);

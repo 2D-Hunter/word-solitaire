@@ -85,6 +85,7 @@ public class AccountDeletedPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         foreach (var btn in buttons)
         {
             btn.enabled = false;

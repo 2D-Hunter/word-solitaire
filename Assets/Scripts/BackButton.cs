@@ -39,6 +39,7 @@ public class BackButton : MonoBehaviour
     }
     public void OnBackButtonTap()
     {
+        FBPlayerData.instance.VibrationEffect();
         if (CardManager.instance.rightSideCards.Count > 1)
         {
 

@@ -15,6 +15,7 @@ public class PrivacyPolicy : MonoBehaviour
     }
     public void CloseThis()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.privacyPolicy);
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
     }

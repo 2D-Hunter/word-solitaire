@@ -19,6 +19,7 @@ public class InitManager:MonoBehaviour
     public bool deleteData = false;
     public bool feedbackSubmitted = false;
     public bool startShopping = false;
+    public string currentReward = "";
 
     private void Awake()
     {

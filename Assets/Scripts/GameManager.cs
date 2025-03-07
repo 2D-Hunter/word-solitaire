@@ -48,8 +48,8 @@ public class GameManager : MonoBehaviour
 
     public void ShowDictionary()
     {
-        dictionary.SetActive(true);
-        Dictionary.instance.ShowPopup();
+        FBPlayerData.instance.VibrationEffect();
+        PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
     }
     public void ShowBackButton()
     {
@@ -73,10 +73,12 @@ public class GameManager : MonoBehaviour
     }
     public void ShowSettingsPopupGame()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
     }
     public void ShowQuitPopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         quitPopup.SetActive(true);
         QuitPopup.instance.ShowPopup();
     }

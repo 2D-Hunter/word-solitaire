@@ -39,6 +39,7 @@ public class SubmitButton : MonoBehaviour
     }
     public void OnTapSubmit()
     {
+        FBPlayerData.instance.VibrationEffect();
         SlotManager.instance.StartCoroutine(SlotManager.instance.SubmitWord());
     }
 }

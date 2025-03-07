@@ -76,17 +76,14 @@ public class Shop : MonoBehaviour
     
     public void BuyProduct(string productId)
     {
+        FBPlayerData.instance.VibrationEffect();
         Debug.Log("Buy Product Product ID: "+productId);
         InitManager.instance.startShopping = true;
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
-        if (FBPlayerData.instance.BUILD_TYPE == "Unity")
-        {
-            StartCoroutine(GetProductAfterPurchase(productId));
-        }
-        else
-        {
+        if (GameUtils.IsFacebookBuild())
             Application.ExternalCall("CallInAppPurchase", productId);
-        }
+        else
+            StartCoroutine(GetProductAfterPurchase(productId));
 
     }
     IEnumerator GetProductAfterPurchase(string productId)
@@ -124,6 +121,7 @@ public class Shop : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.ToggleShop();
     }
     private void OnDestroy()

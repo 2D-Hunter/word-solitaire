@@ -95,6 +95,7 @@ public class QuitPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         foreach (var button in buttons)
         {
             button.enabled = false;
@@ -115,6 +116,7 @@ public class QuitPopup : MonoBehaviour
     }
     public void Return()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
     }

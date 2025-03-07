@@ -85,6 +85,7 @@ public class DeleteAccountPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        FBPlayerData.instance.VibrationEffect();
         foreach (var btn in buttons)
         {
             btn.enabled = false;
@@ -96,12 +97,14 @@ public class DeleteAccountPopup : MonoBehaviour
     }
     public void RemoveThis()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
         
     }
     public void TapDelete()
     {
+        FBPlayerData.instance.VibrationEffect();
         InitManager.instance.deleteData = true;
         foreach (var btn in buttons)
         {
