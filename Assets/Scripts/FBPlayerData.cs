@@ -8,7 +8,7 @@ public class FBPlayerData : MonoBehaviour
     public string productID = "";
 
     [HideInInspector]
-    public string BUILD_TYPE = "Facebook"; //Unity, Facebook
+    public string BUILD_TYPE = "Android"; //Unity, Facebook
 
     [HideInInspector]
     public bool IsIos = false;
@@ -55,8 +55,8 @@ public class FBPlayerData : MonoBehaviour
 
     private void Awake()
     {
-        BUILD_TYPE = "Facebook";
-        TOTAL_COINS = 10;
+        BUILD_TYPE = "Android";
+        TOTAL_COINS = 1000;
         //GAME_SOUND = false;
         NO_ADS_30_DAYS = false;
         IsTesting = false;

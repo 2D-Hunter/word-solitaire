@@ -35,7 +35,7 @@ public class FeedbackPopup : MonoBehaviour
     }
     private void SetInit()
     {
-        buttons[0].interactable = false;
+        //buttons[0].interactable = false;
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)

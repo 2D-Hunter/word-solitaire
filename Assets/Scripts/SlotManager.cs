@@ -356,9 +356,17 @@ public class SlotManager : MonoBehaviour
             Debug.Log("Game Completed...");
             if (starProgressBar != null)
             {
-                int prevBrillanceScore = PlayerPrefs.GetInt("BrillianceScore");
+                int prevBrillanceScore;
+                if (GameUtils.IsFacebookBuild())
+                    prevBrillanceScore = FBPlayerData.instance.BRILLIANCE;
+                else
+                    prevBrillanceScore = PlayerPrefs.GetInt("BrillianceScore");
+
                 InitManager.instance.brillianceScore = prevBrillanceScore + starProgressBar.CalculateBrillianceScore();
-                PlayerPrefs.SetInt("BrillianceScore", InitManager.instance.brillianceScore);
+                if (GameUtils.IsFacebookBuild())
+                    FBPlayerData.instance.BRILLIANCE = InitManager.instance.brillianceScore;
+                else
+                    PlayerPrefs.SetInt("BrillianceScore", InitManager.instance.brillianceScore);
             }
             InitManager.instance.levelCompleted = true;
             StartCoroutine(TweenExtraCards());

@@ -31,7 +31,9 @@ public class PurchasedItemPopup : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        
         SetInit();
+        
     }
     
     private void SetInit()
@@ -42,7 +44,7 @@ public class PurchasedItemPopup : MonoBehaviour
             if(item.activeSelf)
                 item.SetActive(false);
         }
-        ShowPurchasedProduct();
+        
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)
@@ -64,6 +66,7 @@ public class PurchasedItemPopup : MonoBehaviour
     public void ShowPopup()
     {
         SetInit();
+        ShowPurchasedProduct();
         bg?.DOKill();
         popup?.DOKill();
         popupRectTransform?.DOKill();
