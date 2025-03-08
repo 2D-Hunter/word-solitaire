@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager Instance { get; private set; }
+    public static SoundManager instance { get; private set; }
 
     [Header("Audio Sources")]
-    [SerializeField] private AudioSource bgmSource; // Background Music
+    [SerializeField] public AudioSource bgmSource; // Background Music
     [SerializeField] private AudioSource sfxSource; // Sound Effects
 
     [Header("Audio Clips")]
@@ -16,8 +16,8 @@ public class SoundManager : MonoBehaviour
     private Dictionary<string, AudioClip> soundDictionary = new Dictionary<string, AudioClip>();
 
     [Header("Volume Settings")]
-    [Range(0f, 1f)] public float bgmVolume = 1f;
-    [Range(0f, 1f)] public float sfxVolume = 1f;
+    [Range(0f, 1f)] public float bgmVolume = 0.2f;
+    [Range(0f, 1f)] public float sfxVolume = 0.7f;
 
     private bool isBgmMuted;
     private bool isSfxMuted;
@@ -26,9 +26,9 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         // Singleton Pattern - Ensure only one SoundManager exists
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
+            instance = this;
             DontDestroyOnLoad(gameObject); // Keeps this object persistent
         }
         else
@@ -39,7 +39,6 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        return;
         LoadAudioSettings();
         ApplyVolumeSettings();
         InitializeSoundDictionary();
@@ -61,14 +60,21 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     public void PlayBGM(AudioClip bgm, bool loop = true, float fadeDuration = 0f)
     {
-        if (bgmSource.clip == bgm) return; // Prevent restarting same music
+        if (bgmSource.clip == bgm && bgmSource.isPlaying) return;
 
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
 
         bgmSource.clip = bgm;
         bgmSource.loop = loop;
         bgmSource.Play();
+        StartCoroutine(SetInitialVolumeAndFade(fadeDuration));
+    }
 
+    private IEnumerator SetInitialVolumeAndFade(float fadeDuration)
+    {
+        yield return null; // Wait 1 frame to ensure Play() starts properly
+
+        bgmSource.volume = 0;
         if (fadeDuration > 0)
             fadeCoroutine = StartCoroutine(FadeInBGM(fadeDuration));
         else
@@ -146,8 +152,8 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private void LoadAudioSettings()
     {
-        bgmVolume = PlayerPrefs.GetFloat("BGM_Volume", 1f);
-        sfxVolume = PlayerPrefs.GetFloat("SFX_Volume", 1f);
+        bgmVolume = PlayerPrefs.GetFloat("BGM_Volume", bgmVolume);
+        sfxVolume = PlayerPrefs.GetFloat("SFX_Volume", sfxVolume);
         isBgmMuted = PlayerPrefs.GetInt("BGM_Muted", 0) == 1;
         isSfxMuted = PlayerPrefs.GetInt("SFX_Muted", 0) == 1;
     }
@@ -167,6 +173,7 @@ public class SoundManager : MonoBehaviour
     private IEnumerator FadeInBGM(float duration)
     {
         bgmSource.volume = 0;
+        Debug.Log("FadeInBGM: "+ bgmSource.volume);
         float startTime = Time.time;
 
         while (Time.time < startTime + duration)

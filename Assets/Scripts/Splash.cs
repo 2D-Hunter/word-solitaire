@@ -11,6 +11,7 @@ public class Splash : MonoBehaviour
     }
     void LoadMenu()
     {
+        SoundManager.instance.PlayBGM(SoundManager.instance.bgmSource.clip, true, 10f);
         Initiate.Fade("Menu", Color.black, 1f);
     }
 }

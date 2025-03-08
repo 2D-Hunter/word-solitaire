@@ -154,12 +154,26 @@ public class PurchasedItemPopup : MonoBehaviour
                 purchasedItems[5].SetActive(true);
 
                 DateTime expiryDate = DateTime.UtcNow.AddDays(30);
-                PlayerPrefs.SetString("No_Ads_30_Days", expiryDate.ToString());
-                PlayerPrefs.Save();
+                string expiryDateStr = expiryDate.ToString("o"); // ISO 8601 format (better for parsing)
+
+                if (GameUtils.IsFacebookBuild())
+                {
+                    //FBPlayerData.instance.SetData("No_Ads_30_Days", expiryDateStr);
+                    FBPlayerData.instance.NO_ADS_30_DAYS = true;
+                    FBPlayerData.instance.SavePlayerData();
+                }
+                else
+                {
+                    // Save using PlayerPrefs (for non-Facebook builds)
+                    PlayerPrefs.SetString("No_Ads_30_Days", expiryDate.ToString());
+                    PlayerPrefs.Save();
+                }
+
+                
 
 
 
-                FBPlayerData.instance.NO_ADS_30_DAYS = true;
+                
                 break;
         }
         FBPlayerData.instance.SavePlayerData();

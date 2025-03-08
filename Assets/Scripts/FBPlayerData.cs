@@ -43,6 +43,9 @@ public class FBPlayerData : MonoBehaviour
     public bool NO_ADS_30_DAYS = false;
 
     [HideInInspector]
+    public string EXPIRY_DATE_30_DAYS = "";
+
+    [HideInInspector]
     public int TOTAL_COINS = 1000;
 
     [HideInInspector]

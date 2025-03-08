@@ -60,6 +60,7 @@ public class PopupManager : MonoBehaviour
     {
         if(currentPopup == null)
         {
+            SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup = Instantiate(prefab, uiContainer);
         }
         else
@@ -73,6 +74,7 @@ public class PopupManager : MonoBehaviour
     {
         if (currentPopup2 == null)
         {
+            SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup2 = Instantiate(shop, uiContainer);
         }
         else
