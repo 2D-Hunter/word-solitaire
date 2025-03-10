@@ -120,5 +120,13 @@ public class SettingsPopupMenu : MonoBehaviour
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupMenu);
         PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
     }
+    public void ToggleMusic()
+    {
+        //SoundManager.instance.SetBgmToggle();
+    }
+    public void ToggleSfx()
+    {
+        //SoundManager.instance.ToggleMuteSFX();
+    }
 
 }

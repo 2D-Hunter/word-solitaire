@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
@@ -119,21 +120,38 @@ public class SoundManager : MonoBehaviour
     /// <summary>
     /// Toggles mute for background music and saves the state.
     /// </summary>
-    public void ToggleMuteBGM()
+    public void SetBgmToggle(Toggle toggle)
     {
-        isBgmMuted = !isBgmMuted;
+        toggle.isOn = !isBgmMuted; // Sync toggle with current mute state
+        toggle.onValueChanged.AddListener(delegate { ToggleMuteBGMFromUI(toggle.isOn); });
+    }
+
+    public void ToggleMuteBGMFromUI(bool isOn)
+    {
+        isBgmMuted = !isOn; // If toggle is ON, unmute; if OFF, mute
         bgmSource.mute = isBgmMuted;
         SaveAudioSettings();
+    }
+    public bool IsBGMMuted()
+    {
+        return isBgmMuted;
+    }
+
+    public void ToggleMuteSFXFromUI(bool isOn)
+    {
+        isSfxMuted = !isOn; // If switch is ON, unmute. If OFF, mute.
+        sfxSource.mute = isSfxMuted;
+        SaveAudioSettings();
+    }
+    public bool IsSFXMuted()
+    {
+        return isSfxMuted;
     }
 
     /// <summary>
     /// Toggles mute for sound effects and saves the state.
     /// </summary>
-    public void ToggleMuteSFX()
-    {
-        isSfxMuted = !isSfxMuted;
-        SaveAudioSettings();
-    }
+    
 
     /// <summary>
     /// Saves audio settings using PlayerPrefs.
