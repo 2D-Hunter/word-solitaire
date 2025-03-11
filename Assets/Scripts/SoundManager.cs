@@ -7,6 +7,7 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager instance { get; private set; }
 
+    
     [Header("Audio Sources")]
     [SerializeField] public AudioSource bgmSource; // Background Music
     [SerializeField] private AudioSource sfxSource; // Sound Effects

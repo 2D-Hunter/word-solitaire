@@ -1,16 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UISwitcher {
-	public class UISwitcher : UINullableToggle {
+namespace UISwitcher
+{
+	public class UISwitcherSFX : UINullableToggle
+	{
 		private readonly Vector2 _min = new(0, 0.5f);
 		private readonly Vector2 _max = new(1, 0.5f);
 		private readonly Vector2 _middle = new(0.5f, 0.5f);
 		[SerializeField] private Graphic backgroundGraphic;
 		[SerializeField] private Color onColor, offColor, nullColor;
 		[SerializeField] private RectTransform tipRect;
-		private Color backgroundColor {
-			set {
+		private Color backgroundColor
+		{
+			set
+			{
 				if (backgroundGraphic == null) return;
 				backgroundGraphic.color = value;
 			}
@@ -53,22 +57,26 @@ namespace UISwitcher {
 			}
 		}
 
-		private void SetOn() {
+		private void SetOn()
+		{
 			SetAnchors(_max);
 			backgroundColor = onColor;
 		}
 
-		private void SetOff() {
+		private void SetOff()
+		{
 			SetAnchors(_min);
 			backgroundColor = offColor;
 		}
 
-		private void SetNull() {
+		private void SetNull()
+		{
 			SetAnchors(_middle);
 			backgroundColor = nullColor;
 		}
 
-		private void SetAnchors(Vector2 anchor) {
+		private void SetAnchors(Vector2 anchor)
+		{
 			tipRect.anchorMin = anchor;
 			tipRect.anchorMax = anchor;
 			tipRect.pivot = anchor;
