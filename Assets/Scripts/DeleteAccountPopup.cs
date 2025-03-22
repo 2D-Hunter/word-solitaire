@@ -106,6 +106,7 @@ public class DeleteAccountPopup : MonoBehaviour
     {
         FBPlayerData.instance.VibrationEffect();
         InitManager.instance.deleteData = true;
+        FBPlayerData.instance.ResetAllData();
         foreach (var btn in buttons)
         {
             btn.enabled = false;

@@ -98,6 +98,7 @@ public class AccountDeletedPopup : MonoBehaviour
     public void RemoveThis()
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.accountDeletedPopup);
+        Application.ExternalCall("QuitGame");
 
     }
 

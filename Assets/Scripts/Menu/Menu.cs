@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public class Menu : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class Menu : MonoBehaviour
     public RectTransform heartHud;
     public RectTransform coinHud;
 
+    public RectTransform buttonRect;
+
     private void Awake()
     {
         instance = this;
@@ -36,6 +39,7 @@ public class Menu : MonoBehaviour
     private void Start()
     {
         PopupManager.instance.AssignUIContainer();
+        //AnimateButton();
     }
     public void ShowGoalPopup()
     {
@@ -98,5 +102,13 @@ public class Menu : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
     }
-    
+    void AnimateButton()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Append(buttonRect.DOScale(1.2f, 0.3f).SetEase(Ease.OutQuad)) // Scale Up
+                .Append(buttonRect.DOShakePosition(0.3f, 5f, 10, 90, false, true)) // Shake
+                .Append(buttonRect.DOScale(1, 0.3f).SetEase(Ease.InOutQuad)) // Return to Original
+                .SetLoops(-1); // Loop Forever
+    }
 }

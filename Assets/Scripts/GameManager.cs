@@ -24,6 +24,13 @@ public class GameManager : MonoBehaviour
     public GameObject moreCards;
     public GameObject endGame;
 
+    //Tutorial
+    public GameObject hud;
+    public GameObject secondRow;
+    public GameObject extraCardsSlots;
+    public GameObject bottomIcons;
+    public GameObject tutorialPatch;
+
 
     private void Awake()
     {
@@ -41,8 +48,16 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        {
+            hud.SetActive(false);
+            secondRow.SetActive(false);
+            extraCardsSlots.SetActive(false);
+            bottomIcons.SetActive(false);
+        }
         //Invoke("ToggleLevelup", 1f);
-        PopupManager.instance.AssignUIContainer();
+        if(PopupManager.instance)
+            PopupManager.instance.AssignUIContainer();
     }
 
 
@@ -95,4 +110,6 @@ public class GameManager : MonoBehaviour
             currentLevelupUI = null;
         }
     }
+
+    
 }

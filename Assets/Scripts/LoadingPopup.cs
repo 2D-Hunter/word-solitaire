@@ -14,6 +14,7 @@ public class LoadingPopup : MonoBehaviour
     }
     void DataDeleted()
     {
+        InitManager.instance.deleteData = false;
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
         PopupManager.instance.TogglePopup(PopupManager.instance.accountDeletedPopup);
     }

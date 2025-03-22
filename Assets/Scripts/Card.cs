@@ -44,7 +44,10 @@ public class Card : MonoBehaviour
             rectTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
             int randomIndex = Random.Range(0, CardManager.instance.extraCards.Count);
         }
-        
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        {
+            gameObject.GetComponent<Button>().enabled = false;
+        }
     }
     private void Start()
     {
@@ -143,6 +146,14 @@ public class Card : MonoBehaviour
         }
         else
         {
+            if(cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1)
+            {
+                return;
+            }
+            if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+            {
+                InitManager.instance.tutorialCntr++;
+            }
             if (!isFaceUp) return;
             isFlipping = false;
             Debug.Log("isFlipping000: " + isFlipping);

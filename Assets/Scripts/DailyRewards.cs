@@ -115,8 +115,17 @@ public class DailyRewards : MonoBehaviour
 
     void UpdateTimers()
     {
-        UpdateTimer(DailyRewardsManager.instance.firstRewardKey, DailyRewardsManager.instance.firstRewardCooldown, firstRewardTimerText, collectButton, true);
-        UpdateTimer(DailyRewardsManager.instance.adRewardKey, DailyRewardsManager.instance.adRewardCooldown, adRewardTimerText, null, false);
+        if(GameUtils.IsFacebookBuild())
+        {
+            UpdateTimer(FBPlayerData.instance.LAST_REWARD_TIME, DailyRewardsManager.instance.firstRewardCooldown, firstRewardTimerText, collectButton, true);
+            UpdateTimer(FBPlayerData.instance.LAST_AD_REWARD_TIME, DailyRewardsManager.instance.adRewardCooldown, adRewardTimerText, null, false);
+        }
+        else
+        {
+            UpdateTimer(DailyRewardsManager.instance.firstRewardKey, DailyRewardsManager.instance.firstRewardCooldown, firstRewardTimerText, collectButton, true);
+            UpdateTimer(DailyRewardsManager.instance.adRewardKey, DailyRewardsManager.instance.adRewardCooldown, adRewardTimerText, null, false);
+        }
+        
     }
 
     void UpdateTimer(string key, int cooldown, TextMeshProUGUI timerText, GameObject button, bool isFirstReward)

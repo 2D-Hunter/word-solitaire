@@ -20,6 +20,7 @@ public class InitManager:MonoBehaviour
     public bool feedbackSubmitted = false;
     public bool startShopping = false;
     public string currentReward = "";
+    public int tutorialCntr = 0;
 
     private void Awake()
     {

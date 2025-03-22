@@ -9,8 +9,8 @@ public class SoundManager : MonoBehaviour
 
     
     [Header("Audio Sources")]
-    [SerializeField] public AudioSource bgmSource; // Background Music
-    [SerializeField] private AudioSource sfxSource; // Sound Effects
+     public AudioSource bgmSource; // Background Music
+    public AudioSource sfxSource; // Sound Effects
 
     [Header("Audio Clips")]
     [SerializeField] private List<AudioClip> soundEffects; // List of SFX Clips
@@ -21,8 +21,8 @@ public class SoundManager : MonoBehaviour
     [Range(0f, 1f)] public float bgmVolume = 0.2f;
     [Range(0f, 1f)] public float sfxVolume = 0.7f;
 
-    private bool isBgmMuted;
-    private bool isSfxMuted;
+    public bool isBgmMuted;
+    public bool isSfxMuted;
     private Coroutine fadeCoroutine;
 
     private void Awake()
@@ -44,6 +44,7 @@ public class SoundManager : MonoBehaviour
         LoadAudioSettings();
         ApplyVolumeSettings();
         InitializeSoundDictionary();
+
     }
 
     /// <summary>
@@ -126,6 +127,28 @@ public class SoundManager : MonoBehaviour
         toggle.isOn = !isBgmMuted; // Sync toggle with current mute state
         toggle.onValueChanged.AddListener(delegate { ToggleMuteBGMFromUI(toggle.isOn); });
     }
+    private void Update()
+    {
+        //Debug.Log("Music: " + FBPlayerData.instance.GAME_MUSIC);
+        //Debug.Log("Sound: " + FBPlayerData.instance.GAME_SOUND);
+        //Debug.Log("isBgmMuted: " + isBgmMuted);
+    }
+    public void SetMusicUI()
+    {
+        if(FBPlayerData.instance.GAME_MUSIC)
+            isBgmMuted = false;
+        else
+            isBgmMuted = true;
+        bgmSource.mute = isBgmMuted;
+    }
+    public void SetSFXUI()
+    {
+        if (FBPlayerData.instance.GAME_SOUND)
+            isSfxMuted = false;
+        else
+            isSfxMuted = true;
+        bgmSource.mute = isSfxMuted;
+    }
 
     public void ToggleMuteBGMFromUI(bool isOn)
     {
@@ -159,11 +182,22 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private void SaveAudioSettings()
     {
-        PlayerPrefs.SetFloat("BGM_Volume", bgmVolume);
-        PlayerPrefs.SetFloat("SFX_Volume", sfxVolume);
-        PlayerPrefs.SetInt("BGM_Muted", isBgmMuted ? 1 : 0);
-        PlayerPrefs.SetInt("SFX_Muted", isSfxMuted ? 1 : 0);
-        PlayerPrefs.Save();
+        if (GameUtils.IsFacebookBuild())
+        {
+            FBPlayerData.instance.GAME_MUSIC = !isBgmMuted;
+            FBPlayerData.instance.GAME_SOUND = !isSfxMuted;
+            Debug.Log("SaveAudioSettings: "+ FBPlayerData.instance.GAME_MUSIC +"____"+ FBPlayerData.instance.GAME_SOUND);
+            FBPlayerData.instance.SavePlayerData();
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("BGM_Volume", bgmVolume);
+            PlayerPrefs.SetFloat("SFX_Volume", sfxVolume);
+            PlayerPrefs.SetInt("BGM_Muted", isBgmMuted ? 1 : 0);
+            PlayerPrefs.SetInt("SFX_Muted", isSfxMuted ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+            
     }
 
     /// <summary>
@@ -171,10 +205,19 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private void LoadAudioSettings()
     {
-        bgmVolume = PlayerPrefs.GetFloat("BGM_Volume", bgmVolume);
-        sfxVolume = PlayerPrefs.GetFloat("SFX_Volume", sfxVolume);
-        isBgmMuted = PlayerPrefs.GetInt("BGM_Muted", 0) == 1;
-        isSfxMuted = PlayerPrefs.GetInt("SFX_Muted", 0) == 1;
+        if (GameUtils.IsFacebookBuild())
+        {
+            isBgmMuted = !FBPlayerData.instance.GAME_MUSIC;
+            isSfxMuted = !FBPlayerData.instance.GAME_SOUND;
+        }
+        else
+        {
+            bgmVolume = PlayerPrefs.GetFloat("BGM_Volume", bgmVolume);
+            sfxVolume = PlayerPrefs.GetFloat("SFX_Volume", sfxVolume);
+            isBgmMuted = PlayerPrefs.GetInt("BGM_Muted", 0) == 1;
+            isSfxMuted = PlayerPrefs.GetInt("SFX_Muted", 0) == 1;
+        }
+        
     }
 
     /// <summary>
