@@ -26,7 +26,9 @@ public class GameManager : MonoBehaviour
 
     //Tutorial
     public GameObject hud;
-    public GameObject secondRow;
+    public GameObject submitBtn;
+    public GameObject hintBtn;
+    public GameObject removeCardsBtn;
     public GameObject extraCardsSlots;
     public GameObject bottomIcons;
     public GameObject tutorialPatch;
@@ -51,7 +53,9 @@ public class GameManager : MonoBehaviour
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
             hud.SetActive(false);
-            secondRow.SetActive(false);
+            submitBtn.SetActive(false);
+            hintBtn.SetActive(false);
+            removeCardsBtn.SetActive(false);
             extraCardsSlots.SetActive(false);
             bottomIcons.SetActive(false);
         }
@@ -110,6 +114,25 @@ public class GameManager : MonoBehaviour
             currentLevelupUI = null;
         }
     }
+    //void Update()
+    //{
+    //    if (Input.GetMouseButtonDown(0)) // Detect touch or click
+    //    {
+    //        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //        int layerMask = LayerMask.GetMask("CardLayer"); // Only detect cards
 
-    
+    //        RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, layerMask);
+
+    //        if (hit.collider != null)
+    //        {
+    //            Debug.Log("Tapped on: " + hit.collider.gameObject.name);
+    //        }
+    //        else
+    //        {
+    //            Debug.Log("Tapped outside the card");
+    //        }
+    //    }
+    //}
+
+
 }

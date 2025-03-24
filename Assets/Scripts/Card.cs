@@ -35,6 +35,8 @@ public class Card : MonoBehaviour
 
     public Vector2 originalPosition;
     Sequence cardSequence;
+    public Tutorial tutorial;
+
 
     private void Awake()
     {
@@ -46,7 +48,7 @@ public class Card : MonoBehaviour
         }
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
-            gameObject.GetComponent<Button>().enabled = false;
+            //gameObject.GetComponent<Button>().enabled = false;
         }
     }
     private void Start()
@@ -59,6 +61,12 @@ public class Card : MonoBehaviour
             CardManager.instance.UpdateFaceUpCards(this, isFaceUp);
         }
         Invoke("AddFaceupExtraCard", 1f);
+
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        {
+            if (tutorial == null)
+                tutorial = FindObjectOfType<Tutorial>();
+        }
 
     }
     public void MoveBackToOriginalPosition()
@@ -146,13 +154,19 @@ public class Card : MonoBehaviour
         }
         else
         {
-            if(cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1)
+            Debug.Log("InitManager.instance.tutorialCntr:  " + cardData.letter+"_____"+ FBPlayerData.instance.CURRENT_LEVEL+"_____"+ InitManager.instance.tutorialCntr);
+            if(cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
             {
                 return;
             }
-            if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+            if (cardData.letter == 'G' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 1)
+            {
+                return;
+            }
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1)
             {
                 InitManager.instance.tutorialCntr++;
+                tutorial.ShowNext();
             }
             if (!isFaceUp) return;
             isFlipping = false;

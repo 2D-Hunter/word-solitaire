@@ -26,4 +26,5 @@ public class TutorialAlphaPatch : MonoBehaviour
             tutorial.AnimateCard(); // Play the animation
         }
     }
+
 }

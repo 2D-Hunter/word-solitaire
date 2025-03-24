@@ -96,6 +96,7 @@ public class SlotManager : MonoBehaviour
         //Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
         if (currentSlotIndex != -1)
         {
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1) return;
             //card going back to place
             Debug.Log("___currentSlotIndex: " + currentSlotIndex + "____"+ (GetSlotString().Length-1));
             //if (currentSlotIndex == GetSlotString().Length-1)
@@ -234,6 +235,7 @@ public class SlotManager : MonoBehaviour
     }
     public void AAA()
     {
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 1) return;
         bool allTrue = isSlotOccupied.All(b => b);
         allSlotsOccupied = allTrue;
         
