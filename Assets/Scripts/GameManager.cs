@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public GameObject overlayPanel;
-    public GameObject dictionary = null;
     public bool isValidWord = false;
     public bool foundValidWord = false;
     public string hintWord = "";
@@ -14,8 +13,6 @@ public class GameManager : MonoBehaviour
     public GameObject backButton;
     public string hintText;
 
-    public GameObject settingsPopupGame;
-    public GameObject quitPopup;
     public int scoreMultiplier = 1;
 
     public RectTransform uiContainer;
@@ -25,7 +22,8 @@ public class GameManager : MonoBehaviour
     public GameObject endGame;
 
     //Tutorial
-    public GameObject hud;
+    public GameObject hud1;
+    public GameObject hud2;
     public GameObject submitBtn;
     public GameObject hintBtn;
     public GameObject removeCardsBtn;
@@ -52,7 +50,8 @@ public class GameManager : MonoBehaviour
     {
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
-            hud.SetActive(false);
+            hud1.SetActive(false);
+            hud2.SetActive(false);
             submitBtn.SetActive(false);
             hintBtn.SetActive(false);
             removeCardsBtn.SetActive(false);
@@ -98,8 +97,7 @@ public class GameManager : MonoBehaviour
     public void ShowQuitPopup()
     {
         FBPlayerData.instance.VibrationEffect();
-        quitPopup.SetActive(true);
-        QuitPopup.instance.ShowPopup();
+        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
     }
 
     public void ToggleLevelup()

@@ -42,8 +42,10 @@ public class WordValidator : MonoBehaviour
         GameManager.instance.isValidWord = WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
         Debug.Log("_________________isValidWord: " + GameManager.instance.isValidWord);
         GreenTabHandler.instance.HandleGreenTab(createdWord);
-        SubmitButton.instance.SwapImage();
-        DictionaryButton.instance.SwapImage();
+        if(SubmitButton.instance)
+            SubmitButton.instance.SwapImage();
+        if (DictionaryButton.instance)
+            DictionaryButton.instance.SwapImage();
         return WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
          //validWords.Contains(word.ToLower());
     }

@@ -48,7 +48,7 @@ public class Card : MonoBehaviour
         }
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
-            //gameObject.GetComponent<Button>().enabled = false;
+            gameObject.GetComponent<Button>().enabled = false;
         }
     }
     private void Start()
@@ -154,6 +154,7 @@ public class Card : MonoBehaviour
         }
         else
         {
+            if (!isFaceUp) return;
             Debug.Log("InitManager.instance.tutorialCntr:  " + cardData.letter+"_____"+ FBPlayerData.instance.CURRENT_LEVEL+"_____"+ InitManager.instance.tutorialCntr);
             if(cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
             {
@@ -168,7 +169,7 @@ public class Card : MonoBehaviour
                 InitManager.instance.tutorialCntr++;
                 tutorial.ShowNext();
             }
-            if (!isFaceUp) return;
+            
             isFlipping = false;
             Debug.Log("isFlipping000: " + isFlipping);
             slotManager.OnCardClicked(this);

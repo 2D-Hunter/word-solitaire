@@ -374,7 +374,7 @@ public class SlotManager : MonoBehaviour
             StartCoroutine(TweenExtraCards());
         }
 
-        Vector2 targetPosition = Hud.instance.hudCard.position;
+            Vector2 targetPosition = Hud.instance.hudCard.position;
         
         for (int i = slotsCard.Count-1; i >= 0; i--)
         {
@@ -399,6 +399,7 @@ public class SlotManager : MonoBehaviour
             //Debug.Log("scoreText.text: " + scoreText.text);
             cardSequence.OnComplete(() =>
             {
+                FBPlayerData.instance.VibrationEffect();
                 card.gameObject.SetActive(false);
                 Debug.Log("InitManager.instance.currentTarget: "+ InitManager.instance.currentTarget);
                 if(InitManager.instance.currentTarget > 0)

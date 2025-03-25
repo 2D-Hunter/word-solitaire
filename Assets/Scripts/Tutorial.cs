@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class Tutorial : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class Tutorial : MonoBehaviour
     public GameObject cardO = null;
     Vector2 initialPosHand;
     public GameObject infoPanel;
+    public TextMeshProUGUI infoPanelText;
 
 
     private void Start()
@@ -37,6 +39,7 @@ public class Tutorial : MonoBehaviour
         {
             cardTransform = cardTransform1.GetComponent<RectTransform>();
             cardG.GetComponent<Button>().enabled = true;
+            infoPanelText.text = "<b><size=110%>'Tap cards'</size></b> to make words! Make <b><size=110%>'GO'.</size></b>";
         }
     }
     
@@ -47,7 +50,7 @@ public class Tutorial : MonoBehaviour
 
     public void AnimateCard()
     {
-        if (isAnimating) return;
+        if (isAnimating || InitManager.instance.tutorialCntr == 2) return;
         Debug.Log("Animate Card");
         originalScale = cardTransform.localScale;
         originalRotation = cardTransform.localRotation;
@@ -94,6 +97,8 @@ public class Tutorial : MonoBehaviour
             handRectTransform.localRotation = Quaternion.Euler(0, 0, 218f);
             SetHandPosition(-305f, -652f);
             infoPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            infoPanelText.text = "Now tap the\n<b><size=110%>'Submit Button'.</size></b>";
+            
         }
         
     }
