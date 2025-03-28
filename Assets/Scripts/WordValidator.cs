@@ -29,6 +29,7 @@ public class WordValidator : MonoBehaviour
 
     public bool ValidateWord(string word)
     {
+        if (word == "FA" && FBPlayerData.instance.CURRENT_LEVEL == 1) return false;
         string createdWord = SlotManager.instance.GetSlotString();
         if (word.Length <= 1)
         {
@@ -52,6 +53,6 @@ public class WordValidator : MonoBehaviour
 
     public bool isWordValid(string word)
     {
-      return WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
+        return WordServiceContainer.DictionaryService.isValidWord(word.ToLower());
     }
 }

@@ -58,8 +58,15 @@ public class GameManager : MonoBehaviour
             extraCardsSlots.SetActive(false);
             bottomIcons.SetActive(false);
         }
+        else if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            hud2.SetActive(false);
+            hintBtn.SetActive(false);
+            removeCardsBtn.SetActive(false);
+            bottomIcons.SetActive(false);
+        }
         //Invoke("ToggleLevelup", 1f);
-        if(PopupManager.instance)
+        if (PopupManager.instance)
             PopupManager.instance.AssignUIContainer();
     }
 

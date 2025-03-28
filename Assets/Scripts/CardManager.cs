@@ -21,9 +21,12 @@ public class CardManager : MonoBehaviour
         Debug.Log("All Cards: ");
         instance = this;
         
+
+
     }
     private void Start()
     {
+        AssignExtraCards();
         MakeRandomCardWild();
     }
     void MakeRandomCardWild()
@@ -57,6 +60,41 @@ public class CardManager : MonoBehaviour
         }
 
         
+    }
+    private void AssignExtraCards()
+    {
+        if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            char[] letters = { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
+
+            for (int i = 0; i < extraCards.Count; i++)
+            {
+                if (extraCards[i] == null)
+                {
+                    Debug.LogError($"Extra Card at index {i} is null!");
+                    continue;
+                }
+
+                // Ensure cardData is assigned
+                if (extraCards[i].cardData == null)
+                {
+                    Debug.LogWarning($"CardData at index {i} is null! Assigning now...");
+                    extraCards[i].cardData = extraCards[i].gameObject.AddComponent<CardData>();
+                }
+
+                if (extraCards[i].cardData.letterText == null || extraCards[i].cardData.valueText == null)
+                {
+                    Debug.LogError($"Text components missing in CardData at index {i}!");
+                    continue;
+                }
+
+                // Assign values
+                extraCards[i].cardData.letterText.text = letters[i].ToString();
+                int cardValue = extraCards[i].cardData.GetCardValue(letters[i]);
+                extraCards[i].cardData.valueText.text = cardValue.ToString();
+                extraCards[i].cardData.cardValue = cardValue;
+            }
+        }
     }
 
 }

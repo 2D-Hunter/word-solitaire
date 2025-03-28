@@ -30,12 +30,21 @@ public class CardData : MonoBehaviour
     };
     private void Start()
     {
+        Debug.Log("____Card Data");
         if (gameObject.tag == "ExtraCard")
         {
-            char randomLetter = (char)('A' + Random.Range(0, 26));
-            letterText.text = randomLetter.ToString();
-            valueText.text = GetCardValue(randomLetter).ToString();
-            cardValue = GetCardValue(randomLetter);
+            if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+            {
+                
+            }
+            else
+            {
+                char randomLetter = (char)('A' + Random.Range(0, 26));
+                letterText.text = randomLetter.ToString();
+                valueText.text = GetCardValue(randomLetter).ToString();
+                cardValue = GetCardValue(randomLetter);
+            }
+            
         }
         else
         {

@@ -371,7 +371,14 @@ public class SlotManager : MonoBehaviour
                     PlayerPrefs.SetInt("BrillianceScore", InitManager.instance.brillianceScore);
             }
             InitManager.instance.levelCompleted = true;
-            StartCoroutine(TweenExtraCards());
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1)
+            {
+                Invoke("LoadGame", 2f);
+            }
+            else
+            {
+                StartCoroutine(TweenExtraCards());
+            }
         }
 
             Vector2 targetPosition = Hud.instance.hudCard.position;
@@ -425,6 +432,14 @@ public class SlotManager : MonoBehaviour
         slotsCard.Clear();
         
 
+    }
+    void LoadGame()
+    {
+        FBPlayerData.instance.TUTORIAL_1_COMPLETED = true;
+        InitManager.instance.currentLevel++;
+        FBPlayerData.instance.CURRENT_LEVEL = InitManager.instance.currentLevel;
+        FBPlayerData.instance.SavePlayerData();
+        Initiate.Fade("Game", Color.black, 1f);
     }
     IEnumerator TweenExtraCards()
     {
@@ -484,7 +499,9 @@ public class SlotManager : MonoBehaviour
 
         yield return new WaitForSeconds(1);
         InitManager.instance.currentLevel++;
-        if(InitManager.instance.currentLevel > 5)
+        FBPlayerData.instance.CURRENT_LEVEL = InitManager.instance.currentLevel;
+        FBPlayerData.instance.SavePlayerData();
+        if (InitManager.instance.currentLevel > 5)
         {
             InitManager.instance.currentLevel = 1;
         }

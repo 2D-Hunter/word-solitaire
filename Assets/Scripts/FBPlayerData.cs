@@ -61,6 +61,8 @@ public class FBPlayerData : MonoBehaviour
     public string LAST_AD_REWARD_TIME = "";
     public int AVAILABLE_REWARDS = 5;
     public int CURRENT_REWARD_INDEX = 0;
+    public bool TUTORIAL_1_COMPLETED = false;
+    public bool TUTORIAL_2_COMPLETED = false;
 
 
     private void Awake()
@@ -95,7 +97,7 @@ public class FBPlayerData : MonoBehaviour
     {
         Debug.Log("Data Saved");
         string data = CURRENT_LEVEL + ":" + GAME_MUSIC + ":" + GAME_SOUND + ":" + NO_ADS_30_DAYS + ":" + TOTAL_COINS + ":" + BRILLIANCE + ":" + TOTAL_HEARTS + ":" + LAST_HEART_TIME
-             + ":" + LAST_REWARD_TIME + ":" + LAST_AD_REWARD_TIME + ":" + AVAILABLE_REWARDS + ":" + CURRENT_REWARD_INDEX;
+             + ":" + LAST_REWARD_TIME + ":" + LAST_AD_REWARD_TIME + ":" + AVAILABLE_REWARDS + ":" + CURRENT_REWARD_INDEX + ":" + TUTORIAL_1_COMPLETED + ":" + TUTORIAL_2_COMPLETED;
         Application.ExternalCall("SavePlayerData", data);
 
     }
@@ -117,6 +119,8 @@ public class FBPlayerData : MonoBehaviour
         LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"];
         AVAILABLE_REWARDS = playerData["AVAILABLE_REWARDS_001"];
         CURRENT_REWARD_INDEX = playerData["CURRENT_REWARD_INDEX_001"];
+        TUTORIAL_1_COMPLETED = playerData["TUTORIAL_1_COMPLETED_001"];
+        TUTORIAL_2_COMPLETED = playerData["TUTORIAL_2_COMPLETED_001"];
 
         Debug.Log(GAME_SOUND + "_____" + NO_ADS_30_DAYS + "_____" + TOTAL_COINS + " __________ RecievePlayerData22");
 

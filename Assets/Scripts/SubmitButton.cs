@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class SubmitButton : MonoBehaviour
 {
@@ -58,10 +59,21 @@ public class SubmitButton : MonoBehaviour
     {
         if (FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
-            GameManager.instance.hud1.SetActive(true);
-            tutorial.handRectTransform.gameObject.SetActive(false);
-            tutorial.infoPanel.SetActive(false);
-            spriteMask.SetActive(false);
+            if(InitManager.instance.tutorialCntr == 5)
+            {
+                tutorial.infoPanel.SetActive(false);
+            }
+            else
+            {
+                GameManager.instance.hud1.SetActive(true);
+                tutorial.handRectTransform.gameObject.SetActive(false);
+                tutorial.infoPanel.SetActive(false);
+                tutorial.infoPanel2.SetActive(true);
+                tutorial.infoPanel2.GetComponent<RectTransform>().localScale = Vector3.zero;
+                tutorial.infoPanel2.GetComponent<RectTransform>().DOScale(0.95f, 0.3f).SetEase(Ease.OutBack);
+                spriteMask.SetActive(false);
+            }
+            
         }
         FBPlayerData.instance.VibrationEffect();
         SlotManager.instance.StartCoroutine(SlotManager.instance.SubmitWord());

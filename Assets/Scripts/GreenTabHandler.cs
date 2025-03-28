@@ -42,7 +42,7 @@ public class GreenTabHandler : MonoBehaviour
     }
     public void SwitchMultiplier(int i)
     {
-        
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1) return;
         foreach (var multiplier in scoreMultiplier)
         {
             multiplier.SetActive(false);
