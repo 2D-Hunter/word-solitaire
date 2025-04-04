@@ -37,6 +37,7 @@ public class Card : MonoBehaviour
     Sequence cardSequence;
     public Tutorial tutorial;
 
+    private float[] originalPosOfExtraCards = { -180f, -165f, -150f, -135f, -120f, -105, -90, -75, -60, -45, -30, -15, 0, 15, 30 };
 
     private void Awake()
     {
@@ -62,7 +63,7 @@ public class Card : MonoBehaviour
         }
         Invoke("AddFaceupExtraCard", 1f);
 
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             if (tutorial == null)
                 tutorial = FindObjectOfType<Tutorial>();
@@ -131,6 +132,7 @@ public class Card : MonoBehaviour
 
     public void OnCardClick(Card card)
     {
+        Debug.Log("____111");
         RemoveCardsButton.instance.sendBackAll = false;
         SlotManager.instance.goingBack = false;
         if (InitManager.instance != null)
@@ -140,6 +142,7 @@ public class Card : MonoBehaviour
 
         if (this.tag == "ExtraCard")
         {
+            Debug.Log("____111");
             GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
             extraCardContainer.transform.SetAsLastSibling();
             if (isFaceUp && !SlotManager.instance.allSlotsOccupied)
@@ -148,6 +151,7 @@ public class Card : MonoBehaviour
             }
             else
             {
+                Debug.Log("____111");
                 OnExtraCardClick();
             }
             
@@ -156,19 +160,23 @@ public class Card : MonoBehaviour
         {
             if (!isFaceUp) return;
             Debug.Log("InitManager.instance.tutorialCntr:  " + cardData.letter+"_____"+ FBPlayerData.instance.CURRENT_LEVEL+"_____"+ InitManager.instance.tutorialCntr);
-            if(cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
+            if(!FBPlayerData.instance.TUTORIAL_1_COMPLETED || !FBPlayerData.instance.TUTORIAL_2_COMPLETED)
             {
-                return;
+                if (cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
+                {
+                    return;
+                }
+                if (cardData.letter == 'G' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 1)
+                {
+                    return;
+                }
+                if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+                {
+                    InitManager.instance.tutorialCntr++;
+                    tutorial.ShowNext();
+                }
             }
-            if (cardData.letter == 'G' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 1)
-            {
-                return;
-            }
-            if (FBPlayerData.instance.CURRENT_LEVEL == 1)
-            {
-                InitManager.instance.tutorialCntr++;
-                tutorial.ShowNext();
-            }
+            
             
             isFlipping = false;
             Debug.Log("isFlipping000: " + isFlipping);
@@ -187,11 +195,14 @@ public class Card : MonoBehaviour
 
     public void OnExtraCardClick()
     {
+        Debug.Log("OnExtraCardClick: "+ FBPlayerData.instance.CURRENT_LEVEL + "____" + InitManager.instance.tutorialCntr);
         
+
         Card eCard = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1];
         RectTransform rectTransform = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1].GetComponent<RectTransform>();
 
-
+        Debug.Log(eCard);
+        Debug.Log(rectTransform);
         if (!isFaceUp)
         {
             lastCardPos = rectTransform.anchoredPosition.x;
@@ -237,10 +248,7 @@ public class Card : MonoBehaviour
             //        });
             //});
             Debug.Log("______qqq");
-            CardManager.instance.extraCards.Remove(eCard);
-            CardManager.instance.rightSideCards.Add(eCard);
-            CardManager.instance.allFaceUpCards = CardManager.instance.allFaceUpCards.Except(CardManager.instance.rightSideCards).ToList();
-            CardManager.instance.UpdateFaceUpCards(eCard, eCard.isFaceUp);
+            
         }
         else
         {
@@ -254,10 +262,14 @@ public class Card : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
 
         rectTransform.DOAnchorPosX(moveDistance, 0.3f);
+        if(CardManager.instance.extraCards.Count == 1)
+        {
+            GameManager.instance.ShowMoreCardsToBuy();
+        }
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
         .OnComplete(() =>
         {
-            Debug.Log("Half flip");
+            Debug.Log("Half flip: "+ eCard);
                 //isFaceUp = true;
                 UpdateCardFlipping(true, eCard);
             rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
@@ -445,9 +457,10 @@ public class Card : MonoBehaviour
     }
     private void UpdateCardFlipping(bool flipToFaceUp, Card eCard)
     {
-        Debug.Log("++++++++++++++++++++++++++++++flipToFaceUp: " + flipToFaceUp);
+        Debug.Log("++++++++++++++++++++++++++++++flipToFaceUp: " + flipToFaceUp+"___"+ CardManager.instance.extraCards.Count);
         //Card eCard = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1];
         RectTransform rectTransform = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1].GetComponent<RectTransform>();
+        Debug.Log("++++++++++++++++++++++++++++++flipToFaceUp: " + rectTransform);
         if (flipToFaceUp)
         {
             for (int i = 0; i < GetComponent<RectTransform>().childCount; i++)
@@ -464,8 +477,11 @@ public class Card : MonoBehaviour
             {
                 eCard.cardFace.SetActive(false);
             }
-                
 
+            CardManager.instance.extraCards.Remove(eCard);
+            CardManager.instance.rightSideCards.Add(eCard);
+            CardManager.instance.allFaceUpCards = CardManager.instance.allFaceUpCards.Except(CardManager.instance.rightSideCards).ToList();
+            CardManager.instance.UpdateFaceUpCards(eCard, eCard.isFaceUp);
         }
         else
         {
@@ -491,6 +507,10 @@ public class Card : MonoBehaviour
         //{
         if (CardManager.instance.rightSideCards.Count <= 1) return;
         Debug.Log("CardManager.instance.rightSideCards.Count: " + CardManager.instance.rightSideCards.Count);
+        if (CardManager.instance.extraCards.Count == 0)
+        {
+            GameManager.instance.HideMoreCardsToBuy();
+        }
         var cardToFlip = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
         Debug.Log("cardToFlip: " + cardToFlip + "    lastCardPos: " + cardToFlip.lastCardPos);
         if(cardToFlip.GetComponent<RectTransform>().localEulerAngles.y == 0)
@@ -498,7 +518,7 @@ public class Card : MonoBehaviour
         
         cardToFlip.isFaceUp = false;
         cardToFlip.rectTransform.SetAsLastSibling();
-        cardToFlip.rectTransform.DOAnchorPosX(cardToFlip.lastCardPos, 0.3f);
+        cardToFlip.rectTransform.DOAnchorPosX(originalPosOfExtraCards[CardManager.instance.extraCards.Count], 0.3f);
         Debug.Log("cardToFlip.GetComponent<RectTransform>().localEulerAngles.y: "+ cardToFlip.GetComponent<RectTransform>().localEulerAngles.y);
             cardToFlip.rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>

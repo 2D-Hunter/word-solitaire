@@ -35,7 +35,7 @@ public class SubmitButton : MonoBehaviour
     public void SwapImage()
     {
         string imageToLoad;
-        if (FBPlayerData.instance.CURRENT_LEVEL == 1)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
             imageToLoad = GameManager.instance.isValidWord ? tutorialImage : firstImage;
         else
             imageToLoad = GameManager.instance.isValidWord ? secondImage : firstImage;
@@ -43,7 +43,7 @@ public class SubmitButton : MonoBehaviour
         Sprite loadedSprite = Resources.Load<Sprite>(imageToLoad);
         if (loadedSprite != null)
             myButton.image.sprite = loadedSprite;
-        if (GameManager.instance.isValidWord && FBPlayerData.instance.CURRENT_LEVEL != 1)
+        if (GameManager.instance.isValidWord && (FBPlayerData.instance.CURRENT_LEVEL != 1 && FBPlayerData.instance.CURRENT_LEVEL != 2))
         {
             pointTxt.text = SlotManager.instance.GetSlotPoints().ToString() + "<size=55>pts</size>";
             pointTxtShadow.text = SlotManager.instance.GetSlotPoints().ToString() + "<size=55>pts</size>";
@@ -57,7 +57,7 @@ public class SubmitButton : MonoBehaviour
     }
     public void OnTapSubmit()
     {
-        if (FBPlayerData.instance.CURRENT_LEVEL == 1)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 && !FBPlayerData.instance.TUTORIAL_1_COMPLETED)
         {
             if(InitManager.instance.tutorialCntr == 5)
             {
@@ -74,6 +74,20 @@ public class SubmitButton : MonoBehaviour
                 spriteMask.SetActive(false);
             }
             
+        }
+        else if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 3 && !FBPlayerData.instance.TUTORIAL_2_COMPLETED)
+        {
+            foreach (var card in CardManager.instance.extraCards)
+            {
+                card.GetComponent<Button>().enabled = true;
+
+            }
+            tutorial.infoPanel.SetActive(false);
+            spriteMask.SetActive(false);
+            tutorial.gameObject.SetActive(false);
+            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
+            FBPlayerData.instance.SavePlayerData();
+
         }
         FBPlayerData.instance.VibrationEffect();
         SlotManager.instance.StartCoroutine(SlotManager.instance.SubmitWord());

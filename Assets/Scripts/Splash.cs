@@ -8,7 +8,9 @@ public class Splash : MonoBehaviour
     void Start()
     {
         SoundManager.instance.PlayBGM(SoundManager.instance.bgmSource.clip, true, 10f);
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        //FBPlayerData.instance.CURRENT_LEVEL = 3;
+        //InitManager.instance.currentLevel = 3;
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
             Invoke("LoadGame", 3f);
         else
             Invoke("LoadMenu", 3f);

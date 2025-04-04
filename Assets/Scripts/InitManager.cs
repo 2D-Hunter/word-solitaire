@@ -21,7 +21,9 @@ public class InitManager:MonoBehaviour
     public bool startShopping = false;
     public string currentReward = "";
     public int tutorialCntr = 0;
-    
+    public int buyMoreCardsCntr = 1;
+    public int moreCardsPrice = 150;
+
 
     private void Awake()
     {

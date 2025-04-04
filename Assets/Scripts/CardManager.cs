@@ -94,6 +94,10 @@ public class CardManager : MonoBehaviour
                 extraCards[i].cardData.valueText.text = cardValue.ToString();
                 extraCards[i].cardData.cardValue = cardValue;
             }
+            rightSideCards[0].cardData.letterText.text = 'J'.ToString();
+            int cardValue1 = rightSideCards[0].cardData.GetCardValue('J');
+            rightSideCards[0].cardData.valueText.text = cardValue1.ToString();
+            rightSideCards[0].cardData.cardValue = cardValue1;
         }
     }
 

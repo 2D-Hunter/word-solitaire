@@ -117,8 +117,25 @@ public class QuitPopup : MonoBehaviour
     public void Return()
     {
         FBPlayerData.instance.VibrationEffect();
-        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
-        PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
+        
+        if(GameManager.instance)
+        {
+            if(!GameManager.instance.isEndGamePressed)
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+                PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
+            }
+            else
+            {
+                ClosePopup();
+            }
+        }
+        else
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+            PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
+        }
+        
     }
     public void Quit()
     {

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class GameManager : MonoBehaviour
     private GameObject currentLevelupUI;
     public GameObject moreCards;
     public GameObject endGame;
+    public bool isEndGamePressed = false;
 
     //Tutorial
     public GameObject hud1;
@@ -30,6 +33,12 @@ public class GameManager : MonoBehaviour
     public GameObject extraCardsSlots;
     public GameObject bottomIcons;
     public GameObject tutorialPatch;
+    public GameObject tutorial;
+
+    public Card moreCardPrefab;  // Assign the Card Prefab in the Inspector
+    public Transform parentPanel;
+
+    private float[] targetPositionsOfMoreCards = { -180f, -165f, -150f, -135f, -120f };
 
 
     private void Awake()
@@ -45,6 +54,8 @@ public class GameManager : MonoBehaviour
         //    return;
         //}
         instance = this;
+        InitManager.instance.buyMoreCardsCntr = 1;
+        InitManager.instance.moreCardsPrice = 150;
     }
     private void Start()
     {
@@ -64,6 +75,10 @@ public class GameManager : MonoBehaviour
             hintBtn.SetActive(false);
             removeCardsBtn.SetActive(false);
             bottomIcons.SetActive(false);
+        }
+        else
+        {
+            tutorial.SetActive(false);
         }
         //Invoke("ToggleLevelup", 1f);
         if (PopupManager.instance)
@@ -138,6 +153,58 @@ public class GameManager : MonoBehaviour
     //        }
     //    }
     //}
+    public void TapEndGame()
+    {
+        isEndGamePressed = true;
+        PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+    }
+    public void SpawnCards()
+    {
+        StartCoroutine(SpawnAndMoveCards());
+    }
+    private IEnumerator SpawnAndMoveCards()
+    {
+        Card[] cards = new Card[5];
 
+        // Step 1: Spawn all cards instantly at x = -400
+        for (int i = 0; i < 5; i++)
+        {
+            Card newCard = Instantiate(moreCardPrefab, parentPanel);
+            newCard.tag = "ExtraCard";
+            CardManager.instance.extraCards.Add(newCard);
+            RectTransform cardTransform = newCard.GetComponent<RectTransform>();
+            cardTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
+            // Set initial position
+            cardTransform.anchoredPosition = new Vector2(-400, cardTransform.anchoredPosition.y);
+
+            cards[i] = newCard;
+            
+        }
+
+        // Step 2: Wait for 0.5 seconds
+        yield return new WaitForSeconds(0.3f);
+
+        // Step 3: Start tweening all cards to their target positions
+        for (int i = 0; i < 5; i++)
+        {
+            RectTransform cardTransform = cards[i].GetComponent<RectTransform>();
+            
+            cardTransform.DOAnchorPosX(targetPositionsOfMoreCards[i], 0.5f).SetEase(Ease.OutBounce).SetDelay(i * 0.1f);
+        }
+    }
+    public void TapMoreCards()
+    {
+        if(FBPlayerData.instance.TOTAL_COINS >= 150)
+        {
+            InitManager.instance.buyMoreCardsCntr++;
+            HideMoreCardsToBuy();
+            CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
+            SpawnCards();
+        }
+        else
+        {
+            PopupManager.instance.ToggleShop();
+        }
+    }
 
 }

@@ -56,6 +56,7 @@ public class SlotManager : MonoBehaviour
     private int cardCount = 0;
     private StarProgressBar starProgressBar;
     public Card extraCard;
+    public Tutorial tutorial;
     private void Awake()
     {
         instance = this;
@@ -69,6 +70,11 @@ public class SlotManager : MonoBehaviour
 
         StartCoroutine(StoreOriginalPositions());
         starProgressBar = FindObjectOfType<StarProgressBar>();
+        if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            if (tutorial == null)
+                tutorial = FindObjectOfType<Tutorial>();
+        }
 
 
     }
@@ -121,6 +127,11 @@ public class SlotManager : MonoBehaviour
         }
         else
         {
+            if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
+            {
+                InitManager.instance.tutorialCntr++;
+                tutorial.ShowNext();
+            }
             //card is going to bottom slot
             if (SlotManager.instance.allSlotsOccupied) return;
             PlaySound.instance.PlaySoundEffect();
@@ -435,6 +446,7 @@ public class SlotManager : MonoBehaviour
     }
     void LoadGame()
     {
+        InitManager.instance.tutorialCntr = 0;
         FBPlayerData.instance.TUTORIAL_1_COMPLETED = true;
         InitManager.instance.currentLevel++;
         FBPlayerData.instance.CURRENT_LEVEL = InitManager.instance.currentLevel;

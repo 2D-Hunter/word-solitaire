@@ -42,47 +42,54 @@ public class BackButton : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         if (CardManager.instance.rightSideCards.Count > 1)
         {
-
-            // Instantiate UI prefab under the parent
-            GameObject newUIElement = Instantiate(coinAnim1, parentPanel);
-            TextMeshProUGUI[] textComponents = newUIElement.GetComponentsInChildren<TextMeshProUGUI>();
-
-            if (textComponents.Length >= 2)
+            if(FBPlayerData.instance.TOTAL_COINS >= counter)
             {
-                textComponents[0].text = textComponents[1].text = "-"+counter.ToString();
+                // Instantiate UI prefab under the parent
+                GameObject newUIElement = Instantiate(coinAnim1, parentPanel);
+                TextMeshProUGUI[] textComponents = newUIElement.GetComponentsInChildren<TextMeshProUGUI>();
+
+                if (textComponents.Length >= 2)
+                {
+                    textComponents[0].text = textComponents[1].text = "-" + counter.ToString();
+                }
+                else
+                {
+                    Debug.LogWarning("Prefab does not have enough TextMeshProUGUI components!");
+                }
+
+                // Get its RectTransform
+                RectTransform rectTransform = newUIElement.GetComponent<RectTransform>();
+
+                if (rectTransform != null)
+                {
+                    // Set initial position (off-screen or lower)
+                    Vector3 startPos = rectTransform.anchoredPosition;
+                    startPos.y -= 50;
+                    rectTransform.anchoredPosition = startPos;
+
+                    // Tween Y movement smoothly
+                    rectTransform.DOAnchorPosY(startPos.y + 80, 0.5f).SetEase(Ease.OutQuad)
+                    .OnComplete(() =>
+                    {
+                        Destroy(newUIElement);
+                        newUIElement = null;
+                    });
+                }
+                CoinManager.instance.SpendCoins(counter);
+
+                counter += 5;
+                UpdateText();
+                //var card = CardManager.instance.rightSideCards.RemoveAt(CardManager.instance.rightSideCards.Count-1);
+                var card = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
+                card.FlipCardBack();
+                CardManager.instance.rightSideCards.Remove(card);
+                GameCoinHud.instance.Show();
             }
             else
             {
-                Debug.LogWarning("Prefab does not have enough TextMeshProUGUI components!");
+                PopupManager.instance.ToggleShop();
             }
-
-            // Get its RectTransform
-            RectTransform rectTransform = newUIElement.GetComponent<RectTransform>();
-
-            if (rectTransform != null)
-            {
-                // Set initial position (off-screen or lower)
-                Vector3 startPos = rectTransform.anchoredPosition;
-                startPos.y -= 50;
-                rectTransform.anchoredPosition = startPos;
-
-                // Tween Y movement smoothly
-                rectTransform.DOAnchorPosY(startPos.y + 80, 0.5f).SetEase(Ease.OutQuad)
-                .OnComplete(() =>
-                 {
-                     Destroy(newUIElement);
-                     newUIElement = null;
-                 });
-            }
-            CoinManager.instance.SpendCoins(counter);
             
-            counter += 5;
-            UpdateText();
-            //var card = CardManager.instance.rightSideCards.RemoveAt(CardManager.instance.rightSideCards.Count-1);
-            var card = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
-            card.FlipCardBack();
-            CardManager.instance.rightSideCards.Remove(card);
-            GameCoinHud.instance.Show();
         }
     }
     void UpdateText()

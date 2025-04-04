@@ -26,6 +26,10 @@ public class Tutorial : MonoBehaviour
     public GameObject cardF = null;
     public GameObject cardA = null;
     public GameObject cardR = null;
+
+    public GameObject cardJ = null;
+    public GameObject cardU = null;
+    public GameObject cardG1 = null;
     Vector2 initialPosHand;
     public GameObject infoPanel;
     public GameObject infoPanel2;
@@ -45,18 +49,27 @@ public class Tutorial : MonoBehaviour
         cardF.GetComponent<Button>().enabled = false;
         cardA.GetComponent<Button>().enabled = false;
         cardR.GetComponent<Button>().enabled = false;
-        SetHandPosition(-211f, handRectTransform.anchoredPosition.y);
+        
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
         {
+            SetHandPosition(-211f, handRectTransform.anchoredPosition.y);
             cardTransform = cardTransform1.GetComponent<RectTransform>();
             cardG.GetComponent<Button>().enabled = true;
             infoPanelText.text = "<b><size=110%>'Tap cards'</size></b> to make words! Make <b><size=110%>'GO'.</size></b>";
         }
         else if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
         {
-            cardTransform = cardTransform1.GetComponent<RectTransform>();
-            cardG.GetComponent<Button>().enabled = true;
+            cardTransform = cardJ.GetComponent<RectTransform>();
             infoPanelText.text = "The <b><size=110%>'Draw Pile'</size></b> gives you\nbonus letter cards!\nMake <b><size=110%>'JUG'.</size></b>";
+            infoPanelText.fontSize = 45;
+            foreach (var card in CardManager.instance.extraCards)
+            {
+                card.GetComponent<Button>().enabled = false;
+
+            }
+            cardJ.GetComponent<Button>().enabled = false;
+            cardU.GetComponent<Button>().enabled = false;
+            cardG1.GetComponent<Button>().enabled = false;
         }
     }
     void ShowInfoPanel()
@@ -65,6 +78,13 @@ public class Tutorial : MonoBehaviour
             .OnComplete(() =>
             {
                 handRectTransform.gameObject.SetActive(true);
+                if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+                {
+                    handRectTransform.localRotation = Quaternion.Euler(0, 0, 0);
+                    handRectTransform.anchoredPosition = new Vector2(203f, -370f);
+                    StartCoroutine(HandAnimation2());
+                    cardJ.GetComponent<Button>().enabled = true;
+                }
             });
     }
 
@@ -106,45 +126,90 @@ public class Tutorial : MonoBehaviour
         DOTween.KillAll();
         cardTransform.localRotation = Quaternion.Euler(0, 0, 0);
         Debug.Log("InitManager.instance.tutorialCntr: " + InitManager.instance.tutorialCntr);
-        if (InitManager.instance.tutorialCntr == 1)
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
-            cardTransform = cardTransform2.GetComponent<RectTransform>();
-            cardG.GetComponent<Button>().enabled = false;
-            cardO.GetComponent<Button>().enabled = true;
-            //handRectTransform.anchoredPosition = new Vector2(-69f, handRectTransform.anchoredPosition.y);
-            SetHandPosition(-69f, handRectTransform.anchoredPosition.y);
-        }
-        else if (InitManager.instance.tutorialCntr == 2)
-        {
-            cardG.GetComponent<Button>().enabled = false;
-            cardO.GetComponent<Button>().enabled = false;
-            GameManager.instance.submitBtn.SetActive(true);
-            handRectTransform.localRotation = Quaternion.Euler(0, 0, 218f);
-            SetHandPosition(-305f, -652f);
-            infoPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-            infoPanelText.text = "Now tap the\n<b><size=110%>'Submit Button'.</size></b>";
-            cardTransform = null;
+            if (InitManager.instance.tutorialCntr == 1)
+            {
+                cardTransform = cardTransform2.GetComponent<RectTransform>();
+                cardG.GetComponent<Button>().enabled = false;
+                cardO.GetComponent<Button>().enabled = true;
+                //handRectTransform.anchoredPosition = new Vector2(-69f, handRectTransform.anchoredPosition.y);
+                SetHandPosition(-69f, handRectTransform.anchoredPosition.y);
+            }
+            else if (InitManager.instance.tutorialCntr == 2)
+            {
+                cardG.GetComponent<Button>().enabled = false;
+                cardO.GetComponent<Button>().enabled = false;
+                GameManager.instance.submitBtn.SetActive(true);
+                handRectTransform.localRotation = Quaternion.Euler(0, 0, 218f);
+                SetHandPosition(-305f, -652f);
+                infoPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                infoPanelText.text = "Now tap the\n<b><size=110%>'Submit Button'.</size></b>";
+                cardTransform = null;
 
+            }
+            else if (InitManager.instance.tutorialCntr == 3)
+            {
+                handRectTransform.gameObject.SetActive(false);
+                cardF.GetComponent<Button>().enabled = false;
+                cardA.GetComponent<Button>().enabled = true;
+                cardTransform = cardA.GetComponent<RectTransform>();
+            }
+            else if (InitManager.instance.tutorialCntr == 4)
+            {
+                cardA.GetComponent<Button>().enabled = false;
+                cardR.GetComponent<Button>().enabled = true;
+                cardTransform = cardR.GetComponent<RectTransform>();
+            }
+            else if (InitManager.instance.tutorialCntr == 5)
+            {
+                cardA.GetComponent<Button>().enabled = false;
+                cardR.GetComponent<Button>().enabled = false;
+                cardTransform = null;
+                infoPanelText.text = "You've got it!\nNow submit <b><size=110%>'FAR'.</size></b>";
+                
+            }
         }
-        else if (InitManager.instance.tutorialCntr == 3)
+        else if(FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
-            handRectTransform.gameObject.SetActive(false);
-            cardF.GetComponent<Button>().enabled = false;
-            cardA.GetComponent<Button>().enabled = true;
-            cardTransform = cardA.GetComponent<RectTransform>();
-        }
-        else if (InitManager.instance.tutorialCntr == 4)
-        {
-            cardA.GetComponent<Button>().enabled = false;
-            cardR.GetComponent<Button>().enabled = true;
-            cardTransform = cardR.GetComponent<RectTransform>();
-        }
-        else if (InitManager.instance.tutorialCntr == 5)
-        {
-            cardA.GetComponent<Button>().enabled = false;
-            cardR.GetComponent<Button>().enabled = false;
-            cardTransform = null;
-            infoPanelText.text = "You've got it!\nNow submit <b><size=110%>'FAR'.</size></b>";
+            if (InitManager.instance.tutorialCntr == 1)
+            {
+                cardTransform = cardU.GetComponent<RectTransform>();
+                cardJ.GetComponent<Button>().enabled = false;
+                cardU.GetComponent<Button>().enabled = true;
+                cardG1.GetComponent<Button>().enabled = false;
+                handRectTransform.gameObject.SetActive(false);
+                foreach (var sm in CardManager.instance.extraCards)
+                {
+                    Transform target = sm.transform.Find("Sprite Mask"); // Find the child GameObject
+                    if (target != null)
+                    {
+                        target.gameObject.SetActive(false); // Disable it
+                    }
+                    else
+                    {
+                        //Debug.LogWarning("Child object '" + objectName + "' not found in " + card.name);
+                    }
+                }
+            }
+            else if (InitManager.instance.tutorialCntr == 2)
+            {
+                cardTransform = cardG1.GetComponent<RectTransform>();
+                cardJ.GetComponent<Button>().enabled = false;
+                cardU.GetComponent<Button>().enabled = false;
+                cardG1.GetComponent<Button>().enabled = true;
+            }
+            else if (InitManager.instance.tutorialCntr == 3)
+            {
+                cardTransform = null;
+                cardJ.GetComponent<Button>().enabled = false;
+                cardU.GetComponent<Button>().enabled = false;
+                cardG1.GetComponent<Button>().enabled = false;
+                infoPanelText.text = "Great! Now submit <b><size=110%>'JUG'.</size></b>";
+                infoPanelText.fontSize = 55;
+                GameManager.instance.submitBtn.SetActive(true);
+                SubmitButton.instance.spriteMask.SetActive(true);
+            }
         }
 
     }
@@ -173,6 +238,7 @@ public class Tutorial : MonoBehaviour
     }
     public void TapGotIt()
     {
+        
         DOTween.KillAll();
 
         SpriteRenderer sr = alphaPatch.GetComponent<SpriteRenderer>();
