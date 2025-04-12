@@ -55,7 +55,7 @@ public class HeartUI : MonoBehaviour
             {
                 DateTime lastTime = DateTime.FromBinary(lastHeartTimeBinary);
                 TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC for WebGL accuracy
-                float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
+                float remainingTime = Mathf.Max(0f, heartRegenTime - (float)timeElapsed.TotalSeconds);
 
                 if (remainingTime > 0)
                 {

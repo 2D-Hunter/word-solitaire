@@ -115,7 +115,7 @@ public class SlotManager : MonoBehaviour
 
             ResetAfterCardBack(card);
             slotsCard.Remove(card);
-
+            
             card.GetComponent<RectTransform>().SetAsLastSibling();
             card.FlipImmediateBelowCards();
             if (card.GetComponent<Card>() != null)
@@ -124,17 +124,21 @@ public class SlotManager : MonoBehaviour
                 Sequence cardSequence = DOTween.Sequence();
                 card.MoveBackToOriginalPosition();
             }
+            if (slotsCard.Count > 0)
+                slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
         }
         else
         {
+            if (SlotManager.instance.allSlotsOccupied) return;
+            Invoke("PlayCardPlacedSound", 0.2f);
+            
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
             {
                 InitManager.instance.tutorialCntr++;
                 tutorial.ShowNext();
             }
             //card is going to bottom slot
-            if (SlotManager.instance.allSlotsOccupied) return;
-            PlaySound.instance.PlaySoundEffect();
+            
             goingBack = false;
             int emptySlotIndex = -1;
 
@@ -171,8 +175,13 @@ public class SlotManager : MonoBehaviour
                     card.GetComponent<Image>().sprite = Resources.Load<Sprite>("FaceUpCard_0");
                 }
                 card.FlipImmediateBelowCards();
+                
                 //Sequence cardSequence = DOTween.Sequence();
                 slotsCard.Add(card);
+                foreach (var item in slotsCard)
+                {
+                    item.GetComponent<Button>().enabled = false;
+                }
                 var allwild = slotsCard.FindAll(card=> card.IsWildCard()== true);
                 if (allwild.Count>0)
                 {
@@ -228,6 +237,7 @@ public class SlotManager : MonoBehaviour
                 verticalMotion.OnComplete(() =>
                 {
                     Debug.Log("Card reached the slot with projectile motion!");
+                    slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
                     if (activeTrail_WildCard != null)
                     {
                         if (card.isWildCard)
@@ -244,6 +254,16 @@ public class SlotManager : MonoBehaviour
         CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         AAA();
     }
+    void PlayCardPlacedSound()
+    {
+        SoundManager.instance.PlaySFX("CardPlaced");
+        Invoke("PlayCardTakeSound", 0.7f);
+    }
+    void PlayCardTakeSound()
+    {
+        SoundManager.instance.PlaySFX("card_take_"+SlotManager.instance.slotsCard.Count.ToString());
+    }
+
     public void AAA()
     {
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 1) return;
@@ -380,6 +400,7 @@ public class SlotManager : MonoBehaviour
                     FBPlayerData.instance.BRILLIANCE = InitManager.instance.brillianceScore;
                 else
                     PlayerPrefs.SetInt("BrillianceScore", InitManager.instance.brillianceScore);
+                FBPlayerData.instance.SavePlayerData();
             }
             InitManager.instance.levelCompleted = true;
             if (FBPlayerData.instance.CURRENT_LEVEL == 1)
@@ -415,6 +436,8 @@ public class SlotManager : MonoBehaviour
             cardSequence.Join(card.DOScale(Hud.instance.hudCard.localScale, tweenDuration));
             cardSequence.Join(card.DORotate(new Vector3(0, 0, 348), tweenDuration, RotateMode.LocalAxisAdd).SetEase(customEase));
             //Debug.Log("scoreText.text: " + scoreText.text);
+            Invoke("PlayWhooshSound", 0.3f);
+            
             cardSequence.OnComplete(() =>
             {
                 FBPlayerData.instance.VibrationEffect();
@@ -427,7 +450,7 @@ public class SlotManager : MonoBehaviour
                     {
                         Debug.Log("card.tag inside: ");
                         InitManager.instance.currentTarget--;
-                        LevelManager.instance.UpdateLevelUI(LevelManager.instance.levelData.levels[InitManager.instance.currentLevel - 1].levelNumber, InitManager.instance.currentTarget);
+                        LevelManager.instance.UpdateLevelUI(LevelManager.instance.levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber, InitManager.instance.currentTarget);
                         Debug.Log("InitManager.instance.currentTarget Hud.instance.DecreaseTarget");
                         Hud.instance.DecreaseTarget();
                     }
@@ -444,12 +467,15 @@ public class SlotManager : MonoBehaviour
         
 
     }
+    void PlayWhooshSound()
+    {
+        SoundManager.instance.PlaySFX("WhooshSound", 0.3f);
+    }
     void LoadGame()
     {
         InitManager.instance.tutorialCntr = 0;
         FBPlayerData.instance.TUTORIAL_1_COMPLETED = true;
-        InitManager.instance.currentLevel++;
-        FBPlayerData.instance.CURRENT_LEVEL = InitManager.instance.currentLevel;
+        FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
         Initiate.Fade("Game", Color.black, 1f);
     }
@@ -510,15 +536,14 @@ public class SlotManager : MonoBehaviour
     {
 
         yield return new WaitForSeconds(1);
-        InitManager.instance.currentLevel++;
-        FBPlayerData.instance.CURRENT_LEVEL = InitManager.instance.currentLevel;
+        FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
-        if (InitManager.instance.currentLevel > 5)
+        if (FBPlayerData.instance.CURRENT_LEVEL > 5)
         {
-            InitManager.instance.currentLevel = 1;
+            FBPlayerData.instance.CURRENT_LEVEL = 1;
         }
         
-        Debug.Log("InitManager.instance.currentLevel: " + InitManager.instance.currentLevel);
+        Debug.Log("FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
         Initiate.Fade("Menu", Color.black, 1f);
     }
 }

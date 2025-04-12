@@ -23,6 +23,7 @@ public class InitManager:MonoBehaviour
     public int tutorialCntr = 0;
     public int buyMoreCardsCntr = 1;
     public int moreCardsPrice = 150;
+    public List<char> letters = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
 
 
     private void Awake()

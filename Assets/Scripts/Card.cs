@@ -46,6 +46,7 @@ public class Card : MonoBehaviour
         {
             rectTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
             int randomIndex = Random.Range(0, CardManager.instance.extraCards.Count);
+            
         }
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
@@ -272,6 +273,8 @@ public class Card : MonoBehaviour
             Debug.Log("Half flip: "+ eCard);
                 //isFaceUp = true;
                 UpdateCardFlipping(true, eCard);
+            Invoke("CardTurnSound", 0.05f);
+            
             rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                 .OnComplete(() =>
                 {
@@ -282,7 +285,11 @@ public class Card : MonoBehaviour
         });
 
     }
-
+    void CardTurnSound()
+    {
+        Debug.Log("CardTurnSound");
+        SoundManager.instance.PlaySFX("CardTurn", 0.3f);
+    }
 
     public void FlipImmediateBelowCards()
     {
@@ -411,9 +418,9 @@ public class Card : MonoBehaviour
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
-
-                    //isFaceUp = true;
-                    UpdateCardFlipping(card);
+                
+                //isFaceUp = true;
+                UpdateCardFlipping(card);
                 rectTransform.DORotate(new Vector3(0, -90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                     .OnComplete(() =>
                     {

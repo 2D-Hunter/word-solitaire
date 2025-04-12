@@ -100,11 +100,12 @@ public class SoundManager : MonoBehaviour
     /// <summary>
     /// Plays a sound effect by name.
     /// </summary>
-    public void PlaySFX(string soundName)
+    public void PlaySFX(string soundName, float volumeMultiplier = 1f)
     {
         if (!isSfxMuted && soundDictionary.ContainsKey(soundName))
         {
-            sfxSource.PlayOneShot(soundDictionary[soundName], sfxVolume);
+            float finalVolume = Mathf.Clamp01(sfxVolume * volumeMultiplier);
+            sfxSource.PlayOneShot(soundDictionary[soundName], finalVolume);
         }
     }
 

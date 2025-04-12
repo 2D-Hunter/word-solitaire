@@ -7,7 +7,7 @@ public class FBPlayerData : MonoBehaviour
     public static FBPlayerData instance;
     public string productID = "";
 
-    [HideInInspector]
+    
     public string BUILD_TYPE = "Facebook"; //Unity, Facebook
 
     [HideInInspector]
@@ -24,7 +24,7 @@ public class FBPlayerData : MonoBehaviour
     [HideInInspector]
     public string DeviceType;
 
-    
+    public Splash splash;
 
 
 
@@ -67,13 +67,14 @@ public class FBPlayerData : MonoBehaviour
 
     private void Awake()
     {
-        BUILD_TYPE = "Facebook";
-        TOTAL_COINS = 1000;
+        //BUILD_TYPE = "Facebook";
+        //TOTAL_COINS = 1000;
         //GAME_SOUND = false;
-        NO_ADS_30_DAYS = false;
-        IsTesting = false;
+        //NO_ADS_30_DAYS = false;
+        //IsTesting = false;
         
-        CURRENT_LEVEL = 1;
+        //CURRENT_LEVEL = 1;
+        //TUTORIAL_1_COMPLETED = true;
         Debug.Log("___________Awake BUILD_TYPE: " + BUILD_TYPE);
         Debug.Log("___________is ad removed: " + NO_ADS_30_DAYS);
         if (instance == null)
@@ -123,6 +124,10 @@ public class FBPlayerData : MonoBehaviour
         TUTORIAL_2_COMPLETED = playerData["TUTORIAL_2_COMPLETED_001"];
 
         Debug.Log(GAME_SOUND + "_____" + NO_ADS_30_DAYS + "_____" + TOTAL_COINS + " __________ RecievePlayerData22");
+
+        if (splash == null)
+            splash = FindObjectOfType<Splash>();
+        splash.LoadScene();
 
     }
 

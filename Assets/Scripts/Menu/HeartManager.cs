@@ -73,11 +73,11 @@ public class HeartManager : MonoBehaviour
         }
         if (GameUtils.IsFacebookBuild())
         {
-            string lastHeartTimeString = FBPlayerData.instance.LAST_HEART_TIME;
+            Debug.Log("FBPlayerData.instance.LAST_HEART_TIME: " + FBPlayerData.instance.LAST_HEART_TIME);
 
-            if (!string.IsNullOrEmpty(lastHeartTimeString) && long.TryParse(lastHeartTimeString, out long lastHeartTimeBinary))
+            if (FBPlayerData.instance.LAST_HEART_TIME != "")
             {
-                DateTime lastTime = DateTime.FromBinary(lastHeartTimeBinary);
+                DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(FBPlayerData.instance.LAST_HEART_TIME)));
                 TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC time for consistency
 
                 int heartsToRegain = (int)(timeElapsed.TotalSeconds / heartRegenTime);

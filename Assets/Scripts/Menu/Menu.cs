@@ -30,7 +30,7 @@ public class Menu : MonoBehaviour
     {
         instance = this;
         if(InitManager.instance)
-            currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[InitManager.instance.currentLevel - 1].levelNumber.ToString();
+            currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
         overlayPanel.SetActive(false);
         
 

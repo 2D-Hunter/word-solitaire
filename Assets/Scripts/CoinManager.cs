@@ -53,11 +53,16 @@ public class CoinManager : MonoBehaviour
 
     public int GetCoins()
     {
-        return totalCoins;
+        
+        if (GameUtils.IsFacebookBuild())
+            return FBPlayerData.instance.TOTAL_COINS;
+        else
+            return totalCoins;
     }
 
     private void SaveCoins()
     {
+        Debug.Log("SaveCoins: " + GameUtils.IsFacebookBuild());
         if(GameUtils.IsFacebookBuild())
         {
             FBPlayerData.instance.TOTAL_COINS = totalCoins;

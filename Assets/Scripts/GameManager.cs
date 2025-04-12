@@ -188,9 +188,16 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             RectTransform cardTransform = cards[i].GetComponent<RectTransform>();
-            
-            cardTransform.DOAnchorPosX(targetPositionsOfMoreCards[i], 0.5f).SetEase(Ease.OutBounce).SetDelay(i * 0.1f);
+            float delay = i * 0.1f;
+            cardTransform.DOAnchorPosX(targetPositionsOfMoreCards[i], 0.25f).SetEase(Ease.OutExpo).SetDelay(delay);
+            DOVirtual.DelayedCall(delay, () => PlayCardShuffleSound());
+
         }
+    }
+    void PlayCardShuffleSound()
+    {
+        Debug.Log("PlayCardShuffleSound");
+        SoundManager.instance.PlaySFX("CardShuffle", 0.3f);
     }
     public void TapMoreCards()
     {

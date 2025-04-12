@@ -48,8 +48,8 @@ public class GoalPopup : MonoBehaviour
         playBtnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         popupObj.anchoredPosition = new Vector2(0, -350);
 
-        currentLevel.text = currentLevelShadow.text = "Level " + levelData.levels[InitManager.instance.currentLevel - 1].levelNumber.ToString();
-        goal.text = goalShadow.text = levelData.levels[InitManager.instance.currentLevel - 1].levelTarget.ToString();
+        currentLevel.text = currentLevelShadow.text = "Level " + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
+        goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelTarget.ToString();
     }
 
     private void Start()

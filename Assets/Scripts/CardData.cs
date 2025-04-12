@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+
 //[ExecuteAlways]
 public class CardData : MonoBehaviour
 {
     //public static CardData instance;
     public TextMeshProUGUI letterText;
     public TextMeshProUGUI valueText;
+    private List<char> letters = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
     public char letter
     {
         get { return letterText.text[0]; }
@@ -30,12 +32,34 @@ public class CardData : MonoBehaviour
     };
     private void Start()
     {
-        Debug.Log("____Card Data");
+        Debug.Log("____Card Data111");
         if (gameObject.tag == "ExtraCard")
         {
-            if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+            Debug.Log("____Card Data222");
+            if (FBPlayerData.instance.CURRENT_LEVEL == 2)
             {
-                
+                Debug.Log("gameobject.name: "+gameObject.name);
+                //Debug.Log("Before removal: " + string.Join(", ", InitManager.instance.letters));
+                if(gameObject.name == "Card")
+                    letterText.text = letters[0].ToString();
+                else if (gameObject.name == "Card (1)")
+                    letterText.text = letters[1].ToString();
+                else if (gameObject.name == "Card (2)")
+                    letterText.text = letters[2].ToString();
+                else if (gameObject.name == "Card (3)")
+                    letterText.text = letters[3].ToString();
+                else if (gameObject.name == "Card (4)")
+                    letterText.text = letters[4].ToString();
+                else if (gameObject.name == "Card (5)")
+                    letterText.text = letters[5].ToString();
+                else if (gameObject.name == "Card (6)")
+                    letterText.text = letters[6].ToString();
+                else if (gameObject.name == "Card (7)")
+                    letterText.text = letters[7].ToString();
+                else if (gameObject.name == "Card (8)")
+                    letterText.text = letters[8].ToString();
+                else if (gameObject.name == "Card (9)")
+                    letterText.text = letters[9].ToString();
             }
             else
             {
@@ -68,8 +92,8 @@ public class CardData : MonoBehaviour
     {
         //if (Card.instance.gameObject.tag != "ExtraCard")
         //{
-            letterText.text = letter.ToString();
-            valueText.text = GetCardValue(letter).ToString();
+            //letterText.text = letter.ToString();
+            //valueText.text = GetCardValue(letter).ToString();
         //}
     }
     //void Start()
@@ -101,4 +125,18 @@ public class CardData : MonoBehaviour
     //    cardValue = GetCardValue(randomLetter);
     //    Debug.Log($"{gameObject.name} assigned letter: {randomLetter} assigned value: {cardValue}");
     //}
+    int GetCardIndexFromName(string name)
+    {
+        if (name == "Card") return 0;
+
+        // Example: "Card (1)" -> 1
+        if (name.StartsWith("Card ("))
+        {
+            string num = name.Substring(6, name.Length - 7); // Extract the number inside parentheses
+            if (int.TryParse(num, out int index))
+                return index;
+        }
+
+        return -1; // Invalid name format
+    }
 }

@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            LoadLevel(InitManager.instance.currentLevel - 1);
+            LoadLevel(FBPlayerData.instance.CURRENT_LEVEL - 1);
         }
         
     }

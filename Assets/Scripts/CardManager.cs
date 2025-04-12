@@ -26,7 +26,7 @@ public class CardManager : MonoBehaviour
     }
     private void Start()
     {
-        AssignExtraCards();
+        Debug.Log("____Card Data CardManager");
         MakeRandomCardWild();
     }
     void MakeRandomCardWild()
@@ -61,7 +61,7 @@ public class CardManager : MonoBehaviour
 
         
     }
-    private void AssignExtraCards()
+    public void AssignExtraCards()
     {
         if (FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
@@ -69,26 +69,27 @@ public class CardManager : MonoBehaviour
 
             for (int i = 0; i < extraCards.Count; i++)
             {
-                if (extraCards[i] == null)
-                {
-                    Debug.LogError($"Extra Card at index {i} is null!");
-                    continue;
-                }
+                //if (extraCards[i] == null)
+                //{
+                //    Debug.LogError($"Extra Card at index {i} is null!");
+                //    continue;
+                //}
 
-                // Ensure cardData is assigned
-                if (extraCards[i].cardData == null)
-                {
-                    Debug.LogWarning($"CardData at index {i} is null! Assigning now...");
-                    extraCards[i].cardData = extraCards[i].gameObject.AddComponent<CardData>();
-                }
+                //// Ensure cardData is assigned
+                //if (extraCards[i].cardData == null)
+                //{
+                //    Debug.LogWarning($"CardData at index {i} is null! Assigning now...");
+                //    extraCards[i].cardData = extraCards[i].gameObject.AddComponent<CardData>();
+                //}
 
-                if (extraCards[i].cardData.letterText == null || extraCards[i].cardData.valueText == null)
-                {
-                    Debug.LogError($"Text components missing in CardData at index {i}!");
-                    continue;
-                }
+                //if (extraCards[i].cardData.letterText == null || extraCards[i].cardData.valueText == null)
+                //{
+                //    Debug.LogError($"Text components missing in CardData at index {i}!");
+                //    continue;
+                //}
 
                 // Assign values
+
                 extraCards[i].cardData.letterText.text = letters[i].ToString();
                 int cardValue = extraCards[i].cardData.GetCardValue(letters[i]);
                 extraCards[i].cardData.valueText.text = cardValue.ToString();

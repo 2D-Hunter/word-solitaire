@@ -66,7 +66,7 @@ public class BackButton : MonoBehaviour
                     Vector3 startPos = rectTransform.anchoredPosition;
                     startPos.y -= 50;
                     rectTransform.anchoredPosition = startPos;
-
+                    SoundManager.instance.PlaySFX("CoinSpend1");
                     // Tween Y movement smoothly
                     rectTransform.DOAnchorPosY(startPos.y + 80, 0.5f).SetEase(Ease.OutQuad)
                     .OnComplete(() =>
