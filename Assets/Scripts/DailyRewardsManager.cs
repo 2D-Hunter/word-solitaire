@@ -32,73 +32,86 @@ public class DailyRewardsManager : MonoBehaviour
             Destroy(gameObject); // Ensure only one instance exists
         }
 
+        
+    }
+    private void Start()
+    {
         LoadState();
         CheckTimerOnAppStart();
     }
     private void Update()
     {
-        // Check if the 1-hour timer has completed
-        if (!CanCollectReward(firstRewardKey, firstRewardCooldown))
+        if(GameUtils.IsFacebookBuild())
         {
-            long remainingTime = GetRemainingTime(firstRewardKey, firstRewardCooldown);
-            Debug.Log("DailyRewardsManager: " + remainingTime);
-
-            if (remainingTime <= 0 && !isTimerReset)
+            // Check if the 1-hour timer has completed
+            //Debug.Log("OO_OO "+FBPlayerData.instance.LAST_REWARD_TIME);
+            //Debug.Log("OO_OO " + firstRewardCooldown);
+            //Debug.Log("OO_OO " + CanCollectReward(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown));
+            if (!CanCollectReward(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown))
             {
-                IncreaseAvailableRewards(); // Reset available rewards to 5
-                isTimerReset = true;  // Mark the timer as reset
-                Debug.Log("Timer completed. Available rewards reset to 5.");
-            }
-        }
-        else
-        {
-            // Reset the flag when the timer is active again
-            isTimerReset = false;
-        }
-    }
-    // Check the 1-hour timer when the app starts
-    private void CheckTimerOnAppStart()
-    {
-        Debug.Log("CheckTimerOnAppStart: " + CanCollectReward(firstRewardKey, firstRewardCooldown));
-        if (!CanCollectReward(firstRewardKey, firstRewardCooldown))
-        {
-            long remainingTime = GetRemainingTime(firstRewardKey, firstRewardCooldown);
-            if (remainingTime <= 0)
-            {
-                IncreaseAvailableRewards(); // Reset available rewards to 5
-            }
-        }
-        else
-        {
-            Debug.Log("1-hour timer: Reward can be collected (no cooldown).");
+                float remainingTime = GetRemainingTime(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown);
+                int remainingTime1 = Mathf.FloorToInt(remainingTime);
+                    //Debug.Log("DailyRewardsManager: " + remainingTime);
 
-            // If the timer has completed, increase available rewards
-            if(GameUtils.IsFacebookBuild())
-            {
-                string lastClaimTimeString = FBPlayerData.instance.LAST_REWARD_TIME;
-
-                if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                if (remainingTime1 <= 0 && !isTimerReset)
                 {
-                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                    long elapsedTime = currentTime - lastClaimTime;
-
-                    if (elapsedTime >= firstRewardCooldown)
-                    {
-                        Debug.Log("1-hour timer already completed. Increasing available rewards.");
-                        IncreaseAvailableRewards(); // Increase available rewards
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"LAST_REWARD_TIME is missing or invalid: {lastClaimTimeString}");
+                    IncreaseAvailableRewards(); // Reset available rewards to 5
+                    isTimerReset = true;  // Mark the timer as reset
+                    Debug.Log("Timer completed. Available rewards reset to 5.");
                 }
             }
             else
             {
-                if (PlayerPrefs.HasKey(firstRewardKey))
+                // Reset the flag when the timer is active again
+                isTimerReset = false;
+            }
+        }
+        else
+        {
+            // Check if the 1-hour timer has completed
+            if (!CanCollectReward(firstRewardKey, firstRewardCooldown))
+            {
+                float remainingTime = GetRemainingTime(firstRewardKey, firstRewardCooldown);
+                Debug.Log("DailyRewardsManager: " + remainingTime);
+
+                if (remainingTime <= 0 && !isTimerReset)
                 {
-                    string lastClaimTimeString = PlayerPrefs.GetString(firstRewardKey);
-                    if (long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                    IncreaseAvailableRewards(); // Reset available rewards to 5
+                    isTimerReset = true;  // Mark the timer as reset
+                    Debug.Log("Timer completed. Available rewards reset to 5.");
+                }
+            }
+            else
+            {
+                // Reset the flag when the timer is active again
+                isTimerReset = false;
+            }
+        }
+        
+    }
+    // Check the 1-hour timer when the app starts
+    private void CheckTimerOnAppStart()
+    {
+        Debug.Log("CheckTimerOnAppStart: " + FBPlayerData.instance.LAST_REWARD_TIME);
+        if(GameUtils.IsFacebookBuild())
+        {
+            if (!CanCollectReward(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown))
+            {
+                float remainingTime = GetRemainingTime(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown);
+                int remainingTime1 = Mathf.FloorToInt(remainingTime);
+                if (remainingTime1 <= 0)
+                {
+                    IncreaseAvailableRewards(); // Reset available rewards to 5
+                }
+            }
+            else
+            {
+                Debug.Log("1-hour timer: Reward can be collected (no cooldown).");
+
+                // If the timer has completed, increase available rewards
+                    string lastClaimTimeString = FBPlayerData.instance.LAST_REWARD_TIME;
+
+                    if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
                     {
                         long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                         long elapsedTime = currentTime - lastClaimTime;
@@ -111,71 +124,70 @@ public class DailyRewardsManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError($"Invalid value for key {firstRewardKey}: {lastClaimTimeString}");
+                        Debug.LogWarning($"LAST_REWARD_TIME is missing or invalid: {lastClaimTimeString}");
                     }
-                }
-            }
-            
-        }
 
-        // Check the 12-hour timer (if needed)
-        if (!CanCollectReward(adRewardKey, adRewardCooldown))
-        {
-            long remainingTime = GetRemainingTime(adRewardKey, adRewardCooldown);
-            Debug.Log($"12-hour timer remaining time: {remainingTime}");
-            if (remainingTime <= 0)
-            {
-                IncreaseAvailableRewards(); // Reset available rewards to 5
             }
         }
         else
         {
-            Debug.Log("12-hour timer: Reward can be collected (no cooldown).");
-            
-            // If the timer has completed, increase available rewards
-            if(GameUtils.IsFacebookBuild())
+            if (!CanCollectReward(firstRewardKey, firstRewardCooldown))
             {
-                string lastClaimTimeString = FBPlayerData.instance.LAST_AD_REWARD_TIME;
-
-                if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                float remainingTime = GetRemainingTime(firstRewardKey, firstRewardCooldown);
+                if (remainingTime <= 0)
                 {
-                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                    long elapsedTime = currentTime - lastClaimTime;
-
-                    if (elapsedTime >= adRewardCooldown)
-                    {
-                        Debug.Log("12-hour timer already completed. Increasing available rewards.");
-                        ResetAdRewards(); // Increase available rewards
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"LAST_AD_REWARD_TIME is missing or invalid: {lastClaimTimeString}");
+                    IncreaseAvailableRewards(); // Reset available rewards to 5
                 }
             }
             else
             {
-                if (PlayerPrefs.HasKey(adRewardKey))
+                Debug.Log("1-hour timer: Reward can be collected (no cooldown).");
+
+                // If the timer has completed, increase available rewards
+                if (GameUtils.IsFacebookBuild())
                 {
-                    string lastClaimTimeString = PlayerPrefs.GetString(adRewardKey);
-                    if (long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                    string lastClaimTimeString = FBPlayerData.instance.LAST_REWARD_TIME;
+
+                    if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
                     {
                         long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                         long elapsedTime = currentTime - lastClaimTime;
 
-                        if (elapsedTime >= adRewardCooldown)
+                        if (elapsedTime >= firstRewardCooldown)
                         {
-                            Debug.Log("12-hour timer already completed. Increasing available rewards.");
-                            ResetAdRewards(); // Increase available rewards
+                            Debug.Log("1-hour timer already completed. Increasing available rewards.");
+                            IncreaseAvailableRewards(); // Increase available rewards
                         }
                     }
                     else
                     {
-                        Debug.LogError($"Invalid value for key {adRewardKey}: {lastClaimTimeString}");
+                        Debug.LogWarning($"LAST_REWARD_TIME is missing or invalid: {lastClaimTimeString}");
                     }
                 }
+                else
+                {
+                    if (PlayerPrefs.HasKey(firstRewardKey))
+                    {
+                        string lastClaimTimeString = PlayerPrefs.GetString(firstRewardKey);
+                        if (long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                        {
+                            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            long elapsedTime = currentTime - lastClaimTime;
+
+                            if (elapsedTime >= firstRewardCooldown)
+                            {
+                                Debug.Log("1-hour timer already completed. Increasing available rewards.");
+                                IncreaseAvailableRewards(); // Increase available rewards
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"Invalid value for key {firstRewardKey}: {lastClaimTimeString}");
+                        }
+                    }
+                }
+
             }
-            
         }
     }
 
@@ -198,68 +210,97 @@ public class DailyRewardsManager : MonoBehaviour
     // Check if a reward can be collected
     public bool CanCollectReward(string key, int cooldown)
     {
+        //Debug.Log("Key  Cooldown   " + key + "      " + cooldown);
         string tempKey = "";
-        if(key == firstRewardKey)
-        {
-            tempKey = FBPlayerData.instance.LAST_REWARD_TIME;
-        }
-        else if (key == adRewardKey)
-        {
-            tempKey = FBPlayerData.instance.LAST_AD_REWARD_TIME;
-        }
+        //if (key == firstRewardKey)
+        //{
+        //    tempKey = FBPlayerData.instance.LAST_REWARD_TIME;
+        //}
+        //else if (key == adRewardKey)
+        //{
+        //    tempKey = FBPlayerData.instance.LAST_AD_REWARD_TIME;
+        //}
         if (GameUtils.IsFacebookBuild())
         {
-            if (string.IsNullOrEmpty(FBPlayerData.instance.LAST_REWARD_TIME) || string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME))
+            //if (string.IsNullOrEmpty(FBPlayerData.instance.LAST_REWARD_TIME) || string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME))
+            //{
+            //    return true; // First-time users can collect
+            //}
+            //if (string.IsNullOrEmpty(key) || key == "" || key == null || key == "0")
+            //{
+            //    return true;
+            //}
+            if (string.IsNullOrWhiteSpace(key) || !long.TryParse(key, out long parsedKey))
             {
-                return true; // First-time users can collect
+                Debug.LogWarning("Invalid or missing key, allowing reward. key: " + key);
+                return true;
             }
+            DateTime lastTime = DateTime.FromBinary(parsedKey);
+            //Debug.Log("tempKey: " + key);
+            //DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(key));
+            TimeSpan timeElapsed = DateTime.UtcNow - lastTime;
+            TimeSpan cooldownSpan = TimeSpan.FromSeconds(cooldown);
+            bool canCollect = timeElapsed > cooldownSpan;
+            //Debug.Log("____: " + timeElapsed);
+            //Debug.Log("____: "+ cooldownSpan);
+            //long lastClaimTime = long.Parse(tempKey);
+            //long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            long lastClaimTime = long.Parse(tempKey);
-            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-            bool canCollect = (currentTime - lastClaimTime) > cooldown;
-
+            //bool canCollect = (currentTime - lastClaimTime) > cooldown;
+            //Debug.Log("canCollect: " + canCollect);
             return canCollect;
         }
         else
         {
+            Debug.Log(key + "wwwww:: "+ !PlayerPrefs.HasKey(key));
             if (!PlayerPrefs.HasKey(key))
                 return true; // First-time users can collect
 
+            
             long lastClaimTime = long.Parse(PlayerPrefs.GetString(key));
             long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             bool canCollect = (currentTime - lastClaimTime) > cooldown;
-
+            Debug.Log(lastClaimTime + "}}}}}}}");
+            Debug.Log(currentTime + "}}}}}}}");
+            Debug.Log(canCollect + "}}}}}}}");
             return canCollect;
         }
         
     }
 
     // Get the remaining time for a reward
-    public long GetRemainingTime(string key, int cooldown)
+    public float GetRemainingTime(string key, int cooldown)
     {
         string tempKey = "";
-        if (key == firstRewardKey)
-        {
-            tempKey = FBPlayerData.instance.LAST_REWARD_TIME;
-        }
-        else if (key == adRewardKey)
-        {
-            tempKey = FBPlayerData.instance.LAST_AD_REWARD_TIME;
-        }
+        //if (key == firstRewardKey)
+        //{
+        //    tempKey = FBPlayerData.instance.LAST_REWARD_TIME;
+        //}
+        //else if (key == adRewardKey)
+        //{
+        //    tempKey = FBPlayerData.instance.LAST_AD_REWARD_TIME;
+        //}
         if (GameUtils.IsFacebookBuild())
         {
-            if (string.IsNullOrEmpty(FBPlayerData.instance.LAST_REWARD_TIME) || string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME))
+            //if (string.IsNullOrEmpty(FBPlayerData.instance.LAST_REWARD_TIME) || string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME))
+            //{
+            //    return 0; // First-time users can collect
+            //}
+            //Debug.Log("_____tempKey: " + key);
+            if (string.IsNullOrEmpty(key) || key == "" || key == null || key == "0")
             {
-                return 0; // First-time users can collect
+                return 0;
             }
+            
 
-            long lastClaimTime = long.Parse(PlayerPrefs.GetString(key));
-            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            long elapsedTime = currentTime - lastClaimTime;
-            long remainingTime = Math.Max(cooldown - elapsedTime, 0);
-            Debug.Log("remainingTime: " + remainingTime);
+            DateTime lastClaimTime = DateTime.FromBinary(Convert.ToInt64(key));
+            TimeSpan elapsedTime = DateTime.UtcNow - lastClaimTime;
+            TimeSpan cooldownSpan = TimeSpan.FromSeconds(cooldown);
+            
+            float remainingTime = Math.Max((float)cooldownSpan.TotalSeconds - (float)elapsedTime.TotalSeconds, 0);
+            int remainingTime1 = Mathf.FloorToInt(remainingTime);
+            Debug.Log("remainingTime1111: " + remainingTime1);
             return remainingTime;
         }
         else
@@ -287,13 +328,19 @@ public class DailyRewardsManager : MonoBehaviour
     // Check if ad rewards are in cooldown
     public bool IsAdRewardInCooldown()
     {
-        return !CanCollectReward(adRewardKey, adRewardCooldown);
+        if(GameUtils.IsFacebookBuild())
+            return !CanCollectReward(FBPlayerData.instance.LAST_AD_REWARD_TIME, adRewardCooldown);
+        else
+            return !CanCollectReward(adRewardKey, adRewardCooldown);
     }
 
     // Check if the first reward is available
     public bool IsFirstRewardAvailable()
     {
-        return CanCollectReward(firstRewardKey, firstRewardCooldown);
+        if (GameUtils.IsFacebookBuild())
+            return CanCollectReward(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown);
+        else
+            return CanCollectReward(firstRewardKey, firstRewardCooldown);
     }
 
     // Collect the first reward
@@ -301,7 +348,8 @@ public class DailyRewardsManager : MonoBehaviour
     {
         if (GameUtils.IsFacebookBuild())
         {
-            FBPlayerData.instance.LAST_REWARD_TIME = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            FBPlayerData.instance.LAST_REWARD_TIME = DateTime.UtcNow.ToBinary().ToString();
+            Debug.Log("FBPlayerData.instance.LAST_REWARD_TIME: "+ FBPlayerData.instance.LAST_REWARD_TIME);
             FBPlayerData.instance.SavePlayerData();
         }
         else
@@ -317,12 +365,14 @@ public class DailyRewardsManager : MonoBehaviour
     // Collect an ad reward
     public void CollectAdReward(int index)
     {
+        Debug.Log("____CollectAdReward: "+index);
         if (index != currentRewardIndex) return; // Prevent collecting out of order
-
+        Debug.Log("____CollectAdReward: ");
         // Save ad reward collection time
-        if(GameUtils.IsFacebookBuild())
+        if (GameUtils.IsFacebookBuild())
         {
-            FBPlayerData.instance.LAST_AD_REWARD_TIME = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            FBPlayerData.instance.LAST_AD_REWARD_TIME = DateTime.UtcNow.ToBinary().ToString();
+            Debug.Log("FBPlayerData.instance.LAST_AD_REWARD_TIME: " + FBPlayerData.instance.LAST_AD_REWARD_TIME);
             FBPlayerData.instance.SavePlayerData();
         }
         else

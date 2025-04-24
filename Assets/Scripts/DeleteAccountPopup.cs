@@ -19,7 +19,7 @@ public class DeleteAccountPopup : MonoBehaviour
     public RectTransform[] btnsRectTransform = null;
 
 
-    float delay = 0f;
+    
     float delayIncrement = 0.15f;
 
 
@@ -119,6 +119,17 @@ public class DeleteAccountPopup : MonoBehaviour
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.deleteAccountPopup);
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
+    }
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
     }
 
 }

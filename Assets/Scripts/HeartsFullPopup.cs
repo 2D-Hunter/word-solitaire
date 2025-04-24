@@ -19,7 +19,7 @@ public class HeartsFullPopup : MonoBehaviour
     public RectTransform[] btnsRectTransform = null;
 
 
-    float delay = 0f;
+    
     float delayIncrement = 0.15f;
 
     private float origScaleAmount = 1f;

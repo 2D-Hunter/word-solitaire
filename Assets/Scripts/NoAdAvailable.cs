@@ -19,7 +19,7 @@ public class NoAdAvailable : MonoBehaviour
     public RectTransform[] btnsRectTransform = null;
 
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f;
 
 

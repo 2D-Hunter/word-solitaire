@@ -9,7 +9,8 @@ public class HeartUI : MonoBehaviour
     public TextMeshProUGUI heartTextShadow;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI timerTextShadow;
-    private float heartRegenTime = 1800f;
+    private float heartRegenTime = 30f;
+    bool check = true;
 
     private void Update()
     {
@@ -33,6 +34,7 @@ public class HeartUI : MonoBehaviour
             MoreHeartsPopup2.instance.heartText.text = MoreHeartsPopup2.instance.heartTextShadow.text = currentHearts.ToString();
         }
 
+
         if (currentHearts >= HeartManager.instance.maxHearts)
         {
             if (MoreHeartsPopup.instance)
@@ -48,15 +50,21 @@ public class HeartUI : MonoBehaviour
         }
         if (GameUtils.IsFacebookBuild())
         {
-            string lastHeartTimeString = FBPlayerData.instance.LAST_HEART_TIME;
-
-            if (!string.IsNullOrEmpty(lastHeartTimeString) &&
-                long.TryParse(lastHeartTimeString, out long lastHeartTimeBinary))
+            
+            if(check)
             {
-                DateTime lastTime = DateTime.FromBinary(lastHeartTimeBinary);
-                TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC for WebGL accuracy
-                float remainingTime = Mathf.Max(0f, heartRegenTime - (float)timeElapsed.TotalSeconds);
+                Debug.Log("Heart UI FBPlayerData.instance.LAST_HEART_TIME: " + FBPlayerData.instance.LAST_HEART_TIME);
+                check = false;
+            }
 
+
+            if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME != "" || FBPlayerData.instance.LAST_HEART_TIME != null || FBPlayerData.instance.LAST_HEART_TIME != "0")
+            {
+                DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(FBPlayerData.instance.LAST_HEART_TIME));
+                
+                TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC for WebGL accuracy
+                float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
+                //Debug.Log("remainingTime: " + remainingTime);
                 if (remainingTime > 0)
                 {
                     TimeSpan t = TimeSpan.FromSeconds(remainingTime);
@@ -101,10 +109,11 @@ public class HeartUI : MonoBehaviour
         {
             if (PlayerPrefs.HasKey("LastHeartTime"))
             {
+                Debug.Log("Heart UI FBPlayerData.instance.LAST_HEART_TIME: " + PlayerPrefs.GetString("LastHeartTime"));
                 DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString("LastHeartTime")));
-                TimeSpan timeElapsed = DateTime.Now - lastTime;
+                TimeSpan timeElapsed = DateTime.UtcNow - lastTime;
                 float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
-
+                Debug.Log("remainingTime: " + remainingTime);
                 if (remainingTime > 0)
                 {
                     TimeSpan t = TimeSpan.FromSeconds(remainingTime);

@@ -17,13 +17,14 @@ public class QuitPopup : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f; // Adjust delay between each button if needed
     public RectTransform heart; // Assign your heart image's RectTransform
     private float scaleAmount = 0.25f; // How much it expands
     private float duration = 0.1f; // Duration of one beat
-    private float gapBetweenBeats = 5.0f; // Time before the next heartbeat cycle
+    //private float gapBetweenBeats = 5.0f; // Time before the next heartbeat cycle
     public Button[] buttons = null;
+    Sequence heartbeatSequence;
 
     private void Awake()
     {
@@ -146,14 +147,28 @@ public class QuitPopup : MonoBehaviour
 
     void StartHeartBeat()
     {
-        Sequence heartbeatSequence = DOTween.Sequence();
+        if (heart == null) return;
+        heartbeatSequence = DOTween.Sequence();
 
-        heartbeatSequence.Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // First beat
-                         .Append(heart.DOScale(0.22f, duration).SetEase(Ease.InQuad)) // Back to normal
-                         .Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // Second beat
-                         .Append(heart.DOScale(0.22f, duration).SetEase(Ease.InQuad)) // Back to normal
-                         .AppendInterval(Random.Range(2f, 5f)) // Wait before next heartbeat
-                         .SetLoops(-1); // Repeat infinitely
+            heartbeatSequence.Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // First beat
+                             .Append(heart.DOScale(0.22f, duration).SetEase(Ease.InQuad)) // Back to normal
+                             .Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // Second beat
+                             .Append(heart.DOScale(0.22f, duration).SetEase(Ease.InQuad)) // Back to normal
+                             .AppendInterval(Random.Range(2f, 5f)) // Wait before next heartbeat
+                             .SetLoops(-1); // Repeat infinitely
+    }
+
+    private void OnDestroy()
+    {
+        heartbeatSequence.Kill();
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
     }
 
 }

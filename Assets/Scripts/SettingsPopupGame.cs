@@ -17,7 +17,7 @@ public class SettingsPopupGame : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    
     float delayIncrement = 0.15f; // Adjust delay between each button if needed
 
 
@@ -105,6 +105,17 @@ public class SettingsPopupGame : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.settingPopupGame);
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
+    }
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
     }
 
 }

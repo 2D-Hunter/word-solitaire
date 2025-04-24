@@ -7,6 +7,7 @@ public class Splash : MonoBehaviour
 {
     private void Start()
     {
+        Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 #if UNITY_EDITOR
         FBPlayerData.instance.CURRENT_LEVEL = 3;
         LoadMenu();
@@ -14,6 +15,7 @@ public class Splash : MonoBehaviour
     }
     public void LoadScene()
     {
+        
         Debug.Log("FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
             Invoke("LoadGame", 3f);

@@ -8,10 +8,11 @@ public class HeartManager : MonoBehaviour
     public int maxHearts = 5;
     [HideInInspector]
     public int currentHearts;
-    private float heartRegenTime = 1800f; // 30 minutes per heart (1800 seconds)
+    private float heartRegenTime =30f; // 30 minutes per heart (1800 seconds)
 
     private string lastHeartTimeKey = "LastHeartTime";
     private string heartsKey = "PlayerHearts";
+    
 
     private void Awake()
     {
@@ -23,6 +24,7 @@ public class HeartManager : MonoBehaviour
     }
     private void Start()
     {
+        Debug.Log("HeartManager: " + FBPlayerData.instance.TOTAL_HEARTS);
         LoadHearts();
         RegenerateHearts();
     }
@@ -34,6 +36,7 @@ public class HeartManager : MonoBehaviour
 
     private void LoadHearts()
     {
+        Debug.Log("LoadHearts: "+ FBPlayerData.instance.TOTAL_HEARTS);
         if (GameUtils.IsFacebookBuild())
             currentHearts = FBPlayerData.instance.TOTAL_HEARTS;
         else
@@ -56,33 +59,35 @@ public class HeartManager : MonoBehaviour
 
     private void RegenerateHearts()
     {
+        Debug.Log("RegenerateHearts: " + currentHearts);
         if (currentHearts >= maxHearts)
         {
             if (GameUtils.IsFacebookBuild())
             {
-                if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME))
+                if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME != "" || FBPlayerData.instance.LAST_HEART_TIME != null || FBPlayerData.instance.LAST_HEART_TIME != "0")
                 {
                     FBPlayerData.instance.LAST_HEART_TIME = "";
                     FBPlayerData.instance.SavePlayerData();
-                    Debug.Log("Hearts full. LAST_HEART_TIME reset for Facebook Instant Games.");
+                    Debug.Log("Hearts full. LAST_HEART_TIME reset.");
                 }
             }
             else
                 PlayerPrefs.DeleteKey(lastHeartTimeKey); // No need to track time if full
             return;
         }
+        Debug.Log("Hiiii Regenerate Hearts");
         if (GameUtils.IsFacebookBuild())
         {
             Debug.Log("FBPlayerData.instance.LAST_HEART_TIME: " + FBPlayerData.instance.LAST_HEART_TIME);
 
-            if (FBPlayerData.instance.LAST_HEART_TIME != "")
+            if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME != "" || FBPlayerData.instance.LAST_HEART_TIME != null || FBPlayerData.instance.LAST_HEART_TIME != "0")
             {
-                DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(FBPlayerData.instance.LAST_HEART_TIME)));
+                DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(FBPlayerData.instance.LAST_HEART_TIME));
                 TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC time for consistency
 
                 int heartsToRegain = (int)(timeElapsed.TotalSeconds / heartRegenTime);
                 float leftoverTime = (float)timeElapsed.TotalSeconds % heartRegenTime;
-
+                Debug.Log("____heartsToRegain: " + heartsToRegain);
                 if (heartsToRegain > 0)
                 {
                     int newHeartValue = Mathf.Min(currentHearts + heartsToRegain, maxHearts);
@@ -90,13 +95,14 @@ public class HeartManager : MonoBehaviour
                     currentHearts = newHeartValue;
                     SaveHearts();
 
-                    Debug.Log($"Hearts gained: {heartsGained}, Current Hearts: {currentHearts}");
+                    Debug.Log($" Current Hearts: {currentHearts}");
 
                     if (currentHearts < maxHearts)
                     {
                         // Keep leftover seconds for the next heart regen timer
-                        DateTime nextHeartTime = DateTime.UtcNow.AddSeconds(-leftoverTime);
-                        FBPlayerData.instance.LAST_HEART_TIME = nextHeartTime.ToBinary().ToString();
+                        DateTime newHeartTime = DateTime.UtcNow;
+                        //DateTime nextHeartTime = DateTime.UtcNow.AddSeconds(-leftoverTime);
+                        FBPlayerData.instance.LAST_HEART_TIME = newHeartTime.ToBinary().ToString();
                     }
                     else
                     {
@@ -116,27 +122,40 @@ public class HeartManager : MonoBehaviour
             if (PlayerPrefs.HasKey(lastHeartTimeKey))
             {
                 DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(lastHeartTimeKey)));
-                TimeSpan timeElapsed = DateTime.Now - lastTime;
+                TimeSpan timeElapsed = DateTime.UtcNow - lastTime;
 
                 int heartsToRegain = (int)(timeElapsed.TotalSeconds / heartRegenTime);
                 float leftoverTime = (float)timeElapsed.TotalSeconds % heartRegenTime;
-
+                Debug.Log("____heartsToRegain: "+ heartsToRegain);
                 // Only increase 1 heart at a time
                 if (heartsToRegain > 0)
                 {
-                    currentHearts = Mathf.Min(currentHearts + 1, maxHearts);
+                    int newHeartValue = Mathf.Min(currentHearts + heartsToRegain, maxHearts);
+                    int heartsGained = newHeartValue - currentHearts;
+                    currentHearts = newHeartValue;
                     SaveHearts();
 
-                    // If hearts are still less than max, set new last heart regen time
+                    // Update last heart time only if not full
                     if (currentHearts < maxHearts)
                     {
-                        DateTime nextHeartTime = DateTime.Now.AddSeconds(-leftoverTime); // Keep remaining seconds
-                        PlayerPrefs.SetString(lastHeartTimeKey, nextHeartTime.ToBinary().ToString());
+                        DateTime newHeartTime = DateTime.UtcNow; ;
+                        PlayerPrefs.SetString(lastHeartTimeKey, newHeartTime.ToBinary().ToString());
                     }
                     else
                     {
-                        PlayerPrefs.DeleteKey(lastHeartTimeKey); // No need to track if full
+                       PlayerPrefs.DeleteKey(lastHeartTimeKey);
                     }
+
+                    //// If hearts are still less than max, set new last heart regen time
+                    //if (currentHearts < maxHearts)
+                    //{
+                    //    DateTime nextHeartTime = DateTime.UtcNow.AddSeconds(-leftoverTime); // Keep remaining seconds
+                    //    PlayerPrefs.SetString(lastHeartTimeKey, nextHeartTime.ToBinary().ToString());
+                    //}
+                    //else
+                    //{
+                    //    PlayerPrefs.DeleteKey(lastHeartTimeKey); // No need to track if full
+                    //}
                 }
             }
         }
@@ -154,7 +173,7 @@ public class HeartManager : MonoBehaviour
         {
             if(GameUtils.IsFacebookBuild())
             {
-                if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME))
+                if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME != "" || FBPlayerData.instance.LAST_HEART_TIME != null || FBPlayerData.instance.LAST_HEART_TIME != "0")
                 {
                     FBPlayerData.instance.LAST_HEART_TIME = "";
                     FBPlayerData.instance.SavePlayerData();
@@ -176,9 +195,12 @@ public class HeartManager : MonoBehaviour
             // ✅ Only start a new timer if no timer is currently running
             if (GameUtils.IsFacebookBuild())
             {
-                if(currentHearts < maxHearts)
+                Debug.Log("LoseHeart: " + currentHearts + maxHearts);
+                Debug.Log("LoseHeart: " + FBPlayerData.instance.LAST_HEART_TIME);
+                if (currentHearts < maxHearts && (string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME == "" || FBPlayerData.instance.LAST_HEART_TIME == null || FBPlayerData.instance.LAST_HEART_TIME == "0"))
                 {
-                    FBPlayerData.instance.LAST_HEART_TIME = DateTime.Now.ToBinary().ToString();
+                    FBPlayerData.instance.LAST_HEART_TIME = DateTime.UtcNow.ToBinary().ToString();
+                    Debug.Log("FBPlayerData.instance.LAST_HEART_TIME: " + FBPlayerData.instance.LAST_HEART_TIME);
                     FBPlayerData.instance.SavePlayerData();
                 }
             }
@@ -186,7 +208,8 @@ public class HeartManager : MonoBehaviour
             {
                 if (currentHearts < maxHearts && !PlayerPrefs.HasKey(lastHeartTimeKey))
                 {
-                    PlayerPrefs.SetString(lastHeartTimeKey, DateTime.Now.ToBinary().ToString());
+                    PlayerPrefs.SetString(lastHeartTimeKey, DateTime.UtcNow.ToBinary().ToString());
+                    Debug.Log("lastHeartTimeKey: "+ lastHeartTimeKey);
                     PlayerPrefs.Save();
                 }
             }
@@ -205,27 +228,32 @@ public class HeartManager : MonoBehaviour
         if (currentHearts >= maxHearts) return;
         if (GameUtils.IsFacebookBuild())
         {
-            if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) &&
-                long.TryParse(FBPlayerData.instance.LAST_HEART_TIME, out long lastHeartTimeBinary))
+            if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_HEART_TIME) || FBPlayerData.instance.LAST_HEART_TIME != "" || FBPlayerData.instance.LAST_HEART_TIME != null || FBPlayerData.instance.LAST_HEART_TIME != "0")
             {
-                DateTime lastTime = DateTime.FromBinary(lastHeartTimeBinary);
-                TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC for WebGL & Facebook
-                float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
+                //Debug.Log("UpdateHeartTimer: " + FBPlayerData.instance.LAST_HEART_TIME);
 
+                DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(FBPlayerData.instance.LAST_HEART_TIME));
+                
+                TimeSpan timeElapsed = DateTime.UtcNow - lastTime; // Use UTC time for consistency
+                float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
+                //Debug.Log("UpdateHeartTimer: " + lastTime);
+                //Debug.Log("UpdateHeartTimer: " + timeElapsed);
+                //Debug.Log("UpdateHeartTimer: " + remainingTime);
                 if (remainingTime <= 0)
                 {
                     RegenerateHearts();
 
-                    if (currentHearts < maxHearts) // Only reset time if hearts are not full
-                    {
-                        FBPlayerData.instance.LAST_HEART_TIME = DateTime.UtcNow.ToBinary().ToString();
-                        FBPlayerData.instance.SavePlayerData();
-                    }
-                    else
-                    {
-                        FBPlayerData.instance.LAST_HEART_TIME = "";
-                        FBPlayerData.instance.SavePlayerData();
-                    }
+                    //if (currentHearts < maxHearts) // Only reset time if hearts are not full
+                    //{
+                    //    long unixTime1 = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                    //    FBPlayerData.instance.LAST_HEART_TIME = unixTime1.ToString();
+                    //    FBPlayerData.instance.SavePlayerData();
+                    //}
+                    //else
+                    //{
+                    //    FBPlayerData.instance.LAST_HEART_TIME = "";
+                    //    FBPlayerData.instance.SavePlayerData();
+                    //}
 
                     Debug.Log("Hearts regenerated. LAST_HEART_TIME updated.");
                 }
@@ -235,9 +263,13 @@ public class HeartManager : MonoBehaviour
         {
             if (PlayerPrefs.HasKey(lastHeartTimeKey))
             {
+                Debug.Log("UpdateHeartTimer: " + PlayerPrefs.GetString(lastHeartTimeKey));
                 DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(PlayerPrefs.GetString(lastHeartTimeKey)));
-                TimeSpan timeElapsed = DateTime.Now - lastTime;
+                TimeSpan timeElapsed = DateTime.UtcNow - lastTime;
                 float remainingTime = heartRegenTime - (float)timeElapsed.TotalSeconds;
+                Debug.Log("UpdateHeartTimer: " + lastTime);
+                Debug.Log("UpdateHeartTimer: " + timeElapsed);
+                Debug.Log("UpdateHeartTimer: " + remainingTime);
 
                 if (remainingTime <= 0)
                 {

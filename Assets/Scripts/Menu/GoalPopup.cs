@@ -24,7 +24,7 @@ public class GoalPopup : MonoBehaviour
     public CanvasGroup[] stars = null;
     public RectTransform[] starsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.1f;
 
     private void Awake()
@@ -126,5 +126,12 @@ public class GoalPopup : MonoBehaviour
         Menu.instance.overlayPanel.SetActive(true);
         ClosePopup();
         
+    }
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupObj?.DOKill();
+
     }
 }

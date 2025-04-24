@@ -17,12 +17,12 @@ public class Levelup : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f; // Adjust delay between each button if needed
     
-    private float scaleAmount = 0.25f; // How much it expands
-    private float duration = 0.1f; // Duration of one beat
-    private float gapBetweenBeats = 5.0f; // Time before the next heartbeat cycle
+    //private float scaleAmount = 0.25f; // How much it expands
+    //private float duration = 0.1f; // Duration of one beat
+    //private float gapBetweenBeats = 5.0f; // Time before the next heartbeat cycle
     public Button[] buttons = null;
 
     private void Awake()

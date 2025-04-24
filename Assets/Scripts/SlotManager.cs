@@ -48,12 +48,12 @@ public class SlotManager : MonoBehaviour
      Vector3 startScale = new Vector3(2f, 2f, 2f);
      Vector3 endScale = new Vector3(0.83f, 0.83f, 0.83f);
 
-    int lastFilledSlot = -1;
+    //int lastFilledSlot = -1;
 
     public GameObject trailEffectPrefab;
     private GameObject activeTrail_WildCard;
     private int extraCardCount = 0;
-    private int cardCount = 0;
+    //private int cardCount = 0;
     private StarProgressBar starProgressBar;
     public Card extraCard;
     public Tutorial tutorial;

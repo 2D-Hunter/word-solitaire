@@ -19,7 +19,7 @@ public class AccountDeletedPopup : MonoBehaviour
     public RectTransform[] btnsRectTransform = null;
 
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f;
 
 
@@ -101,5 +101,15 @@ public class AccountDeletedPopup : MonoBehaviour
         Application.ExternalCall("QuitGame");
 
     }
-
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
+    }
 }

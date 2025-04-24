@@ -115,15 +115,19 @@ public class FBPlayerData : MonoBehaviour
         TOTAL_COINS = playerData["TOTAL_COINS_001"];
         BRILLIANCE = playerData["BRILLIANCE_001"];
         TOTAL_HEARTS = playerData["TOTAL_HEARTS_001"];
-        LAST_HEART_TIME = playerData["LAST_HEART_TIME_001"];
-        LAST_REWARD_TIME = playerData["LAST_REWARD_TIME_001"];
+        LAST_HEART_TIME = playerData["LAST_HEART_TIME_001"].AsLong.ToString();
+        LAST_REWARD_TIME = playerData["LAST_REWARD_TIME_001"].AsLong.ToString();
         LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"];
         AVAILABLE_REWARDS = playerData["AVAILABLE_REWARDS_001"];
         CURRENT_REWARD_INDEX = playerData["CURRENT_REWARD_INDEX_001"];
         TUTORIAL_1_COMPLETED = playerData["TUTORIAL_1_COMPLETED_001"];
         TUTORIAL_2_COMPLETED = playerData["TUTORIAL_2_COMPLETED_001"];
 
-        Debug.Log(GAME_SOUND + "_____" + NO_ADS_30_DAYS + "_____" + TOTAL_COINS + " __________ RecievePlayerData22");
+
+        Debug.Log("LAST_HEART_TIME (ticks): " + LAST_HEART_TIME);
+
+
+        Debug.Log("_______________ RecievePlayerData222 " + data);
 
         if (splash == null)
             splash = FindObjectOfType<Splash>();

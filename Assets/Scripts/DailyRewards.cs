@@ -16,7 +16,7 @@ public class DailyRewards : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f; // Adjust delay between each button if needed
 
     public GameObject collectButton;      // Button for first reward
@@ -130,15 +130,21 @@ public class DailyRewards : MonoBehaviour
 
     void UpdateTimer(string key, int cooldown, TextMeshProUGUI timerText, GameObject button, bool isFirstReward)
     {
+        //Debug.Log("DailyRewardsManager.instance.CanCollectReward: " + DailyRewardsManager.instance.CanCollectReward(key, cooldown));
         if (!DailyRewardsManager.instance.CanCollectReward(key, cooldown))
         {
-            long remainingTime = DailyRewardsManager.instance.GetRemainingTime(key, cooldown);
+            Debug.Log("UpdateTimer remainingTime: " + key+"______"+cooldown);
+            //float remainingTime = DailyRewardsManager.instance.GetRemainingTime(key, cooldown);
+            //Debug.Log("UpdateTimer remainingTime: " + remainingTime);
+            int remainingTime = Mathf.FloorToInt(DailyRewardsManager.instance.GetRemainingTime(key, cooldown));
+            Debug.Log("UpdateTimer remainingSeconds: " + remainingTime);
             if (remainingTime <= 0)
             {
                 // Ensure UI updates at 00:00
                 remainingTime = 0;
 
                 // Timer has finished
+                //Debug.Log("isFirstReward: "+ isFirstReward);
                 if (isFirstReward)
                 {
                     // First reward: Show collect button
@@ -172,10 +178,11 @@ public class DailyRewards : MonoBehaviour
     {
         FBPlayerData.instance.VibrationEffect();
         InitManager.instance.currentReward = "25_coins";
-        CollectFirstReward_AfterRewardAd();
+        CollectFirstReward_AfterTap();
     }
-    public void CollectFirstReward_AfterRewardAd()
+    public void CollectFirstReward_AfterTap()
     {
+        Debug.Log("____CollectFirstReward");
         // Call the data logic from DailyRewardsManager
         DailyRewardsManager.instance.CollectFirstReward();
 
@@ -198,7 +205,10 @@ public class DailyRewards : MonoBehaviour
             3 => "1_wild_card",
             _ => "default_reward" // Fallback for invalid indexes
         };
-
+#if UNITY_EDITOR
+        CollectAdReward_AfterRewardAd(index);
+        return;
+#endif
         if (GameUtils.IsFacebookBuild())
             Application.ExternalCall("ShowAd_Reward", index.ToString());
         else
@@ -213,7 +223,8 @@ public class DailyRewards : MonoBehaviour
         // Update UI
         adRewardButtons[index].SetActive(false);
         tickMarks[index].SetActive(true);
-        lockIcons[index].SetActive(false);
+        //if(lockIcons[index])
+        //    lockIcons[index].SetActive(false);
         // Unlock next reward (if exists)
         if (index + 1 < adRewardButtons.Length)
         {
@@ -245,16 +256,16 @@ public class DailyRewards : MonoBehaviour
         if (DailyRewardsManager.instance.IsAdRewardInCooldown())
         {
             twelveHourTimer.SetActive(true); // Show 12-hour timer
-            //int currentRewardIndex = DailyRewardsManager.instance.GetCurrentRewardIndex();
-            //Debug.Log("_____currentRewardIndex: " + currentRewardIndex);
+            //int currentRewardIndex1 = DailyRewardsManager.instance.GetCurrentRewardIndex();
+            //Debug.Log("_____currentRewardIndex1: " + currentRewardIndex1);
             //for (int i = 0; i < adRewardButtons.Length; i++)
             //{
-            //    if (i < currentRewardIndex) // Already collected
+            //    if (i < currentRewardIndex1) // Already collected
             //    {
             //        adRewardButtons[i].SetActive(false);
             //        tickMarks[i].SetActive(true);
             //    }
-            //    else if (i == currentRewardIndex) // Next available reward
+            //    else if (i == currentRewardIndex1) // Next available reward
             //    {
             //        adRewardButtons[i].SetActive(true);
             //        tickMarks[i].SetActive(false);
@@ -333,11 +344,24 @@ public class DailyRewards : MonoBehaviour
                 lockIcons[i].SetActive(true); // Show lock for future rewards
             }
         }
+        if(adRewardButtons[1].activeSelf)
+        {
+            lockIcons[0].SetActive(false);
+        }
+        else if (adRewardButtons[2].activeSelf)
+        {
+            lockIcons[1].SetActive(false);
+        }
+        else if (adRewardButtons[3].activeSelf)
+        {
+            lockIcons[2].SetActive(false);
+        }
 
         // Update ad reward timer if in cooldown
+        Debug.Log("DailyRewardsManager.instance.IsAdRewardInCooldown: " + DailyRewardsManager.instance.IsAdRewardInCooldown());
         if (DailyRewardsManager.instance.IsAdRewardInCooldown())
         {
-            long remainingTime = DailyRewardsManager.instance.GetRemainingTime(DailyRewardsManager.instance.adRewardKey, DailyRewardsManager.instance.adRewardCooldown);
+            float remainingTime = DailyRewardsManager.instance.GetRemainingTime(FBPlayerData.instance.LAST_AD_REWARD_TIME, DailyRewardsManager.instance.adRewardCooldown);
             TimeSpan time = TimeSpan.FromSeconds(Math.Max(remainingTime, 0));
             adRewardTimerText.text = $"{time.Hours}h {time.Minutes}m";
         }

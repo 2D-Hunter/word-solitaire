@@ -17,7 +17,7 @@ public class SettingsPopupMenu : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.1f; // Adjust delay between each button if needed
 
 
@@ -127,6 +127,17 @@ public class SettingsPopupMenu : MonoBehaviour
     public void ToggleSfx()
     {
         //SoundManager.instance.ToggleMuteSFX();
+    }
+    private void OnDestroy()
+    {
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
+        }
     }
 
 }

@@ -20,7 +20,7 @@ public class MoreHeartsPopup : MonoBehaviour
 
     public TextMeshProUGUI heartText, heartTextShadow, timerText, timerTextShadow = null;
 
-    float delay = 0f;
+    
     float delayIncrement = 0.15f;
 
     private float origScaleAmount = 1f;
@@ -33,6 +33,7 @@ public class MoreHeartsPopup : MonoBehaviour
 
     public GameObject obj1, obj2;
     public GameObject fullObj1, fullObj2;
+    Sequence heartbeatSequence;
 
     private void Awake()
     {
@@ -116,7 +117,7 @@ public class MoreHeartsPopup : MonoBehaviour
     }
     void StartHeartBeat()
     {
-        Sequence heartbeatSequence = DOTween.Sequence();
+        heartbeatSequence = DOTween.Sequence();
 
         heartbeatSequence.Append(heart.DOScale(scaleAmount, duration).SetEase(Ease.OutQuad)) // First beat
                          .Append(heart.DOScale(origScaleAmount, duration).SetEase(Ease.InQuad)) // Back to normal
@@ -144,6 +145,18 @@ public class MoreHeartsPopup : MonoBehaviour
         else
         {
             PopupManager.instance.ToggleShop();
+        }
+    }
+    private void OnDestroy()
+    {
+        heartbeatSequence.Kill();
+        bg?.DOKill();
+        popup?.DOKill();
+        popupRectTransform?.DOKill();
+        for (int i = 0; i < btns.Length; i++)
+        {
+            btns[i]?.DOKill();
+            btnsRectTransform[i]?.DOKill();
         }
     }
 

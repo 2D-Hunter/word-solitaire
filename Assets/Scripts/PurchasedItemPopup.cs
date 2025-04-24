@@ -18,7 +18,7 @@ public class PurchasedItemPopup : MonoBehaviour
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
 
-    float delay = 0f;
+    //float delay = 0f;
     float delayIncrement = 0.15f;
 
     public GameObject[] purchasedItems;
