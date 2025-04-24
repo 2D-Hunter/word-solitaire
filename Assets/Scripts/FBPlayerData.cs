@@ -117,7 +117,7 @@ public class FBPlayerData : MonoBehaviour
         TOTAL_HEARTS = playerData["TOTAL_HEARTS_001"];
         LAST_HEART_TIME = playerData["LAST_HEART_TIME_001"].AsLong.ToString();
         LAST_REWARD_TIME = playerData["LAST_REWARD_TIME_001"].AsLong.ToString();
-        LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"];
+        LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"].AsLong.ToString();
         AVAILABLE_REWARDS = playerData["AVAILABLE_REWARDS_001"];
         CURRENT_REWARD_INDEX = playerData["CURRENT_REWARD_INDEX_001"];
         TUTORIAL_1_COMPLETED = playerData["TUTORIAL_1_COMPLETED_001"];
@@ -228,7 +228,7 @@ public class FBPlayerData : MonoBehaviour
     }
     public void VibrationEffect()
     {
-        Application.ExternalCall("VibrateDevice", "10");
+        Application.ExternalCall("VibrateDevice");
     }
 
     public void ContinueGameAfterInterstitial(string screen)

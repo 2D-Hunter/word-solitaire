@@ -133,11 +133,11 @@ public class DailyRewards : MonoBehaviour
         //Debug.Log("DailyRewardsManager.instance.CanCollectReward: " + DailyRewardsManager.instance.CanCollectReward(key, cooldown));
         if (!DailyRewardsManager.instance.CanCollectReward(key, cooldown))
         {
-            Debug.Log("UpdateTimer remainingTime: " + key+"______"+cooldown);
+            //Debug.Log("UpdateTimer remainingTime: " + key+"______"+cooldown);
             //float remainingTime = DailyRewardsManager.instance.GetRemainingTime(key, cooldown);
             //Debug.Log("UpdateTimer remainingTime: " + remainingTime);
             int remainingTime = Mathf.FloorToInt(DailyRewardsManager.instance.GetRemainingTime(key, cooldown));
-            Debug.Log("UpdateTimer remainingSeconds: " + remainingTime);
+            //Debug.Log("UpdateTimer remainingSeconds: " + remainingTime);
             if (remainingTime <= 0)
             {
                 // Ensure UI updates at 00:00
@@ -232,8 +232,11 @@ public class DailyRewards : MonoBehaviour
             adRewardButtons[index + 1].SetActive(true);
         }
         // ✅ Show 12-hour timer and adjust popup height
-        twelveHourTimer.SetActive(true);
-        SetPopupHeight(); // Call the function to adjust height
+        if (index == 0)
+        { 
+            twelveHourTimer.SetActive(true);
+            SetPopupHeight(); // Call the function to adjust height
+        }
         FindObjectOfType<GiftNotification>().UpdateRewardsText();
 
         if(index == 0)

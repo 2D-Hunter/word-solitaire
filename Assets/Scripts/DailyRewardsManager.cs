@@ -230,9 +230,10 @@ public class DailyRewardsManager : MonoBehaviour
             //{
             //    return true;
             //}
+            //Debug.Log("Keyyy: " + key);
             if (string.IsNullOrWhiteSpace(key) || !long.TryParse(key, out long parsedKey))
             {
-                Debug.LogWarning("Invalid or missing key, allowing reward. key: " + key);
+                //Debug.LogWarning("Invalid or missing key, allowing reward. key: " + key);
                 return true;
             }
             DateTime lastTime = DateTime.FromBinary(parsedKey);
@@ -300,7 +301,7 @@ public class DailyRewardsManager : MonoBehaviour
             
             float remainingTime = Math.Max((float)cooldownSpan.TotalSeconds - (float)elapsedTime.TotalSeconds, 0);
             int remainingTime1 = Mathf.FloorToInt(remainingTime);
-            Debug.Log("remainingTime1111: " + remainingTime1);
+            //Debug.Log("remainingTime1111: " + remainingTime1);
             return remainingTime;
         }
         else
@@ -328,8 +329,11 @@ public class DailyRewardsManager : MonoBehaviour
     // Check if ad rewards are in cooldown
     public bool IsAdRewardInCooldown()
     {
-        if(GameUtils.IsFacebookBuild())
+        if (GameUtils.IsFacebookBuild())
+        {
+            Debug.Log("IsAdRewardInCooldown: " + FBPlayerData.instance.LAST_AD_REWARD_TIME);
             return !CanCollectReward(FBPlayerData.instance.LAST_AD_REWARD_TIME, adRewardCooldown);
+        }
         else
             return !CanCollectReward(adRewardKey, adRewardCooldown);
     }
@@ -371,7 +375,8 @@ public class DailyRewardsManager : MonoBehaviour
         // Save ad reward collection time
         if (GameUtils.IsFacebookBuild())
         {
-            FBPlayerData.instance.LAST_AD_REWARD_TIME = DateTime.UtcNow.ToBinary().ToString();
+            if(index == 0)
+                FBPlayerData.instance.LAST_AD_REWARD_TIME = DateTime.UtcNow.ToBinary().ToString();
             Debug.Log("FBPlayerData.instance.LAST_AD_REWARD_TIME: " + FBPlayerData.instance.LAST_AD_REWARD_TIME);
             FBPlayerData.instance.SavePlayerData();
         }
