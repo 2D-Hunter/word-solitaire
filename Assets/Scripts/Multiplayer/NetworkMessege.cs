@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BaseMessage;
 
-namespace Word
+
+public class NetworkMessege
 {
-    public class NetworkService:INetworkService
-    {
-    }
+    public MsgType Type;
+    public String Msg;
 }
+

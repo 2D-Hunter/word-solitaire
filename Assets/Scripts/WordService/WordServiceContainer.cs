@@ -24,8 +24,8 @@ namespace Word
         {
             _dictionaryService = new WordDictionaryService();
             _matchService = new WordMatchService();
-            _letterService  = new ILetterService();
-            _networkService = new INetworkService();
+           
+            _networkService = new NetworkService();
             _hintService = new HintService();
             _dictionaryService.Initialize();
 
