@@ -35,7 +35,8 @@ public class GameModeSelection : MonoBehaviour
             message.Type = BaseMessage.MsgType.MatchMaking;
             WordServiceContainer.NetworkService.Send<NetworkMessege>(message);
         });
-        string url = $"ws://ec2-34-214-7-188.us-west-2.compute.amazonaws.com:8770/word";
+
+        string url = $"ws://ec2-52-43-3-186.us-west-2.compute.amazonaws.com:8770/word";
         WordServiceContainer.NetworkService.Connect(url, () =>
         {
             Debug.Log("Onconeect to server >>>>>>>");
