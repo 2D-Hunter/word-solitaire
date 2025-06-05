@@ -66,8 +66,15 @@ public class DailyRewards : MonoBehaviour
         bg.DOKill();
         popup.DOKill();
         popupRectTransform.DOKill();
-
         UpdateUI();
+        if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME) && FBPlayerData.instance.LAST_AD_REWARD_TIME != "0")
+        {
+            if (!DailyRewardsManager.instance.IsAdRewardInCooldown())
+            {
+                OnTwelveHourTimerComplete();
+            }
+        }
+
 
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
@@ -147,6 +154,8 @@ public class DailyRewards : MonoBehaviour
                 //Debug.Log("isFirstReward: "+ isFirstReward);
                 if (isFirstReward)
                 {
+                    FBPlayerData.instance.LAST_REWARD_TIME = "";
+                    FBPlayerData.instance.SavePlayerData();
                     // First reward: Show collect button
                     collectButton.SetActive(true);
                     oneHourTimer.SetActive(false);
@@ -196,6 +205,7 @@ public class DailyRewards : MonoBehaviour
     // ---------- COLLECT AD REWARD ----------
     public void CollectAdReward(int index)
     {
+        
         FBPlayerData.instance.VibrationEffect();
         InitManager.instance.currentReward = index switch
         {
@@ -248,6 +258,8 @@ public class DailyRewards : MonoBehaviour
         else if (index == 3)
         {
             // reward a Wild Card
+            FBPlayerData.instance.TOTAL_WILD_CARD++;
+            FBPlayerData.instance.SavePlayerData();
         }
 
     }

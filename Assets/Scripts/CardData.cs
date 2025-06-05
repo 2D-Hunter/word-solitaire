@@ -22,12 +22,12 @@ public class CardData : MonoBehaviour
 
     private static readonly Dictionary<char, int> letterValues = new Dictionary<char, int>
     {
-        { 'A', 1 }, { 'B', 3 }, { 'C', 3 }, { 'D', 2 },
-        { 'E', 1 }, { 'F', 4 }, { 'G', 2 }, { 'H', 4 },
-        { 'I', 1 }, { 'J', 8 }, { 'K', 5 }, { 'L', 1 },
-        { 'M', 3 }, { 'N', 1 }, { 'O', 1 }, { 'P', 3 },
-        { 'Q', 10 }, { 'R', 1 }, { 'S', 1 }, { 'T', 1 },
-        { 'U', 1 }, { 'V', 4 }, { 'W', 4 }, { 'X', 8 },
+        { 'A', 1 }, { 'B', 4 }, { 'C', 4 }, { 'D', 3 },
+        { 'E', 1 }, { 'F', 4 }, { 'G', 4 }, { 'H', 3 },
+        { 'I', 1 }, { 'J', 8 }, { 'K', 5 }, { 'L', 2 },
+        { 'M', 3 }, { 'N', 2 }, { 'O', 1 }, { 'P', 3 },
+        { 'Q', 10 }, { 'R', 1 }, { 'S', 2 }, { 'T', 1 },
+        { 'U', 3 }, { 'V', 4 }, { 'W', 5 }, { 'X', 8 },
         { 'Y', 4 }, { 'Z', 10 }
     };
     private void Start()
@@ -83,19 +83,22 @@ public class CardData : MonoBehaviour
         char uppercaseLetter = char.ToUpper(letter);
         if (letterValues.TryGetValue(uppercaseLetter, out int value))
         {
+            Debug.Log("________GetCardValue: "+value);
             return value;
         }
         return 0;
     }
 
-    private void OnValidate()
-    {
-        //if (Card.instance.gameObject.tag != "ExtraCard")
-        //{
-            //letterText.text = letter.ToString();
-            //valueText.text = GetCardValue(letter).ToString();
-        //}
-    }
+    //private void OnValidate()
+    //{
+    //    //if (Card.instance.gameObject.tag != "ExtraCard")
+    //    //{
+    //    Debug.Log("________OnValidate");
+    //    letterText.text = letter.ToString();
+    //    valueText.text = GetCardValue(letter).ToString();
+    //}
+
+    
     //void Start()
     //{
     //    Debug.Log("Card");

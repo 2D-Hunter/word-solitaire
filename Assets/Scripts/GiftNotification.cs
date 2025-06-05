@@ -26,6 +26,7 @@ public class GiftNotification : MonoBehaviour
         if (DailyRewardsManager.instance != null)
         {
             int availableRewards = DailyRewardsManager.instance.GetAvailableRewards();
+            if (availableRewards > 5) availableRewards = 5;
             rewardsText.text = rewardsTextShadow.text = availableRewards.ToString();
         }
         else

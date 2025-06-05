@@ -26,8 +26,9 @@ public class WordnikDefinition : MonoBehaviour
     {
         if (Dictionary.instance.loading != null)
             Dictionary.instance.loading.SetActive(true);
-
-        string requestUrl = $"{apiUrl}?action=query&prop=extracts&titles={word}&format=json&explaintext=true";
+        
+        //string requestUrl = $"{apiUrl}?action=query&prop=extracts&titles={word}&format=json&explaintext=true";
+        string requestUrl = "https://897rjsp6dj.execute-api.us-west-2.amazonaws.com/wordgame/word?word="+word;
         Debug.Log("URL: " + requestUrl);
         using (UnityWebRequest webRequest = UnityWebRequest.Get(requestUrl))
         {
@@ -123,23 +124,28 @@ public class WordnikDefinition : MonoBehaviour
     {
         try
         {
-            var response = JObject.Parse(jsonResponse);
-
-            // Access the "pages" section
-            var pages = response["query"]?["pages"];
-            if (pages != null)
+            var responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<WordDefinitionResponse>(jsonResponse);
+            if(responseObj.statusCode == 200)
             {
-                foreach (var page in pages)
+                var response = JObject.Parse(responseObj.body);
+
+                // Access the "pages" section
+                var pages = response["query"]?["pages"];
+                if (pages != null)
                 {
-                    var extract = page.First?["extract"]?.ToString();
-                    if (!string.IsNullOrEmpty(extract))
+                    foreach (var page in pages)
                     {
-                        // Extract and return the relevant part of the definition
-                        return ExtractDefinition(extract);
+                        var extract = page.First?["extract"]?.ToString();
+                        if (!string.IsNullOrEmpty(extract))
+                        {
+                            // Extract and return the relevant part of the definition
+                            return ExtractDefinition(extract);
+                        }
                     }
                 }
             }
-            return "No definition found for this word.";
+            
+            return "Please try again later.";
         }
         catch (System.Exception e)
         {
@@ -165,4 +171,10 @@ public class WordnikDefinition : MonoBehaviour
     {
         public string extract;
     }
+}
+
+class WordDefinitionResponse
+{
+    public int statusCode;
+    public string body;
 }

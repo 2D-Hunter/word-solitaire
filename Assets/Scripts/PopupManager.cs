@@ -25,6 +25,7 @@ public class PopupManager : MonoBehaviour
     public GameObject dailyRewardsPopup;
     public GameObject purchasedItemPopup;
     public GameObject noAdAvailable;
+    public GameObject noReward;
     public GameObject dictionaryPopup;
     public GameObject message;
 
@@ -60,7 +61,7 @@ public class PopupManager : MonoBehaviour
     {
         if(currentPopup == null)
         {
-            SoundManager.instance.PlaySFX("PopupAppear", 0.2f);
+            SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup = Instantiate(prefab, uiContainer);
         }
         else

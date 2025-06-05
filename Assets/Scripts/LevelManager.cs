@@ -16,6 +16,9 @@ public class LevelManager : MonoBehaviour
 
     private int currentLevelIndex = 0;
 
+    public string levelNamePrefix = "Level-";
+    public RectTransform levelsObj = null;
+
     void Awake()
     {
         instance = this;
@@ -26,27 +29,64 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            LoadLevel(FBPlayerData.instance.CURRENT_LEVEL - 1);
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+            {
+                LoadLevel(FBPlayerData.instance.CURRENT_LEVEL-1);
+            }
+            else
+            {
+                LoadLevel(FBPlayerData.instance.CURRENT_LEVEL);
+            }
         }
         
     }
 
     public void LoadLevel(int levelIndex)
     {
-        foreach (GameObject level in levels)
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
-            level.SetActive(false);
+            foreach (GameObject level in levels)
+            {
+                level.SetActive(false);
+            }
+        }
+        else
+        {
+            Destroy(levels[0]);
+            levels[0] = null;
+            Destroy(levels[1]);
+            levels[1] = null;
+            //levels[0].SetActive(false);
+            //levels[1].SetActive(false);
+            string prefabName = levelNamePrefix + levelIndex;
+            GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
+            levelPrefab.SetActive(true);
+            Debug.Log("Level Prefab: " + levelPrefab);
+            if (levelPrefab != null)
+            {
+                GameObject level = Instantiate(levelPrefab, levelsObj);
+            }
+            else
+            {
+                Debug.LogError("Level prefab not found: " + prefabName);
+            }
         }
 
+        Debug.Log("levelIndex: " + levelIndex + "_____"+ levels.Length);
+
+        if(FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            levelIndex++;
+        }
         if (levelIndex >= 0 && levelIndex < levels.Length)
         {
-            levels[levelIndex].SetActive(true);
+            levels[levelIndex-1].SetActive(true);
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
             if (levelData != null && levelIndex < levelData.levels.Length)
             {
-                var levelInfo = levelData.levels[levelIndex];
-                UpdateLevelUI(levelIndex + 1, levelInfo.levelTarget);
+                var levelInfo = levelData.levels[levelIndex-1];
+                UpdateLevelUI(levelIndex, levelInfo.levelTarget);
                 Debug.Log($"Loading Level: {levelInfo.levelNumber}");
                 //InitManager.instance.currentTarget = levelInfo.levelTarget;
                 if (InitManager.instance != null)

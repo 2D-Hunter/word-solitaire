@@ -26,6 +26,7 @@ public class GreenTabHandler : MonoBehaviour
 
     public void HandleGreenTab(string word)
     {
+        
         Debug.Log("Word Length: " + word.Length);
         if(GameManager.instance.isValidWord)
         {
@@ -47,11 +48,12 @@ public class GreenTabHandler : MonoBehaviour
         {
             multiplier.SetActive(false);
         }
+        
         if (i <= 2) return;
         Debug.Log("______SwitchMultiplier: "+(i-1));
         if (GameManager.instance.isValidWord)
         {
-            //Debug.Log("______SwitchMultiplier: "+ scoreMultiplier[i - 3]);
+            Debug.Log("______SwitchMultiplier: "+ scoreMultiplier[i - 3]);
             scoreMultiplier[i-3].SetActive(true);
             GameManager.instance.scoreMultiplier = i - 1;
         }

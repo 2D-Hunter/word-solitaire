@@ -160,7 +160,18 @@ public class PurchasedItemPopup : MonoBehaviour
                 {
                     //FBPlayerData.instance.SetData("No_Ads_30_Days", expiryDateStr);
                     FBPlayerData.instance.NO_ADS_30_DAYS = true;
-                    FBPlayerData.instance.SavePlayerData();
+                    Application.ExternalCall("HideBanner");
+
+                    if ((string.IsNullOrEmpty(FBPlayerData.instance.EXPIRY_DATE_30_DAYS) || FBPlayerData.instance.EXPIRY_DATE_30_DAYS == "" || FBPlayerData.instance.EXPIRY_DATE_30_DAYS == null || FBPlayerData.instance.EXPIRY_DATE_30_DAYS == "0"))
+                    {
+                        // Save as Unix seconds
+                        long unixTime = (long)(DateTime.UtcNow.AddDays(30) - DateTime.UnixEpoch).TotalSeconds;
+                        FBPlayerData.instance.EXPIRY_DATE_30_DAYS = unixTime.ToString();
+
+                        //FBPlayerData.instance.EXPIRY_DATE_30_DAYS = DateTime.UtcNow.AddDays(30).ToString("o");
+                        Debug.Log("FBPlayerData.instance.EXPIRY_DATE_30_DAYS: " + FBPlayerData.instance.EXPIRY_DATE_30_DAYS);
+                        FBPlayerData.instance.SavePlayerData();
+                    }
                 }
                 else
                 {

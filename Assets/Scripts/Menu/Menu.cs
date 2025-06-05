@@ -26,8 +26,16 @@ public class Menu : MonoBehaviour
 
     public RectTransform buttonRect;
 
+    public TextMeshProUGUI msgTxt;
+    public BackgroundManager backgroundManager;
+
     private void Awake()
     {
+        
+        backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
+        backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
+
+        InitManager.instance.CurrentScene = "Menu";
         instance = this;
         if(InitManager.instance)
             currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
@@ -110,5 +118,16 @@ public class Menu : MonoBehaviour
                 .Append(buttonRect.DOShakePosition(0.3f, 5f, 10, 90, false, true)) // Shake
                 .Append(buttonRect.DOScale(1, 0.3f).SetEase(Ease.InOutQuad)) // Return to Original
                 .SetLoops(-1); // Loop Forever
+    }
+    public void ShowMessage(string msg)
+    {
+        
+        msgTxt.transform.SetAsLastSibling();
+        msgTxt.text = msg;
+        Invoke("RemoveMessage", 3f);
+    }
+    void RemoveMessage()
+    {
+        msgTxt.text = "";
     }
 }

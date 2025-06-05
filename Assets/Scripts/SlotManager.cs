@@ -47,6 +47,7 @@ public class SlotManager : MonoBehaviour
      float height = 400f;
      Vector3 startScale = new Vector3(2f, 2f, 2f);
      Vector3 endScale = new Vector3(0.83f, 0.83f, 0.83f);
+     Vector3 endScale_ExtraCard = new Vector3(0.875f, 0.875f, 0.875f);
 
     //int lastFilledSlot = -1;
 
@@ -174,6 +175,7 @@ public class SlotManager : MonoBehaviour
                 {
                     card.GetComponent<Image>().sprite = Resources.Load<Sprite>("FaceUpCard_0");
                 }
+                
                 card.FlipImmediateBelowCards();
                 
                 //Sequence cardSequence = DOTween.Sequence();
@@ -217,8 +219,11 @@ public class SlotManager : MonoBehaviour
                 verticalMotion.Append(cardRect.DOMove(targetPosition, animDuration ).SetEase(Ease.OutQuad));
 
                 cardRect.DOScale(startScale, animDuration / 4).SetEase(Ease.OutQuad);
-                cardRect.DOScale(endScale, animDuration).SetEase(Ease.InOutQuad);
-                
+                if (card.GetComponent<RectTransform>().tag == "ExtraCard")
+                    cardRect.DOScale(endScale_ExtraCard, animDuration).SetEase(Ease.InOutQuad);
+                else
+                    cardRect.DOScale(endScale, animDuration).SetEase(Ease.InOutQuad);
+
                 verticalMotion.Play();
                 verticalMotion.OnUpdate(() =>
                 {
@@ -289,6 +294,7 @@ public class SlotManager : MonoBehaviour
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
         if(currentSlotIndex != -1)
         {
+            allSlotsOccupied = false;
             isSlotOccupied[currentSlotIndex] = false;
             slotToCardMap.Remove(cardSlots[currentSlotIndex]);
 
@@ -344,12 +350,14 @@ public class SlotManager : MonoBehaviour
         
         if(GetSlotString().Length >= 4)
             Appreciations.instance.ShowAppreciation();
+        
         GameManager.instance.hintText = "";
         GameManager.instance.foundValidWord = false;
         GameManager.instance.hintWord = "";
         GetSlotString();
         GameManager.instance.isValidWord = false;
         isSlotOccupied[0] = false;
+        allSlotsOccupied = false;
         RemoveCardsButton.instance.SwapImage();
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
@@ -372,7 +380,7 @@ public class SlotManager : MonoBehaviour
                 //cardCount++;
             }
         }
-        
+        GameManager.instance.scoreMultiplier = 1;
         CardManager.instance.totalCardToGet -= (GetSlotString().Length) - extraCardCount;
         //CardManager.instance.totalCardToGet -= cardCount;
         targetAchieve = GetSlotString().Length;
@@ -473,6 +481,7 @@ public class SlotManager : MonoBehaviour
     }
     void LoadGame()
     {
+        Debug.Log("Load Game");
         InitManager.instance.tutorialCntr = 0;
         FBPlayerData.instance.TUTORIAL_1_COMPLETED = true;
         FBPlayerData.instance.CURRENT_LEVEL++;
@@ -481,69 +490,112 @@ public class SlotManager : MonoBehaviour
     }
     IEnumerator TweenExtraCards()
     {
+        if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            for (int i = CardManager.instance.extraCards.Count - 1; i >= 0; i--)
+            {
+                RectTransform card = CardManager.instance.extraCards[i].GetComponent<RectTransform>();
+                card.gameObject.SetActive(false);
+                SoundManager.instance.PlaySFX("CardTurn", 0.3f);
+                FBPlayerData.instance.VibrationEffect();
+                yield return new WaitForSeconds(0.2f); // 0.3 sec delay between each
+            }
+            Invoke("ShowAd", 1f);
+
+
+            yield break;
+        }
         GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
         extraCardContainer.transform.SetAsLastSibling();
         Vector2 targetPosition = Hud.instance.hudStar.position;
-
-        for (int i = CardManager.instance.extraCards.Count - 1; i >= 0; i--)
+        int cardCount = CardManager.instance.extraCards.Count;
+        int completedTweens = 0;
+        if (cardCount <= 0)
         {
-            RectTransform card = CardManager.instance.extraCards[i].GetComponent<RectTransform>();
-            CanvasGroup canvasGroup = CardManager.instance.extraCards[i].GetComponent<CanvasGroup>();
-
-            Vector3[] path = new Vector3[]
+            Invoke("ShowAd", 1.5f);
+        }
+        else
+        {
+            for (int i = CardManager.instance.extraCards.Count - 1; i >= 0; i--)
             {
+                Debug.Log("___Loop");
+                RectTransform card = CardManager.instance.extraCards[i].GetComponent<RectTransform>();
+                CanvasGroup canvasGroup = CardManager.instance.extraCards[i].GetComponent<CanvasGroup>();
+
+                Vector3[] path = new Vector3[]
+                {
                 card.position,       // Start Point (P0)
                 point3.position,  // Control Point 1 (P1)
                 point4.position,  // Control Point 2 (P2)
                 targetPosition    // End Point (P3)
-            };
+                };
 
-            Sequence cardSequence = DOTween.Sequence();
-            card.SetAsLastSibling();
+                Sequence cardSequence = DOTween.Sequence();
+                card.SetAsLastSibling();
 
-            cardSequence.Append(card.DOPath(path, 0.8f, PathType.CatmullRom)
-    .SetEase(customEase));
+                cardSequence.Append(card.DOPath(path, 0.8f, PathType.CatmullRom)
+        .SetEase(customEase));
 
-            cardSequence.Join(card.DOScale(Hud.instance.hudCard.localScale, 0.8f)
-                .SetEase(Ease.OutBack));
-            cardSequence.Join(card.DORotate(new Vector3(0, 0, 348), 0.8f, RotateMode.LocalAxisAdd)
-                .SetEase(customEase));
+                cardSequence.Join(card.DOScale(Hud.instance.hudCard.localScale, 0.8f)
+                    .SetEase(Ease.OutBack));
+                cardSequence.Join(card.DORotate(new Vector3(0, 0, 348), 0.8f, RotateMode.LocalAxisAdd)
+                    .SetEase(customEase));
 
-            //cardSequence.Append(canvasGroup.DOFade(0, 0.8f).SetEase(customFadeEase));
-            cardSequence.OnUpdate(() =>
-            {
+                //cardSequence.Append(canvasGroup.DOFade(0, 0.8f).SetEase(customFadeEase));
+                cardSequence.OnUpdate(() =>
+                {
                 //Debug.Log($"Current Alpha: {canvasGroup.alpha}");
             });
-            //cardSequence.Play();
+                //cardSequence.Play();
 
-            cardSequence.OnComplete(() =>
-            {
+                cardSequence.OnComplete(() =>
+                {
+                    FBPlayerData.instance.VibrationEffect();
                 //Debug.Log("_______canvasGroup.alpha: "+canvasGroup.alpha);
                 card.gameObject.SetActive(false);
+                    completedTweens++;
+                    Debug.Log("Card Count: " + cardCount);
+                    Debug.Log("Card Count Completed Tween: " + completedTweens);
 
-                
+                    if (completedTweens == cardCount)
+                    {
+                        Invoke("ShowAd", 1f);
+                    }
+                });
 
-            });
+                yield return new WaitForSeconds(delayBetweenTweens);
 
-            yield return new WaitForSeconds(delayBetweenTweens);
-
+            }
         }
+        
+    }
+    void ShowAd()
+    {
+        Debug.Log("___Show Interstitial");
+        // All tweens complete, now show interstitial and continue
+        Application.ExternalCall("ShowAd_Interstitial", "Levelup");
 
+#if UNITY_EDITOR
+        FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
+#endif
+    }
+    public void ContinueGameAfterInterstitial()
+    {
         StartCoroutine(LoadMenu());
     }
-
     IEnumerator LoadMenu()
     {
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1f);
         FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
-        if (FBPlayerData.instance.CURRENT_LEVEL > 5)
-        {
-            FBPlayerData.instance.CURRENT_LEVEL = 1;
-        }
+        //if (FBPlayerData.instance.CURRENT_LEVEL > 5)
+        //{
+        //    FBPlayerData.instance.CURRENT_LEVEL = 1;
+        //}
         
         Debug.Log("FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
         Initiate.Fade("Menu", Color.black, 1f);
+
     }
 }

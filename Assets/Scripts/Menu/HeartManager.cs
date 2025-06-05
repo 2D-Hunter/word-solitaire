@@ -8,7 +8,7 @@ public class HeartManager : MonoBehaviour
     public int maxHearts = 5;
     [HideInInspector]
     public int currentHearts;
-    private float heartRegenTime =30f; // 30 minutes per heart (1800 seconds)
+    private float heartRegenTime =1800f; // 30 minutes per heart (1800 seconds)
 
     private string lastHeartTimeKey = "LastHeartTime";
     private string heartsKey = "PlayerHearts";

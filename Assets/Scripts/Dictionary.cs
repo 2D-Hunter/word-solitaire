@@ -48,11 +48,11 @@ public class Dictionary : MonoBehaviour
     {
         if(GameManager.instance.isValidWord)
         {
-            title.text = SlotManager.instance.GetSlotString();
-            titleShadow.text = SlotManager.instance.GetSlotString();
-            title2.text = SlotManager.instance.GetSlotString();
-            title2Shadow.text = SlotManager.instance.GetSlotString();
-            
+            title.text = SlotManager.instance.GetSlotString().ToUpper();
+            titleShadow.text = SlotManager.instance.GetSlotString().ToUpper();
+            title2.text = SlotManager.instance.GetSlotString().ToUpper();
+            title2Shadow.text = SlotManager.instance.GetSlotString().ToUpper();
+
         }
         else
         {

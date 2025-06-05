@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Splash : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Splash : MonoBehaviour
         Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 #if UNITY_EDITOR
         FBPlayerData.instance.CURRENT_LEVEL = 3;
-        LoadMenu();
+        LoadScene();
 #endif
     }
     public void LoadScene()

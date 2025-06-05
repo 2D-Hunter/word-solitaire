@@ -90,11 +90,51 @@ public class Tutorial : MonoBehaviour
 
     private void Update()
     {
+        
         //Debug.Log(cardG.GetComponent<Button>().enabled+"_____"+ cardO.GetComponent<Button>().enabled);
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1)
+        {
+            if (InitManager.instance.tutorialCntr == 1)
+            {
+                cardG.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 2)
+            {
+                cardO.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 3)
+            {
+                cardF.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 4)
+            {
+                cardA.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 5)
+            {
+                cardR.GetComponent<Button>().enabled = false;
+            }
+        }
+        else if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            if (InitManager.instance.tutorialCntr == 1)
+            {
+                cardJ.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 2)
+            {
+                cardU.GetComponent<Button>().enabled = false;
+            }
+            if (InitManager.instance.tutorialCntr == 3)
+            {
+                cardG1.GetComponent<Button>().enabled = false;
+            }
+        }
     }
 
     public void AnimateCard()
     {
+        Debug.Log(cardG.GetComponent<Button>().enabled);
         if (isAnimating || cardTransform == null) return;
         Debug.Log("Animate Card");
         originalScale = cardTransform.localScale;
@@ -123,7 +163,8 @@ public class Tutorial : MonoBehaviour
     public void ShowNext()
     {
         isAnimating = false;
-        DOTween.KillAll();
+        handRectTransform?.DOKill();
+        //DOTween.KillAll();
         cardTransform.localRotation = Quaternion.Euler(0, 0, 0);
         Debug.Log("InitManager.instance.tutorialCntr: " + InitManager.instance.tutorialCntr);
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
@@ -163,6 +204,7 @@ public class Tutorial : MonoBehaviour
             }
             else if (InitManager.instance.tutorialCntr == 5)
             {
+                cardF.GetComponent<Button>().enabled = false;
                 cardA.GetComponent<Button>().enabled = false;
                 cardR.GetComponent<Button>().enabled = false;
                 cardTransform = null;
@@ -213,6 +255,7 @@ public class Tutorial : MonoBehaviour
         }
 
     }
+    
 
     void SetHandPosition(float xPos, float yPos)
     {
@@ -257,5 +300,12 @@ public class Tutorial : MonoBehaviour
         cardF.GetComponent<Button>().enabled = true;
         cardTransform = cardF.GetComponent<RectTransform>();
         isAnimating = false;
+    }
+
+    private void OnDestroy()
+    {
+        handRectTransform?.DOKill();
+        cardTransform?.DOKill();
+        
     }
 }

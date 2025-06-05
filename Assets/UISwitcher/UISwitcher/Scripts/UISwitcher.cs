@@ -20,50 +20,42 @@ namespace UISwitcher
 		}
 		private void Start()
 		{
-			//if (SoundManager.instance != null)
-			//{
-			//	if (gameObject.tag == "Music")
-			//		SetState(!SoundManager.instance.IsBGMMuted()); // Sync with SoundManager
-			//	else if (gameObject.tag == "SFX")
-			//		SetState(!SoundManager.instance.IsSFXMuted());
-			//}
+			
 			Debug.Log("FBPlayerData.instance.GAME_MUSIC: " + FBPlayerData.instance.GAME_MUSIC);
 			Debug.Log("FBPlayerData.instance.GAME_SOUND: " + FBPlayerData.instance.GAME_SOUND);
-			//FBPlayerData.instance.GAME_MUSIC = false;
-			//Debug.Log("gameObject.tag: " + gameObject.tag);
-			if (gameObject.tag == "Music")
-            {
-				if (FBPlayerData.instance.GAME_MUSIC)
-				{
-					SoundManager.instance.isBgmMuted = false;
-					SetOn();
-				}
-				else
-				{
-					SoundManager.instance.isBgmMuted = true;
-					SetOff();
-				}
-				//SoundManager.instance.bgmSource.mute = SoundManager.instance.isBgmMuted;
-			}
-			else if (gameObject.tag == "SFX")
-			{
-				//SoundManager.instance.SetSFXUI();
-			}
+
+			//if (gameObject.tag == "Music")
+			//         {
+			//	if (FBPlayerData.instance.GAME_MUSIC)
+			//	{
+			//		SoundManager.instance.isBgmMuted = false;
+			//		SetOn();
+			//	}
+			//	else
+			//	{
+			//		SoundManager.instance.isBgmMuted = true;
+			//		SetOff();
+			//	}
+			//	//SoundManager.instance.bgmSource.mute = SoundManager.instance.isBgmMuted;
+			//}
+			//else if (gameObject.tag == "SFX")
+			//{
+			//	//SoundManager.instance.SetSFXUI();
+			//}
+
+			bool isMusic = gameObject.tag == "Music";
+			bool desiredState = isMusic ? FBPlayerData.instance.GAME_MUSIC : FBPlayerData.instance.GAME_SOUND;
 
 			
+			SetWithoutNotify(desiredState);
+			OnChanged(desiredState);
 
-
-			//if (FBPlayerData.instance.GAME_SOUND)
-			//    SoundManager.instance.ToggleMuteSFXFromUI(true);
+			//if (isMusic)
+			//	SoundManager.instance.isBgmMuted = !desiredState;
 			//else
-			//    SoundManager.instance.ToggleMuteSFXFromUI(false);
+			//	SoundManager.instance.ToggleMuteSFXFromUI(desiredState);
 
-			//bool isBgmMuted = SoundManager.instance.IsBGMMuted();
-			//Debug.Log(isBgmMuted);
-			//SetState(!isBgmMuted);
-			//bool isSfxMuted = SoundManager.instance.IsSFXMuted();
-			//Debug.Log(isSfxMuted);
-			//SetState(!isSfxMuted);
+
 		}
 		protected override void OnChanged(bool? obj)
 		{

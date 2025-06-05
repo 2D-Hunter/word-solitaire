@@ -6,6 +6,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.EventSystems;
 
 
 public class FeedbackPopup : MonoBehaviour
@@ -17,6 +18,12 @@ public class FeedbackPopup : MonoBehaviour
 
     public CanvasGroup[] btns = null;
     public RectTransform[] btnsRectTransform = null;
+
+    public Button submitButton = null;
+    private Image submitButtonImage;
+    public EventTrigger eventTrigger;
+    private string disableImg = "disableImg";
+    private string enableImg = "enableImg";
 
 
     //float delay = 0f;
@@ -36,6 +43,14 @@ public class FeedbackPopup : MonoBehaviour
     private void SetInit()
     {
         //buttons[0].interactable = false;
+        // Initialize button state
+        eventTrigger = submitButton.GetComponent<EventTrigger>();
+        submitButton.enabled = eventTrigger.enabled = false;
+
+        // Subscribe to input change event
+        submitButtonImage = submitButton.GetComponent<Image>();
+        UpdateButtonState("");
+        inputField.onValueChanged.AddListener(UpdateButtonState);
         bg.alpha = 0;
         popup.alpha = 0;
         foreach (var btn in btns)
@@ -49,6 +64,26 @@ public class FeedbackPopup : MonoBehaviour
         popupRectTransform.anchoredPosition = new Vector2(0, -350);
 
     }
+    void UpdateButtonState(string text)
+    {
+        bool hasText = !string.IsNullOrWhiteSpace(text);
+        submitButton.enabled = eventTrigger.enabled = hasText;
+
+        // Load sprite from Resources by name
+        string spriteName = hasText ? enableImg : disableImg;
+        Sprite newSprite = Resources.Load<Sprite>(spriteName);
+
+        if (newSprite != null)
+        {
+            submitButtonImage.sprite = newSprite;
+        }
+        else
+        {
+            Debug.LogWarning("Sprite not found: " + spriteName);
+        }
+    }
+
+    
     private void Start()
     {
         inputField.onSelect.AddListener(ForceKeyboard);
@@ -132,6 +167,9 @@ public class FeedbackPopup : MonoBehaviour
             btns[i]?.DOKill();
             btnsRectTransform[i]?.DOKill();
         }
+
+        // Clean up listener
+        inputField.onValueChanged.RemoveListener(UpdateButtonState);
     }
 
 

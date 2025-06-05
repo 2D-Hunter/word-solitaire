@@ -14,11 +14,13 @@ public class RemoveCardsButton : MonoBehaviour
     private void Start()
     {
         instance = this;
+        gameObject.SetActive(false);
         //SwapImage();
     }
     
     public void SwapImage()
     {
+        return;
         string imageToLoad = SlotManager.instance.isSlotOccupied[0] ? secondImage : firstImage;
         Sprite loadedSprite = Resources.Load<Sprite>(imageToLoad);
         if (loadedSprite != null)
@@ -27,6 +29,7 @@ public class RemoveCardsButton : MonoBehaviour
     }
     public void OnTapRemoveCards()
     {
+        return;
         FBPlayerData.instance.VibrationEffect();
         sendBackAll = true;
         //Debug.Log("SlotManager.instance.slotsCard.Count: "+ SlotManager.instance.slotsCard.Count);
@@ -66,6 +69,7 @@ public class RemoveCardsButton : MonoBehaviour
     }
     private void SetGoBackValue()
     {
+        return;
         for (int i = 0; i < SlotManager.instance.slotsCard.Count; i++)
         {
             var card = SlotManager.instance.slotsCard[i];

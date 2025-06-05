@@ -29,7 +29,8 @@ public class Shop : MonoBehaviour
     }
     private void SetInit()
     {
-        if(FBPlayerData.instance.NO_ADS_30_DAYS)
+        Debug.Log("_____NO_ADS_30_DAYS::: " + FBPlayerData.instance.NO_ADS_30_DAYS);
+        if (FBPlayerData.instance.NO_ADS_30_DAYS)
         {
             noAds30Days.SetActive(false);
             noAds30Days_lock.SetActive(true);

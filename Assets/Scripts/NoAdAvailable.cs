@@ -85,21 +85,33 @@ public class NoAdAvailable : MonoBehaviour
     }
     public void ClosePopup()
     {
-        FBPlayerData.instance.VibrationEffect();
+        //FBPlayerData.instance.VibrationEffect();
         foreach (var btn in buttons)
         {
             btn.enabled = false;
         }
-        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
+        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis1);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
 
     }
+    void RemoveThis1()
+    {
+        PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+    }
     public void RemoveThis()
     {
         FBPlayerData.instance.VibrationEffect();
-        PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
-        PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
+        if (InitManager.instance.CurrentScene == "Game")
+        {
+            ClosePopup();
+        }
+        else
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+            PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
+        }
+        
 
     }
     private void OnDestroy()

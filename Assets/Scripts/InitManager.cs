@@ -24,7 +24,8 @@ public class InitManager:MonoBehaviour
     public int buyMoreCardsCntr = 1;
     public int moreCardsPrice = 150;
     public List<char> letters = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
-
+    public List<char> letters1 = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
+    public string CurrentScene = "Splash";
 
     private void Awake()
     {
@@ -47,4 +48,5 @@ public class InitManager:MonoBehaviour
         var levelInfo = levelData.levels[currentLevel - 1];
         Debug.Log("___Level Info: " + levelInfo.levelNumber + "_____Target: "+levelInfo.levelTarget);
     }
+    
 }

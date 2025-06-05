@@ -19,7 +19,7 @@ public class SoundManager : MonoBehaviour
 
     [Header("Volume Settings")]
     [Range(0f, 1f)] public float bgmVolume = 0.2f;
-    [Range(0f, 1f)] public float sfxVolume = 0.7f;
+    [Range(0f, 1f)] public float sfxVolume = 1f;
 
     public bool isBgmMuted;
     public bool isSfxMuted;
@@ -69,14 +69,23 @@ public class SoundManager : MonoBehaviour
 
         bgmSource.clip = bgm;
         bgmSource.loop = loop;
-        bgmSource.Play();
-        StartCoroutine(SetInitialVolumeAndFade(fadeDuration));
+        Debug.Log("________PlayBGM: " + isBgmMuted);
+        if (!isBgmMuted)
+        {
+            bgmSource.Play();
+            StartCoroutine(SetInitialVolumeAndFade(fadeDuration));
+        }
     }
 
     private IEnumerator SetInitialVolumeAndFade(float fadeDuration)
     {
         yield return null; // Wait 1 frame to ensure Play() starts properly
 
+        if (isBgmMuted)
+        {
+            bgmSource.volume = 0;
+            yield break;
+        }
         bgmSource.volume = 0;
         if (fadeDuration > 0)
             fadeCoroutine = StartCoroutine(FadeInBGM(fadeDuration));
@@ -148,13 +157,46 @@ public class SoundManager : MonoBehaviour
             isSfxMuted = false;
         else
             isSfxMuted = true;
-        bgmSource.mute = isSfxMuted;
+        sfxSource.mute = isSfxMuted;
     }
 
     public void ToggleMuteBGMFromUI(bool isOn)
     {
-        isBgmMuted = !isOn; // If toggle is ON, unmute; if OFF, mute
+        //isBgmMuted = !isOn; // If toggle is ON, unmute; if OFF, mute
+        //bgmSource.mute = isBgmMuted;
+        //SaveAudioSettings();
+        isBgmMuted = !isOn;
         bgmSource.mute = isBgmMuted;
+        Debug.Log("UISwitcher111: " + isBgmMuted);
+        if (!isBgmMuted)
+        {
+            Debug.Log("UISwitcher222: " + bgmSource.isPlaying);
+            bgmSource.volume = bgmVolume;
+            // Resume music if not playing
+            if (!bgmSource.isPlaying)
+            {
+                Debug.Log("UISwitcher333: " + bgmSource.clip);
+                if (bgmSource.clip != null)
+                {
+                    
+                    bgmSource.Play(); // Resume the last clip
+                    bgmSource.volume = bgmVolume;
+                    Debug.Log("UISwitcher444: " + bgmSource.volume);
+                    Debug.Log("UISwitcher555: " + isBgmMuted);
+                }
+                else
+                {
+                    // Optional: handle case where no BGM clip was set yet
+                    Debug.LogWarning("No BGM clip assigned. Can't play music.");
+                    SoundManager.instance.PlayBGM(SoundManager.instance.bgmSource.clip, true, 5f);
+                }
+            }
+        }
+        else
+        {
+            bgmSource.Pause();
+        }
+
         SaveAudioSettings();
     }
     public bool IsBGMMuted()
@@ -166,6 +208,8 @@ public class SoundManager : MonoBehaviour
     {
         isSfxMuted = !isOn; // If switch is ON, unmute. If OFF, mute.
         sfxSource.mute = isSfxMuted;
+        if(isOn)
+            sfxSource.volume = sfxVolume;
         SaveAudioSettings();
     }
     public bool IsSFXMuted()
@@ -210,6 +254,8 @@ public class SoundManager : MonoBehaviour
         {
             isBgmMuted = !FBPlayerData.instance.GAME_MUSIC;
             isSfxMuted = !FBPlayerData.instance.GAME_SOUND;
+
+
         }
         else
         {
@@ -235,6 +281,9 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private IEnumerator FadeInBGM(float duration)
     {
+        if (isBgmMuted)
+            yield break;
+
         bgmSource.volume = 0;
         Debug.Log("FadeInBGM: "+ bgmSource.volume);
         float startTime = Time.time;
@@ -264,5 +313,26 @@ public class SoundManager : MonoBehaviour
 
         bgmSource.volume = 0;
         bgmSource.Stop();
+    }
+
+
+    public void MuteAll()
+    {
+        isBgmMuted = true;
+        isSfxMuted = true;
+        if (bgmSource != null) bgmSource.mute = true;
+        if (sfxSource != null) sfxSource.mute = true;
+    }
+
+    public void SetMusicMute(bool mute)
+    {
+        isBgmMuted = mute;
+        if (bgmSource != null) bgmSource.mute = mute;
+    }
+
+    public void SetSFXMute(bool mute)
+    {
+        isSfxMuted = mute;
+        if (sfxSource != null) sfxSource.mute = mute;
     }
 }

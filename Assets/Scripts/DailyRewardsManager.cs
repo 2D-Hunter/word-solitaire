@@ -36,12 +36,14 @@ public class DailyRewardsManager : MonoBehaviour
     }
     private void Start()
     {
+        Debug.Log("availableRewards: " + availableRewards);
         LoadState();
         CheckTimerOnAppStart();
     }
     private void Update()
     {
-        if(GameUtils.IsFacebookBuild())
+        //Debug.Log("availableRewards: " + availableRewards);
+        if (GameUtils.IsFacebookBuild())
         {
             // Check if the 1-hour timer has completed
             //Debug.Log("OO_OO "+FBPlayerData.instance.LAST_REWARD_TIME);
@@ -51,13 +53,15 @@ public class DailyRewardsManager : MonoBehaviour
             {
                 float remainingTime = GetRemainingTime(FBPlayerData.instance.LAST_REWARD_TIME, firstRewardCooldown);
                 int remainingTime1 = Mathf.FloorToInt(remainingTime);
-                    //Debug.Log("DailyRewardsManager: " + remainingTime);
+                    Debug.Log("DailyRewardsManager: " + availableRewards);
 
                 if (remainingTime1 <= 0 && !isTimerReset)
                 {
+                    
                     IncreaseAvailableRewards(); // Reset available rewards to 5
                     isTimerReset = true;  // Mark the timer as reset
                     Debug.Log("Timer completed. Available rewards reset to 5.");
+                    
                 }
             }
             else
@@ -76,6 +80,7 @@ public class DailyRewardsManager : MonoBehaviour
 
                 if (remainingTime <= 0 && !isTimerReset)
                 {
+                    FBPlayerData.instance.LAST_REWARD_TIME = "";
                     IncreaseAvailableRewards(); // Reset available rewards to 5
                     isTimerReset = true;  // Mark the timer as reset
                     Debug.Log("Timer completed. Available rewards reset to 5.");
@@ -110,15 +115,28 @@ public class DailyRewardsManager : MonoBehaviour
 
                 // If the timer has completed, increase available rewards
                     string lastClaimTimeString = FBPlayerData.instance.LAST_REWARD_TIME;
+                Debug.Log("lastClaimTimeString: "+ lastClaimTimeString);
+                Debug.Log("lastClaimTimeString: "+ string.IsNullOrEmpty(lastClaimTimeString));
+                Debug.Log("lastClaimTimeString: "+ lastClaimTimeString != "");
+                Debug.Log("lastClaimTimeString: "+ lastClaimTimeString != null);
+                Debug.Log("lastClaimTimeString: "+ lastClaimTimeString != "0");
+                //if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
+                //{
+                if (!string.IsNullOrEmpty(lastClaimTimeString) && lastClaimTimeString != "0")
+                {
+                    DateTime lastTime = DateTime.FromBinary(Convert.ToInt64(lastClaimTimeString));
+                    TimeSpan elapsedTime = DateTime.UtcNow - lastTime;
 
-                    if (!string.IsNullOrEmpty(lastClaimTimeString) && long.TryParse(lastClaimTimeString, out long lastClaimTime))
-                    {
-                        long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                        long elapsedTime = currentTime - lastClaimTime;
+                    TimeSpan cooldownSpan = TimeSpan.FromSeconds(firstRewardCooldown);
 
-                        if (elapsedTime >= firstRewardCooldown)
+                    float remainingTime = Math.Max((float)cooldownSpan.TotalSeconds - (float)elapsedTime.TotalSeconds, 0);
+                    int remainingTime1 = Mathf.FloorToInt(remainingTime);
+
+                    Debug.Log("CheckTimerOnAppStart: " + remainingTime1 + "_____" + firstRewardCooldown);
+                    if (remainingTime1 <= firstRewardCooldown)
                         {
                             Debug.Log("1-hour timer already completed. Increasing available rewards.");
+                            FBPlayerData.instance.LAST_REWARD_TIME = "";
                             IncreaseAvailableRewards(); // Increase available rewards
                         }
                     }
@@ -128,6 +146,18 @@ public class DailyRewardsManager : MonoBehaviour
                     }
 
             }
+            // 12-Hour Ad Reward Timer CHECK
+            Debug.Log("CheckTimerOnAppStart: " + IsAdRewardInCooldown());
+            if (!string.IsNullOrEmpty(FBPlayerData.instance.LAST_AD_REWARD_TIME) && FBPlayerData.instance.LAST_AD_REWARD_TIME != "0")
+            {
+                if (!IsAdRewardInCooldown())
+                {
+                    Debug.Log("12-hour ad reward cooldown finished. Resetting ad rewards...");
+                    FBPlayerData.instance.LAST_AD_REWARD_TIME = "";
+                    ResetAdRewards();
+                }
+            }
+                
         }
         else
         {
@@ -253,7 +283,7 @@ public class DailyRewardsManager : MonoBehaviour
         }
         else
         {
-            Debug.Log(key + "wwwww:: "+ !PlayerPrefs.HasKey(key));
+            //Debug.Log(key + "wwwww:: "+ !PlayerPrefs.HasKey(key));
             if (!PlayerPrefs.HasKey(key))
                 return true; // First-time users can collect
 
@@ -262,9 +292,9 @@ public class DailyRewardsManager : MonoBehaviour
             long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             bool canCollect = (currentTime - lastClaimTime) > cooldown;
-            Debug.Log(lastClaimTime + "}}}}}}}");
-            Debug.Log(currentTime + "}}}}}}}");
-            Debug.Log(canCollect + "}}}}}}}");
+            //Debug.Log(lastClaimTime + "}}}}}}}");
+            //Debug.Log(currentTime + "}}}}}}}");
+            //Debug.Log(canCollect + "}}}}}}}");
             return canCollect;
         }
         
@@ -408,9 +438,12 @@ public class DailyRewardsManager : MonoBehaviour
     public void ResetAdRewards()
     {
         currentRewardIndex = 0;
-        if(GameUtils.IsFacebookBuild())
+        availableRewards = availableRewards+4;
+        if (GameUtils.IsFacebookBuild())
         {
+            FBPlayerData.instance.LAST_AD_REWARD_TIME = "";
             FBPlayerData.instance.CURRENT_REWARD_INDEX = currentRewardIndex;
+            FBPlayerData.instance.AVAILABLE_REWARDS = availableRewards;
             FBPlayerData.instance.SavePlayerData();
         }
         else
@@ -419,7 +452,7 @@ public class DailyRewardsManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         
-        IncreaseAvailableRewards();
+        //IncreaseAvailableRewards();
     }
     
 
@@ -432,9 +465,11 @@ public class DailyRewardsManager : MonoBehaviour
     // Decrease the number of available rewards by 1
     public void DecreaseAvailableRewards()
     {
+        Debug.Log("availableRewards: " + availableRewards);
         if (availableRewards > 0)
         {
             availableRewards--;
+            Debug.Log("availableRewards: " + availableRewards);
             if (GameUtils.IsFacebookBuild())
             {
                 FBPlayerData.instance.AVAILABLE_REWARDS = availableRewards;

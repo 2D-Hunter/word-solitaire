@@ -60,10 +60,16 @@ public class GoalPopup : MonoBehaviour
     public void ShowPopup()
     {
         SetInit();
+        bg.DOKill();
+        popup.DOKill();
+        popupObj.DOKill();
 
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupObj.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
+
+        playBtn.DOKill();
+        playBtnRectTransform.DOKill();
 
         playBtn.DOFade(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
         playBtnRectTransform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetDelay(0.15f);
@@ -132,6 +138,15 @@ public class GoalPopup : MonoBehaviour
         bg?.DOKill();
         popup?.DOKill();
         popupObj?.DOKill();
+
+        playBtn?.DOKill();
+        playBtnRectTransform?.DOKill();
+
+        for (int i = 0; i < stars.Length; i++)
+        {
+            stars[i]?.DOKill();
+            starsRectTransform[i]?.DOKill();
+        }
 
     }
 }

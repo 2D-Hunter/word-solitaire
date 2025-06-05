@@ -99,6 +99,7 @@ public class SettingsPopupGame : MonoBehaviour
     public void Restart()
     {
         FBPlayerData.instance.VibrationEffect();
+        Initiate.Fade("Game", Color.black, 1f);
     }
     public void Quit()
     {

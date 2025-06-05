@@ -9,7 +9,7 @@ public class HeartUI : MonoBehaviour
     public TextMeshProUGUI heartTextShadow;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI timerTextShadow;
-    private float heartRegenTime = 30f;
+    private float heartRegenTime = 1800f;
     bool check = true;
 
     private void Update()

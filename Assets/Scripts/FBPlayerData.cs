@@ -1,10 +1,13 @@
 using UnityEngine;
 using SimpleJSON;
 using System;
+using System.Collections;
 
 public class FBPlayerData : MonoBehaviour
 {
     public static FBPlayerData instance;
+    private bool prevMusicMuted;
+    private bool prevSoundMuted;
     public string productID = "";
 
     
@@ -63,16 +66,22 @@ public class FBPlayerData : MonoBehaviour
     public int CURRENT_REWARD_INDEX = 0;
     public bool TUTORIAL_1_COMPLETED = false;
     public bool TUTORIAL_2_COMPLETED = false;
+    public int TOTAL_WILD_CARD = 2;
 
-
+    //worddict
     private void Awake()
     {
+#if UNITY_EDITOR
+        Debug.unityLogger.logEnabled = true;
+#else
+ Debug.unityLogger.logEnabled = false;
+#endif
         //BUILD_TYPE = "Facebook";
         //TOTAL_COINS = 1000;
         //GAME_SOUND = false;
         //NO_ADS_30_DAYS = false;
         //IsTesting = false;
-        
+
         //CURRENT_LEVEL = 1;
         //TUTORIAL_1_COMPLETED = true;
         Debug.Log("___________Awake BUILD_TYPE: " + BUILD_TYPE);
@@ -91,14 +100,16 @@ public class FBPlayerData : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-       FBPlayerData.instance.NO_ADS_30_DAYS = !ShouldShowAds();
+        
+       //FBPlayerData.instance.NO_ADS_30_DAYS = !ShouldShowAds();
     }
 
     public void SavePlayerData()
     {
         Debug.Log("Data Saved");
         string data = CURRENT_LEVEL + ":" + GAME_MUSIC + ":" + GAME_SOUND + ":" + NO_ADS_30_DAYS + ":" + TOTAL_COINS + ":" + BRILLIANCE + ":" + TOTAL_HEARTS + ":" + LAST_HEART_TIME
-             + ":" + LAST_REWARD_TIME + ":" + LAST_AD_REWARD_TIME + ":" + AVAILABLE_REWARDS + ":" + CURRENT_REWARD_INDEX + ":" + TUTORIAL_1_COMPLETED + ":" + TUTORIAL_2_COMPLETED;
+             + ":" + LAST_REWARD_TIME + ":" + LAST_AD_REWARD_TIME + ":" + AVAILABLE_REWARDS + ":" + CURRENT_REWARD_INDEX + ":" + TUTORIAL_1_COMPLETED + ":" + TUTORIAL_2_COMPLETED
+              + ":" + TOTAL_WILD_CARD + ":" + EXPIRY_DATE_30_DAYS;
         Application.ExternalCall("SavePlayerData", data);
 
     }
@@ -117,17 +128,21 @@ public class FBPlayerData : MonoBehaviour
         TOTAL_HEARTS = playerData["TOTAL_HEARTS_001"];
         LAST_HEART_TIME = playerData["LAST_HEART_TIME_001"].AsLong.ToString();
         LAST_REWARD_TIME = playerData["LAST_REWARD_TIME_001"].AsLong.ToString();
-        LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"].AsLong.ToString();
+        LAST_AD_REWARD_TIME = playerData["LAST_AD_REWARD_TIME_001"].AsLong.ToString();          
         AVAILABLE_REWARDS = playerData["AVAILABLE_REWARDS_001"];
         CURRENT_REWARD_INDEX = playerData["CURRENT_REWARD_INDEX_001"];
         TUTORIAL_1_COMPLETED = playerData["TUTORIAL_1_COMPLETED_001"];
         TUTORIAL_2_COMPLETED = playerData["TUTORIAL_2_COMPLETED_001"];
+        TOTAL_WILD_CARD = playerData["TOTAL_WILD_CARD_001"];
+        EXPIRY_DATE_30_DAYS = playerData["EXPIRY_DATE_30_DAYS_001"];
 
 
         Debug.Log("LAST_HEART_TIME (ticks): " + LAST_HEART_TIME);
+        Debug.Log("EXPIRY_DATE_30_DAYS (ticks): " + EXPIRY_DATE_30_DAYS);
 
 
         Debug.Log("_______________ RecievePlayerData222 " + data);
+        CheckExpiaryDate_RemoveAds();
 
         if (splash == null)
             splash = FindObjectOfType<Splash>();
@@ -160,29 +175,62 @@ public class FBPlayerData : MonoBehaviour
             IsIos = false;
         }
     }
+    public void OnAdStarted()
+    {
+        Debug.Log(">>> Ad Started - Muting audio");
+
+        // Save current states
+        prevMusicMuted = !GAME_MUSIC;
+        prevSoundMuted = !GAME_SOUND;
+
+        // Temporarily mute everything
+        SoundManager.instance.MuteAll(); // You'll define this in SoundManager (see below)
+    }
+
+    public void OnAdEnded()
+    {
+        Debug.Log(">>> Ad Ended - Restoring audio");
+
+        // Restore music
+        GAME_MUSIC = !prevMusicMuted;
+        GAME_SOUND = !prevSoundMuted;
+
+        SoundManager.instance.SetMusicMute(!GAME_MUSIC);
+        SoundManager.instance.SetSFXMute(!GAME_SOUND);
+    }
     public void MuteSound(bool hasFocus)
     {
 
-        //if (hasFocus)
-        //{
-        //    Debug.Log("_____Mute Music()");
-        //    SpotTheDifferencesGameToolkit.Scripts.Audio.MusicBase.instance.SetMusicMute();
-        //}
-        //else
-        //{
+        if (hasFocus)
+        {
+            Debug.Log("_____Mute Music()");
+            SoundManager.instance.MuteAll();
+        }
+        else
+        {
 
-        //    if (GAME_MUSIC)
-        //    {
-        //        Debug.Log("_____UnMute Music(): ");
-        //        SpotTheDifferencesGameToolkit.Scripts.Audio.MusicBase.instance.SetMusicUnMute();
-        //    }
-        //}
+            if (GAME_MUSIC)
+            {
+                Debug.Log("_____UnMute Music(): ");
+                SoundManager.instance.SetMusicMute(false);
+            }
+            if (GAME_SOUND)
+            {
+                Debug.Log("_____UnMute Sound(): ");
+                SoundManager.instance.SetSFXMute(false);
+            }
+        }
     }
     public void UnMuteSound()
     {
-        //Debug.Log("_____UnMute Music()");
-        //if (GAME_MUSIC)
-        //    SpotTheDifferencesGameToolkit.Scripts.Audio.MusicBase.instance.SetMusicUnMute();
+        Debug.Log("_____UnMute Music()");
+        if (GAME_MUSIC)
+            SoundManager.instance.SetMusicMute(false);
+        if (GAME_SOUND)
+        {
+            Debug.Log("_____UnMute Sound(): ");
+            SoundManager.instance.SetSFXMute(false);
+        }
     }
     public void MobileOrDesktop(string type)
     {
@@ -222,6 +270,16 @@ public class FBPlayerData : MonoBehaviour
                 break;
         }
     }
+    public void Get5CardsAfterVideoAd()
+    {
+        StartCoroutine(DelayedGet5Cards());
+    }
+
+    private IEnumerator DelayedGet5Cards()
+    {
+        yield return new WaitForSeconds(0.2f);
+        GameManager.instance.Get5CardsAfterVideoAd();
+    }
     public void RewardAdNotAvailable()
     {
 
@@ -236,8 +294,8 @@ public class FBPlayerData : MonoBehaviour
         Debug.Log("___Screen: " + screen);
         switch (screen)
         {
-            case "Win":
-                
+            case "Levelup":
+                SlotManager.instance.ContinueGameAfterInterstitial();
                 break;
         }
     }
@@ -255,17 +313,47 @@ public class FBPlayerData : MonoBehaviour
 
     }
 
-    void OnApplicationPause()
+    public void OnApplicationPause()
     {
         Debug.Log("OnApplicationPause");
         //MuteSound();
     }
-
-    public void ShowAdsNotAvailable()
+    public void OnBrowserFocusChange(string focus)
     {
+        bool hasFocus = focus == "true";
+        Debug.Log("OnBrowserFocusChange: " + hasFocus);
+        MuteSound(!hasFocus); // or your logic
+    }
 
-        PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
-        PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+    public void ShowAdsNotAvailable(string msg)
+    {
+        Debug.Log("_____ShowAdsNotAvailable: " + msg);
+        Debug.Log("_____Current Scene: " + InitManager.instance.CurrentScene);
+
+        if(InitManager.instance.CurrentScene == "Game")
+        {
+            if (msg == "Ad not completed" || msg == "Ad not completed.")
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noReward);
+            }
+            else
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+            }
+        }
+        else
+        {
+            PopupManager.instance.TogglePopup(PopupManager.instance.dailyRewardsPopup);
+            if (msg == "Ad not completed" || msg == "Ad not completed.")
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noReward);
+            }
+            else
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+            }
+        }
+        
     }
 
     public bool ShouldShowAds()
@@ -288,4 +376,59 @@ public class FBPlayerData : MonoBehaviour
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
         PopupManager.instance.ToggleMessage(PopupManager.instance.message);
     }
+    public void ShowMessage(string msg)
+    {
+        Menu.instance.ShowMessage(msg);
+    }
+    public void CheckExpiaryDate_RemoveAds()
+    {
+        Debug.Log("CheckExpiaryDate_RemoveAds: "+ EXPIRY_DATE_30_DAYS);
+
+        string dateStr;
+
+        if (GameUtils.IsFacebookBuild())
+        {
+            dateStr = EXPIRY_DATE_30_DAYS;
+        }
+        else
+        {
+            dateStr = PlayerPrefs.GetString("AdsRemovedUntil", "");
+        }
+        Debug.Log("dateStr: " + dateStr);
+
+        // Safety check for missing or invalid value
+        if (string.IsNullOrEmpty(dateStr) || dateStr == "0")
+        {
+            Debug.LogWarning("Expiry date is invalid or not set. Value: " + dateStr);
+            NO_ADS_30_DAYS = false;
+            Application.ExternalCall("LoadBanner");
+            Application.ExternalCall("loadInterstitial");
+            return;
+        }
+        if (long.TryParse(EXPIRY_DATE_30_DAYS, out long seconds))
+        {
+            DateTime endDate = DateTime.UnixEpoch.AddSeconds(seconds);
+            Debug.Log("DateTime.UtcNow: "+ DateTime.UtcNow);
+            Debug.Log("endDate: " + endDate);
+            if (DateTime.UtcNow < endDate)
+            {
+                NO_ADS_30_DAYS = true;
+            }
+            else
+            {
+                NO_ADS_30_DAYS = false;
+                EXPIRY_DATE_30_DAYS = "";
+                SavePlayerData();
+
+                Application.ExternalCall("LoadBanner");
+                Application.ExternalCall("loadInterstitial");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Failed to parse expiry date: " + EXPIRY_DATE_30_DAYS);
+            NO_ADS_30_DAYS = false;
+        }
+    }
+
 }

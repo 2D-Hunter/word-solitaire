@@ -29,6 +29,7 @@ public class Message : MonoBehaviour
         msg.alpha = 0;
         StartCoroutine(ShowMessage());
     }
+
     IEnumerator ShowMessage()
     {
         yield return new WaitForSeconds(0.5f);

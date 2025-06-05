@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
@@ -32,17 +33,24 @@ public class GameManager : MonoBehaviour
     public GameObject removeCardsBtn;
     public GameObject extraCardsSlots;
     public GameObject bottomIcons;
+    public GameObject wildCardBtn;
     public GameObject tutorialPatch;
     public GameObject tutorial;
+    
 
     public Card moreCardPrefab;  // Assign the Card Prefab in the Inspector
     public Transform parentPanel;
 
     private float[] targetPositionsOfMoreCards = { -180f, -165f, -150f, -135f, -120f };
+    public BackgroundManager backgroundManager;
+    private NumberOfWildCard numberOfWildCard;
 
 
     private void Awake()
     {
+        numberOfWildCard = FindObjectOfType<NumberOfWildCard>();
+        backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
+        InitManager.instance.CurrentScene = "Game";
         //if (instance == null)
         //{
         //    instance = this;
@@ -59,7 +67,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        //wildCardBtn.SetActive(false);
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
             hud1.SetActive(false);
             hud2.SetActive(false);
@@ -68,6 +77,7 @@ public class GameManager : MonoBehaviour
             removeCardsBtn.SetActive(false);
             extraCardsSlots.SetActive(false);
             bottomIcons.SetActive(false);
+            tutorial.SetActive(true);
         }
         else if (FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
@@ -75,6 +85,7 @@ public class GameManager : MonoBehaviour
             hintBtn.SetActive(false);
             removeCardsBtn.SetActive(false);
             bottomIcons.SetActive(false);
+            tutorial.SetActive(true);
         }
         else
         {
@@ -201,17 +212,43 @@ public class GameManager : MonoBehaviour
     }
     public void TapMoreCards()
     {
-        if(FBPlayerData.instance.TOTAL_COINS >= 150)
+        if(GameUtils.IsFacebookBuild())
         {
-            InitManager.instance.buyMoreCardsCntr++;
-            HideMoreCardsToBuy();
-            CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
-            SpawnCards();
+#if UNITY_EDITOR
+            FBPlayerData.instance.Get5CardsAfterVideoAd();
+            return;
+#endif
+            Application.ExternalCall("ShowAd_Reward", "MoreCards");
         }
         else
         {
-            PopupManager.instance.ToggleShop();
+            //if (FBPlayerData.instance.TOTAL_COINS >= 150)
+            //{
+            //    InitManager.instance.buyMoreCardsCntr++;
+            //    HideMoreCardsToBuy();
+            //    CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
+            //    SpawnCards();
+            //}
+            //else
+            //{
+            //    PopupManager.instance.ToggleShop();
+            //}
+        }
+        
+    }
+    public void Get5CardsAfterVideoAd()
+    {
+        HideMoreCardsToBuy();
+        SpawnCards();
+    }
+    public void TapWildCardBtn()
+    {
+        if(FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
+        {
+            FBPlayerData.instance.TOTAL_WILD_CARD--;
+            numberOfWildCard.UpdateWildCard();
+            FBPlayerData.instance.SavePlayerData();
         }
     }
-
+    
 }

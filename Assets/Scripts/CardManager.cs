@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using DG.Tweening;
 
 public class CardManager : MonoBehaviour
 {
@@ -14,7 +15,9 @@ public class CardManager : MonoBehaviour
     public int totalCardToGet;
 
     public GameObject cardContainer = null;
-    
+
+    public RectTransform startPoint; // Assign this in the Inspector
+
 
     private void Awake()
     {
@@ -28,6 +31,29 @@ public class CardManager : MonoBehaviour
     {
         Debug.Log("____Card Data CardManager");
         MakeRandomCardWild();
+        //AnimateCardsFromDeck(); // 🔥 Fan out effect
+    }
+    public void AnimateCardsFromDeck()
+    {
+        float moveDuration = 0.5f;
+        float delayBetweenCards = 0.1f;
+
+        for (int i = 0; i < totalCardsToClear.Count; i++)
+        {
+            Card card = totalCardsToClear[i];
+            RectTransform rect = card.GetComponent<RectTransform>();
+            if (rect == null) continue;
+
+            Vector2 finalPos = rect.anchoredPosition;
+
+            // Step 1: Instantly move card to deck/start point
+            rect.anchoredPosition = startPoint.anchoredPosition;
+
+            // Step 2: Animate it back to its original position with delay
+            rect.DOAnchorPos(finalPos, moveDuration)
+                .SetDelay(i * delayBetweenCards)
+                .SetEase(Ease.OutQuad);
+        }
     }
     void MakeRandomCardWild()
     {
