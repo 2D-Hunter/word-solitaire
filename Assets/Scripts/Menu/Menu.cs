@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using Word;
 
 public class Menu : MonoBehaviour
 {
@@ -29,9 +30,13 @@ public class Menu : MonoBehaviour
     public TextMeshProUGUI msgTxt;
     public BackgroundManager backgroundManager;
 
+    public GameObject[] allUI;
+    public GameObject connectingToServer = null;
+
     private void Awake()
     {
         
+
         backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
         backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
 
@@ -46,6 +51,7 @@ public class Menu : MonoBehaviour
     }
     private void Start()
     {
+        
         PopupManager.instance.AssignUIContainer();
         //AnimateButton();
     }
@@ -129,5 +135,22 @@ public class Menu : MonoBehaviour
     void RemoveMessage()
     {
         msgTxt.text = "";
+    }
+    public void StartMultiplayer()
+    {
+        foreach (GameObject item in allUI)
+        {
+            item.SetActive(false);
+        }
+        connectingToServer.SetActive(true);
+
+        string url = $"ws://ec2-52-43-3-186.us-west-2.compute.amazonaws.com:8770/word";
+        MultiplayerEventHandler.Instance.SubscribeMultiplayerEvents();
+        WordServiceContainer.NetworkService.Connect(url, () =>
+        {
+            Debug.Log("Onconeect to server >>>>>>>");
+        });
+
+        //Initiate.Fade("MultiplayerSelection", Color.black, 1f);
     }
 }

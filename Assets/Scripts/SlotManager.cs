@@ -123,7 +123,7 @@ public class SlotManager : MonoBehaviour
             {
                 goingBack = true;
                 Sequence cardSequence = DOTween.Sequence();
-                card.MoveBackToOriginalPosition();
+                card.MoveBackToOriginalPosition(card);
             }
             if (slotsCard.Count > 0)
                 slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
@@ -139,7 +139,14 @@ public class SlotManager : MonoBehaviour
                 tutorial.ShowNext();
             }
             //card is going to bottom slot
-            
+            if(card.tag == "WildCard")
+            {
+                 animDuration = 0.4f;
+            }
+            else
+            {
+                animDuration = 0.3f;
+            }
             goingBack = false;
             int emptySlotIndex = -1;
 
@@ -155,7 +162,7 @@ public class SlotManager : MonoBehaviour
             if (emptySlotIndex != -1)
             {
                     RectTransform cardRect = card.GetComponent<RectTransform>();
-                if (cardRect != null && card.tag == "ExtraCard")
+                if (cardRect != null && (card.tag == "ExtraCard" || card.tag == "WildCard"))
                 {
                     //originalPositions1[cardRect] = cardRect.anchoredPosition;
                     //Debug.Log("+++++++::: " + originalPositions1[cardRect]);
@@ -204,6 +211,10 @@ public class SlotManager : MonoBehaviour
                     height = 800f;
                     CardManager.instance.rightSideCards.Remove(card);
                 }
+                else if(card.GetComponent<RectTransform>().tag == "WildCard")
+                {
+                    height = 200f;
+                }
                 else
                 {
                     height = 400f;
@@ -242,6 +253,12 @@ public class SlotManager : MonoBehaviour
                 verticalMotion.OnComplete(() =>
                 {
                     Debug.Log("Card reached the slot with projectile motion!");
+                    if(card.tag == "WildCard")
+                    {
+                        FBPlayerData.instance.TOTAL_WILD_CARD--;
+                        FBPlayerData.instance.SavePlayerData();
+                        FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
+                    }
                     slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
                     if (activeTrail_WildCard != null)
                     {
@@ -454,7 +471,7 @@ public class SlotManager : MonoBehaviour
                 if(InitManager.instance.currentTarget > 0)
                 {
                     Debug.Log("card.tag: " + card.tag);
-                    if(card.tag != "ExtraCard")
+                    if(card.tag != "ExtraCard" && card.tag != "WildCard")
                     {
                         Debug.Log("card.tag inside: ");
                         InitManager.instance.currentTarget--;

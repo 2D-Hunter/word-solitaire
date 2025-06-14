@@ -28,6 +28,8 @@ public class PopupManager : MonoBehaviour
     public GameObject noReward;
     public GameObject dictionaryPopup;
     public GameObject message;
+    public GameObject wildcardPopup;
+    public GameObject moreCardsPopup;
 
     private GameObject currentPopup;
     private GameObject currentPopup2;

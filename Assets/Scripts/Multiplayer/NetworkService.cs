@@ -55,9 +55,9 @@ public class NetworkService : INetworkService
             if (!_isManuallyClosed)
             {
                 // attempt reconnect after short delay
-                Thread.Sleep(2000);
-                InitWebSocket();
-                _webSocket.ConnectAsync();
+                //Thread.Sleep(2000);
+                //InitWebSocket();
+                //_webSocket.ConnectAsync();
             }
         };
 

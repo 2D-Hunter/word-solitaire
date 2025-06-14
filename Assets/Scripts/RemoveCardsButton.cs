@@ -39,7 +39,7 @@ public class RemoveCardsButton : MonoBehaviour
             var card = SlotManager.instance.slotsCard[i];
 
             card.FlipImmediateBelowCards();
-            card.MoveBackToOriginalPosition();
+            //card.MoveBackToOriginalPosition();
             //SlotManager.instance.ResetAfterCardBack(card);
             //SlotManager.instance.slotsCard.Remove(card);
 

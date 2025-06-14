@@ -127,5 +127,22 @@ public class CardManager : MonoBehaviour
             rightSideCards[0].cardData.cardValue = cardValue1;
         }
     }
+    public void DisableAllCards()
+    {
+        Card[] cards = FindObjectsOfType<Card>();
+        foreach (Card card in cards)
+        {
+            card.DisableClick();
+        }
+    }
+
+    public void EnableAllCards()
+    {
+        Card[] cards = FindObjectsOfType<Card>();
+        foreach (Card card in cards)
+        {
+            card.EnableClick();
+        }
+    }
 
 }

@@ -23,6 +23,7 @@ public class GameModeSelection : MonoBehaviour
     }
     public void OnClickMultiMode()
     {
+        Debug.Log("OnClickMultiMode");
         WordServiceContainer.NetworkService.Subscribe<PlayerDetails>(BaseMessage.MsgType.playerdetails, (PlayerDetails msg) =>
         {
             Debug.Log(">>>>>>>>>>>>>>>>>>>>>>"+  msg.playerID);

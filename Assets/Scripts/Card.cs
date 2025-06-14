@@ -56,6 +56,7 @@ public class Card : MonoBehaviour
                 gameObject.GetComponent<Button>().enabled = false;
             }
         }
+        
     }
     //private void OnValidate()
     //{
@@ -69,6 +70,13 @@ public class Card : MonoBehaviour
     //}
     private void Start()
     {
+        
+        if (FBPlayerData.instance.CURRENT_LEVEL >= 3 && this.tag == "ExtraCard")
+        {
+            Debug.Log("Child Count: "+GetComponent<RectTransform>().childCount);
+            if(GetComponent<RectTransform>().childCount >= 5)
+                GetComponent<RectTransform>().GetChild(4).gameObject.SetActive(false);
+        }
         //instance = this;
          cardSequence = DOTween.Sequence();
         slotManager = FindObjectOfType<SlotManager>();
@@ -86,11 +94,12 @@ public class Card : MonoBehaviour
 
     }
     
-    public void MoveBackToOriginalPosition()
+    public void MoveBackToOriginalPosition(Card card)
     {
         
         if (this.tag == "ExtraCard")
         {
+            Debug.Log("MoveBackToOriginalPosition Extra Card");
             CardManager.instance.rightSideCards.Add(this);
             if (cardSequence != null && cardSequence.IsActive())
             {
@@ -111,10 +120,40 @@ public class Card : MonoBehaviour
 
             });
         }
+        else if (this.tag == "WildCard")
+        {
+            Debug.Log("MoveBackToOriginalPosition Wild Card");
+
+            if (cardSequence != null && cardSequence.IsActive())
+            {
+                cardSequence.Kill(); // Clean up old sequence explicitly
+            }
+
+            cardSequence = DOTween.Sequence();
+            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.4f).SetEase(Ease.OutQuad));
+            cardSequence.Join(GetComponent<RectTransform>().DOScale(0.7f, 0.3f).SetEase(Ease.OutBack));
+            //cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 10), 0.3f, RotateMode.Fast).SetEase(Ease.OutQuad));
+            cardSequence.Join(
+    GetComponent<RectTransform>()
+        .DORotate(new Vector3(0, 0, -350), 0.3f, RotateMode.FastBeyond360)
+        .SetEase(Ease.OutQuad)
+)
+
+            .OnComplete(() =>
+            {
+                
+                    FBPlayerData.instance.TOTAL_WILD_CARD++;
+                    FBPlayerData.instance.SavePlayerData();
+                    FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
+                RemoveCardsButton.instance.sendBackAll = false;
+                Destroy(card.gameObject);
+                card = null;
+            });
+        }
         else
         {
             //GetComponent<RectTransform>().DOKill();
-            Debug.Log("cardSequence121212");
+            Debug.Log("MoveBackToOriginalPosition Normal Card");
 
             if (cardSequence != null && cardSequence.IsActive())
             {
@@ -732,7 +771,19 @@ public class Card : MonoBehaviour
 
     }
 
-    
+    public void DisableClick()
+    {
+        Debug.Log("Click disabled");
+        if (FBPlayerData.instance.CURRENT_LEVEL == 11)
+        {
+            gameObject.GetComponent<Button>().enabled = false;
+        }
+    }
+    public void EnableClick()
+    {
+        Debug.Log("Click enabled");
+        gameObject.GetComponent<Button>().enabled = true;
+    }
 
 
 }

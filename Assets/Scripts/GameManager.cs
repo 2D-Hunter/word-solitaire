@@ -36,7 +36,9 @@ public class GameManager : MonoBehaviour
     public GameObject wildCardBtn;
     public GameObject tutorialPatch;
     public GameObject tutorial;
-    
+    public GameObject boosterTutorial;
+    public GameObject hudMask;
+
 
     public Card moreCardPrefab;  // Assign the Card Prefab in the Inspector
     public Transform parentPanel;
@@ -44,6 +46,10 @@ public class GameManager : MonoBehaviour
     private float[] targetPositionsOfMoreCards = { -180f, -165f, -150f, -135f, -120f };
     public BackgroundManager backgroundManager;
     private NumberOfWildCard numberOfWildCard;
+    public RectTransform wildCardTab;
+
+
+
 
 
     private void Awake()
@@ -67,7 +73,17 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        //wildCardBtn.SetActive(false);
+        if(FBPlayerData.instance.CURRENT_LEVEL >= 11)
+            wildCardBtn.SetActive(true);
+        else
+            wildCardBtn.SetActive(false);
+        if(FBPlayerData.instance.CURRENT_LEVEL == 11)
+        {
+            boosterTutorial.SetActive(true);
+        }
+        else
+            boosterTutorial.SetActive(false);
+
         if (FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
             hud1.SetActive(false);
@@ -90,6 +106,7 @@ public class GameManager : MonoBehaviour
         else
         {
             tutorial.SetActive(false);
+            hudMask.SetActive(false);
         }
         //Invoke("ToggleLevelup", 1f);
         if (PopupManager.instance)
@@ -169,6 +186,7 @@ public class GameManager : MonoBehaviour
         isEndGamePressed = true;
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
     }
+    
     public void SpawnCards()
     {
         StartCoroutine(SpawnAndMoveCards());
@@ -212,28 +230,29 @@ public class GameManager : MonoBehaviour
     }
     public void TapMoreCards()
     {
-        if(GameUtils.IsFacebookBuild())
-        {
-#if UNITY_EDITOR
-            FBPlayerData.instance.Get5CardsAfterVideoAd();
-            return;
-#endif
-            Application.ExternalCall("ShowAd_Reward", "MoreCards");
-        }
-        else
-        {
-            //if (FBPlayerData.instance.TOTAL_COINS >= 150)
-            //{
-            //    InitManager.instance.buyMoreCardsCntr++;
-            //    HideMoreCardsToBuy();
-            //    CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
-            //    SpawnCards();
-            //}
-            //else
-            //{
-            //    PopupManager.instance.ToggleShop();
-            //}
-        }
+        PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
+//        if(GameUtils.IsFacebookBuild())
+//        {
+//#if UNITY_EDITOR
+//            FBPlayerData.instance.Get5CardsAfterVideoAd();
+//            return;
+//#endif
+//            Application.ExternalCall("ShowAd_Reward", "MoreCards");
+//        }
+//        else
+//        {
+//            //if (FBPlayerData.instance.TOTAL_COINS >= 150)
+//            //{
+//            //    InitManager.instance.buyMoreCardsCntr++;
+//            //    HideMoreCardsToBuy();
+//            //    CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
+//            //    SpawnCards();
+//            //}
+//            //else
+//            //{
+//            //    PopupManager.instance.ToggleShop();
+//            //}
+//        }
         
     }
     public void Get5CardsAfterVideoAd()
@@ -243,12 +262,61 @@ public class GameManager : MonoBehaviour
     }
     public void TapWildCardBtn()
     {
-        if(FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
+        //if(FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
+        //{
+        //    FBPlayerData.instance.TOTAL_WILD_CARD--;
+        //    numberOfWildCard.UpdateWildCard();
+        //    FBPlayerData.instance.SavePlayerData();
+        //}
+        if(boosterTutorial.activeSelf)
         {
-            FBPlayerData.instance.TOTAL_WILD_CARD--;
-            numberOfWildCard.UpdateWildCard();
-            FBPlayerData.instance.SavePlayerData();
+            FindObjectOfType<BoosterTutorial>().StopHandAnim();
+            boosterTutorial.SetActive(false);
         }
+        
+        PopupManager.instance.TogglePopup(PopupManager.instance.wildcardPopup);
     }
-    
+    public void UseWildCardNow()
+    {
+        Debug.Log("_____Use Wild Card Now...");
+        
+        SpawnWildCard();
+
+
+    }
+    public void WildCardBackToCollection()
+    {
+        Debug.Log("_____Wild Card Back To Collection.");
+    }
+    public void SpawnWildCard()
+    {
+        // Instantiate card
+        Card newCard = Instantiate(moreCardPrefab, uiContainer);
+        newCard.tag = "WildCard";
+        newCard.isWildCard = true;
+        newCard.isFaceUp = true;
+
+        RectTransform cardTransform = newCard.GetComponent<RectTransform>();
+
+        // Update visuals
+        cardTransform.GetChild(2).gameObject.SetActive(false);
+        cardTransform.GetChild(3).gameObject.SetActive(true);
+
+        // Convert tab position to the local position of the new card's parent
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            uiContainer,
+            RectTransformUtility.WorldToScreenPoint(null, wildCardTab.position),
+            null,
+            out localPoint
+        );
+
+        cardTransform.anchoredPosition = localPoint;
+        cardTransform.localRotation = wildCardTab.localRotation;
+        cardTransform.localScale = Vector3.one * 0.71f;
+
+        SlotManager.instance.OnCardClicked(newCard);
+        newCard.GetComponent<RectTransform>().SetAsLastSibling();
+    }
+
 }
