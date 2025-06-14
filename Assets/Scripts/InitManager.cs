@@ -7,7 +7,7 @@ public class InitManager:MonoBehaviour
     public static InitManager instance;
 
     public string version = "1.0.12";
-    public int currentLevel = 3;
+    public int currentLevel = 1;
 
     
     public int currentTarget = 5;
