@@ -7,6 +7,10 @@ public class UnityMainThreadDispatcher : MonoBehaviour
 {
     private static readonly Queue<Action> _executionQueue = new();
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
     public static void Enqueue(Action action)
     {
         lock (_executionQueue)

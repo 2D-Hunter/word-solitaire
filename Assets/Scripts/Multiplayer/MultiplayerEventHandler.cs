@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,7 @@ public class MultiplayerEventHandler : MonoBehaviour
     public void SubscribeMultiplayerEvents()
     {
         Debug.Log("____SubscribeMultiplayerEvents");
+        WordServiceContainer.NetworkService.Subscribe<MatchFound>(BaseMessage.MsgType.MatchFound, OnMatchFound);
         WordServiceContainer.NetworkService.Subscribe<PlayerDetails>(BaseMessage.MsgType.playerdetails, (PlayerDetails msg) =>
         {
             Debug.Log(">>>>>>>>>>>>>>>>>>>>>>" + msg.playerID);
@@ -41,5 +43,10 @@ public class MultiplayerEventHandler : MonoBehaviour
             
         });
         
+    }
+
+    private void OnMatchFound(MatchFound found)
+    {
+        Debug.Log(found.players.Count);
     }
 }
