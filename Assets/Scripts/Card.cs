@@ -5,10 +5,12 @@ using System.Linq;
 using System.Collections;
 
 using DG.Tweening;
+using UnityEngine.EventSystems;
+
 //[ExecuteAlways]
 public class Card : MonoBehaviour
 {
-
+    public RectTransform thisCard;
     public List<Card> belowCards;
     
     public RectTransform rectTransform;
@@ -40,8 +42,13 @@ public class Card : MonoBehaviour
 
     private float[] originalPosOfExtraCards = { -180f, -165f, -150f, -135f, -120f, -105, -90, -75, -60, -45, -30, -15, 0, 15, 30 };
 
+
+
+
     private void Awake()
     {
+        if (thisCard == null)
+            thisCard = GetComponent<RectTransform>();
         Debug.Log("______this.tag: "+ this.tag);
         if(this.tag == "ExtraCard")
         {
@@ -62,15 +69,17 @@ public class Card : MonoBehaviour
     //{
     //    //if (Card.instance.gameObject.tag != "ExtraCard")
     //    //{
-    //    Debug.Log("________OnValidate");
+    //    //Debug.Log("________isWildCard: " + isWildCard);
     //    cardFace.SetActive(!isFaceUp);
-        
-
-    //    //}
+    //    if (isWildCard && isFaceUp)
+    //    {
+    //        gameObject.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(true);
+    //        gameObject.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
+    //    }
     //}
     private void Start()
     {
-        
+
         if (FBPlayerData.instance.CURRENT_LEVEL >= 3 && this.tag == "ExtraCard")
         {
             Debug.Log("Child Count: "+GetComponent<RectTransform>().childCount);
@@ -91,7 +100,12 @@ public class Card : MonoBehaviour
             if (tutorial == null)
                 tutorial = FindObjectOfType<Tutorial>();
         }
-
+        Debug.Log("_______isWildCarddd: " + gameObject.name+"_____" + isWildCard);
+        if (isWildCard && isFaceUp)
+        {
+            gameObject.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(true);
+            gameObject.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
+        }
     }
     
     public void MoveBackToOriginalPosition(Card card)
@@ -197,7 +211,8 @@ public class Card : MonoBehaviour
     }
     void AddFaceupExtraCard()
     {
-        CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[0], true);
+        if(CardManager.instance.rightSideCards.Count > 0)
+            CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[0], true);
     }
 
     public void OnCardClick(Card card)
@@ -371,139 +386,36 @@ public class Card : MonoBehaviour
         Debug.Log("CardTurnSound");
         SoundManager.instance.PlaySFX("CardTurn", 0.3f);
     }
-
-
+    
     public void FlipImmediateBelowCards()
     {
         foreach (Card belowCard in belowCards)
         {
             if (belowCard == null) continue;
 
-            Debug.Log($"Processing below card: {belowCard.name}");
-
-            // Check overlap conditions
+            Debug.Log($"🔎 Checking card: {belowCard.name}");
             bool overlapsWithTappedCard = IsOverlapping(this, belowCard, 2f);
-            bool overlapsWithOtherCards = DoesOverlapWithAnyOtherCardExcept(belowCard, this);
+            bool isBlocked = IsBlockedByOtherCards(belowCard, this);
 
+            Debug.Log($"➡ {belowCard.name} isBlocked: {isBlocked}, siblingIndex: {belowCard.transform.GetSiblingIndex()}");
 
-
-            Debug.Log("____>>>overlapsWithTappedCard: " + overlapsWithTappedCard + "____" + this + "____" + belowCard);
-            Debug.Log("____>>>overlapsWithOtherCards: " + overlapsWithOtherCards + "____" + belowCard + "____" + this);
-
-
-            //if(this.name == "Card 5" && belowCard.name == "Card 1")
-            //{
-            //    belowCard.FlipCard();&& 
-            //}
-            if (overlapsWithTappedCard && !overlapsWithOtherCards && isFaceUp)
-            //if (overlapsWithTappedCard && !overlapsWithOtherCards)
+            if (overlapsWithTappedCard && !isBlocked && isFaceUp)
             {
-                Debug.Log("____FlipImmediateBelowCards-11");
-                Debug.Log($"Flipping immediate below card: {belowCard.name}");
-                belowCard.FlipCard(belowCard);
-
-                //belowCard.FlipImmediateBelowCards();
+                Debug.Log($"✅ Flipping {belowCard.name}");
+                FlipCard(belowCard);
             }
             else
             {
-                Debug.Log("____FlipImmediateBelowCards-22");
-                Debug.Log($"Card {belowCard.name} is blocked or not directly below.");
+                Debug.Log($"⛔ BLOCKED: {belowCard.name} will NOT flip");
                 if (SlotManager.instance.goingBack && belowCard.isFaceUp)
                     belowCard.FlipCard(belowCard);
             }
         }
     }
+    
 
     
 
-
-    private bool DoesOverlapWithAnyOtherCardExcept(Card targetCard, Card excludedCard)
-    {
-        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
-        {
-            if (otherCard == targetCard || otherCard == excludedCard)
-            {
-                continue;
-            }
-
-            if (!otherCard.isFaceUp) continue;
-
-            //Debug.Log("___Overlap detected: " + targetCard.name + "_____" + otherCard.name);
-            if (IsOverlapping(targetCard, otherCard, 2f))
-            {
-                Debug.Log($"Overlap detected: {targetCard.name} overlaps with top-layer card {otherCard.name}");
-                return true;
-            }
-            else
-            {
-                Debug.Log($"No Overlap detected: {targetCard.name} overlaps with top-layer card {otherCard.name}");
-            }
-        }
-
-        return false;
-    }
-    private bool DoesOverlapWithAnyOtherCardExcept14(Card targetCard, Card excludedCard)
-    {
-        Rect targetRect = GetWorldRect(targetCard.GetComponent<RectTransform>());
-        float targetCenterY = targetRect.center.y;
-
-        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
-        {
-            if (otherCard == targetCard || otherCard == excludedCard)
-                continue;
-
-            // Only consider cards that are visually above
-            Rect otherRect = GetWorldRect(otherCard.GetComponent<RectTransform>());
-            float otherCenterY = otherRect.center.y;
-
-            if (otherCenterY <= targetCenterY)
-                continue; // not above
-
-            if (IsOverlapping(targetCard, otherCard, 5f))  // use small threshold now
-            {
-                Debug.Log($"Card {targetCard.name} is overlapped by higher card {otherCard.name}");
-                return true;
-            }
-        }
-
-        return false;
-    }
-    private bool IsOverlappedByAnyCard(Card cardToCheck)
-    {
-        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
-        {
-            if (otherCard == cardToCheck)
-                continue;
-
-            if (IsOverlapping(otherCard, cardToCheck, 2f))
-            {
-                Debug.Log($"{cardToCheck.name} is overlapped by {otherCard.name}");
-                return true;
-            }
-        }
-
-        Debug.Log($"{cardToCheck.name} is not overlapped by any card and is in the top layer.");
-        return false;
-    }
-
-    //private bool IsOverlapping(Card cardA, Card cardB)
-    //{
-    //    RectTransform rectA = cardA.GetComponent<RectTransform>();
-    //    RectTransform rectB = cardB.GetComponent<RectTransform>();
-
-    //    if (rectA == null || rectB == null) return false;
-
-    //    Rect worldRectA = GetWorldRect(rectA);
-    //    Rect worldRectB = GetWorldRect(rectB);
-
-    //    Debug.Log($"Checking overlap between {cardA.name} and {cardB.name}");
-    //    Debug.Log($"CardA Rect: {worldRectA}, CardB Rect: {worldRectB}");
-
-    //    bool overlaps = worldRectA.Overlaps(worldRectB);
-    //    Debug.Log($"Overlap result between {cardA.name} and {cardB.name}: {overlaps}");
-    //    return overlaps;
-
-    //}
     private bool IsOverlapping(Card cardA, Card cardB, float thresholdPercent = 2f)
     {
         RectTransform rectA = cardA.GetComponent<RectTransform>();
@@ -535,63 +447,18 @@ public class Card : MonoBehaviour
 
         return overlapPercent >= thresholdPercent;
     }
-    private bool IsBlockedByAnyCard(Card targetCard)
-    {
-        Rect targetRect = GetWorldRect(targetCard.GetComponent<RectTransform>());
-
-        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
-        {
-            if (otherCard == targetCard)
-                continue;
-
-            // Make sure other card is *visually* above
-            if (otherCard.transform.GetSiblingIndex() > targetCard.transform.GetSiblingIndex())
-            {
-                Rect otherRect = GetWorldRect(otherCard.GetComponent<RectTransform>());
-
-                Rect intersection = Rect.MinMaxRect(
-                    Mathf.Max(targetRect.xMin, otherRect.xMin),
-                    Mathf.Max(targetRect.yMin, otherRect.yMin),
-                    Mathf.Min(targetRect.xMax, otherRect.xMax),
-                    Mathf.Min(targetRect.yMax, otherRect.yMax)
-                );
-
-                if (intersection.width > 0 && intersection.height > 0)
-                {
-                    float overlapArea = intersection.width * intersection.height;
-                    float targetArea = targetRect.width * targetRect.height;
-                    float overlapPercent = (overlapArea / targetArea) * 100f;
-
-                    if (overlapPercent >= 5f)
-                    {
-                        Debug.Log($"Card {targetCard.name} is blocked by {otherCard.name} with {overlapPercent}% overlap.");
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
+    
 
     private Rect GetWorldRect(RectTransform rectTransform)
     {
         Vector3[] corners = new Vector3[4];
         rectTransform.GetWorldCorners(corners);
-
-        float width = corners[2].x - corners[0].x;
-        float height = corners[2].y - corners[0].y;
-
-        Debug.Log($"Corners for {rectTransform.name}: BL({corners[0]}), TL({corners[1]}), TR({corners[2]}), BR({corners[3]})");
-
-        return new Rect(corners[0].x, corners[0].y, width, height);
-        
+        return new Rect(corners[0].x, corners[0].y, corners[2].x - corners[0].x, corners[2].y - corners[0].y);
     }
     public void FlipCard(Card card)
     {
-        Debug.Log("card.belowCards.Count: " + card.belowCards.Count);
-        Debug.Log("card.belowCards.Count: " + belowCards.Count);
+        
+        Debug.Log("card.belowCards.Count: " +card.name + "______"+ belowCards.Count);
         Debug.Log("isFlipping: " + isFlipping);
         if (isFlipping) return;
         //if (isFaceUp) return; 
@@ -618,6 +485,7 @@ public class Card : MonoBehaviour
             });
         //}
     }
+    
     private void UpdateCardFlipping(Card card)
     {
 
@@ -785,5 +653,55 @@ public class Card : MonoBehaviour
         gameObject.GetComponent<Button>().enabled = true;
     }
 
+    
+
+    private bool IsSignificantOverlap(Rect a, Rect b, float thresholdPercent)
+    {
+        Rect overlap = Rect.MinMaxRect(
+            Mathf.Max(a.xMin, b.xMin),
+            Mathf.Max(a.yMin, b.yMin),
+            Mathf.Min(a.xMax, b.xMax),
+            Mathf.Min(a.yMax, b.yMax)
+        );
+
+        if (overlap.width <= 0 || overlap.height <= 0)
+            return false;
+
+        float overlapArea = overlap.width * overlap.height;
+        float aArea = a.width * a.height;
+        float overlapPercent = (overlapArea / aArea) * 100f;
+
+        return overlapPercent >= thresholdPercent;
+    }
+
+    private bool IsBlockedByOtherCards(Card targetCard, Card excludeCard)
+    {
+        int targetIndex = targetCard.transform.GetSiblingIndex();
+        Rect targetRect = GetWorldRect(targetCard.rectTransform);
+
+        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
+        {
+            if (otherCard == null || otherCard == targetCard || otherCard == excludeCard)
+                continue;
+
+            if (!otherCard.gameObject.activeInHierarchy)
+                continue;
+
+            int otherIndex = otherCard.transform.GetSiblingIndex();
+
+            if (otherIndex > targetIndex)
+            {
+                Rect otherRect = GetWorldRect(otherCard.rectTransform);
+
+                if (IsSignificantOverlap(targetRect, otherRect, 5f))
+                {
+                    Debug.Log($"❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
 }

@@ -68,6 +68,9 @@ public class FBPlayerData : MonoBehaviour
     public bool TUTORIAL_2_COMPLETED = false;
     public int TOTAL_WILD_CARD = 2;
 
+    public string AD_TYPE;
+
+
     //worddict
     private void Awake()
     {
@@ -84,6 +87,7 @@ public class FBPlayerData : MonoBehaviour
 
         //CURRENT_LEVEL = 1;
         //TUTORIAL_1_COMPLETED = true;
+        //TUTORIAL_2_COMPLETED = false;
         Debug.Log("___________Awake BUILD_TYPE: " + BUILD_TYPE);
         Debug.Log("___________is ad removed: " + NO_ADS_30_DAYS);
         if (instance == null)
@@ -295,6 +299,7 @@ public class FBPlayerData : MonoBehaviour
         switch (screen)
         {
             case "Levelup":
+            case "Tutorial":
                 SlotManager.instance.ContinueGameAfterInterstitial();
                 break;
         }
@@ -332,12 +337,15 @@ public class FBPlayerData : MonoBehaviour
 
         if(InitManager.instance.CurrentScene == "Game")
         {
+            PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
             if (msg == "Ad not completed" || msg == "Ad not completed.")
             {
+                Debug.Log("Ad not completed.....Show popup");
                 PopupManager.instance.TogglePopup(PopupManager.instance.noReward);
             }
             else
             {
+                Debug.Log(".....Show popup Ad not Available");
                 PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
             }
         }
@@ -429,6 +437,17 @@ public class FBPlayerData : MonoBehaviour
             Debug.LogWarning("Failed to parse expiry date: " + EXPIRY_DATE_30_DAYS);
             NO_ADS_30_DAYS = false;
         }
+    }
+
+    public void CloseMoreCardsPopupAndGiveRewards()
+    {
+        MoreCardsPopup moreCardsPopup = FindObjectOfType<MoreCardsPopup>();
+        moreCardsPopup.ClosePopupAndGiveRewards();
+    }
+    public void CloseWildCardPopupAndGiveRewards()
+    {
+        WildCardPopup wildCardPopup = FindObjectOfType<WildCardPopup>();
+        wildCardPopup.ContinueGameAfterRewardAd();
     }
 
 }

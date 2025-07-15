@@ -7,9 +7,12 @@ public class InitManager:MonoBehaviour
     public static InitManager instance;
 
     public string version = "1.0.12";
-    public int currentLevel = 3;
+    public int currentLevel = 1;
+    public int nextRandomLevel;
+    public bool isLevelRandomized = false;
 
-    
+
+
     public int currentTarget = 5;
     public bool levelCompleted = false;
 
@@ -29,6 +32,7 @@ public class InitManager:MonoBehaviour
 
     private void Awake()
     {
+
         if (instance == null)
         {
             instance = this;

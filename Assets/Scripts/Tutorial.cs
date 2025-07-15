@@ -59,6 +59,7 @@ public class Tutorial : MonoBehaviour
         }
         else if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
         {
+            cardJ.GetComponent<RectTransform>().GetChild(4).gameObject.SetActive(true);
             cardTransform = cardJ.GetComponent<RectTransform>();
             infoPanelText.text = "The <b><size=110%>'Draw Pile'</size></b> gives you\nbonus letter cards!\nMake <b><size=110%>'JUG'.</size></b>";
             infoPanelText.fontSize = 45;
@@ -70,6 +71,10 @@ public class Tutorial : MonoBehaviour
             cardJ.GetComponent<Button>().enabled = false;
             cardU.GetComponent<Button>().enabled = false;
             cardG1.GetComponent<Button>().enabled = false;
+        }
+        if(FBPlayerData.instance.CURRENT_LEVEL > 2)
+        {
+            cardJ.GetComponent<RectTransform>().GetChild(4).gameObject.SetActive(false);
         }
     }
     void ShowInfoPanel()
@@ -165,7 +170,8 @@ public class Tutorial : MonoBehaviour
         isAnimating = false;
         handRectTransform?.DOKill();
         //DOTween.KillAll();
-        cardTransform.localRotation = Quaternion.Euler(0, 0, 0);
+        if(cardTransform)
+            cardTransform.localRotation = Quaternion.Euler(0, 0, 0);
         Debug.Log("InitManager.instance.tutorialCntr: " + InitManager.instance.tutorialCntr);
         if(FBPlayerData.instance.CURRENT_LEVEL == 1)
         {

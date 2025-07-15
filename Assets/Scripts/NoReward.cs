@@ -104,7 +104,20 @@ public class NoReward : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         if (InitManager.instance.CurrentScene == "Game")
         {
-            ClosePopup();
+            if (FBPlayerData.instance.AD_TYPE == "MoreCards")
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noReward);
+                PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
+            }
+            else if (FBPlayerData.instance.AD_TYPE == "WildCard")
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.noReward);
+                PopupManager.instance.TogglePopup(PopupManager.instance.wildcardPopup);
+            }
+            else
+            {
+                ClosePopup();
+            }
         }
         else
         {

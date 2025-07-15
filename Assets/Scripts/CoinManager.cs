@@ -25,27 +25,29 @@ public class CoinManager : MonoBehaviour
             return;
         }
 
-        LoadCoins();
+        //LoadCoins();
     }
 
 
     public void AddCoins(int amount)
     {
-        Debug.Log("AddCoins: "+ totalCoins + "_____"+amount);
-        totalCoins += amount;
-        Debug.Log("AddCoins: " + totalCoins);
+        Debug.Log("AddCoins: "+ FBPlayerData.instance.TOTAL_COINS + "_____"+amount);
+        FBPlayerData.instance.TOTAL_COINS += amount;
+        Debug.Log("AddCoins: " + FBPlayerData.instance.TOTAL_COINS);
         SaveCoins();
-        OnCoinsUpdated.Invoke(totalCoins);
+        OnCoinsUpdated.Invoke(FBPlayerData.instance.TOTAL_COINS);
     }
 
     public bool SpendCoins(int amount)
     {
-        if (totalCoins >= amount)
+        Debug.Log("SpendCoins: "+ FBPlayerData.instance.TOTAL_COINS);
+        Debug.Log("SpendCoins: "+ amount);
+        if (FBPlayerData.instance.TOTAL_COINS >= amount)
         {
-            totalCoins -= amount;
+            FBPlayerData.instance.TOTAL_COINS -= amount;
             SaveCoins();
-            Debug.Log("SpednCoins");
-            OnCoinsUpdated.Invoke(totalCoins); // Notify UI elements
+            
+            OnCoinsUpdated.Invoke(FBPlayerData.instance.TOTAL_COINS); // Notify UI elements
             return true;
         }
         return false;
@@ -57,7 +59,7 @@ public class CoinManager : MonoBehaviour
         if (GameUtils.IsFacebookBuild())
             return FBPlayerData.instance.TOTAL_COINS;
         else
-            return totalCoins;
+            return FBPlayerData.instance.TOTAL_COINS;
     }
 
     private void SaveCoins()
@@ -65,7 +67,7 @@ public class CoinManager : MonoBehaviour
         Debug.Log("SaveCoins: " + GameUtils.IsFacebookBuild());
         if(GameUtils.IsFacebookBuild())
         {
-            FBPlayerData.instance.TOTAL_COINS = totalCoins;
+            //FBPlayerData.instance.TOTAL_COINS = totalCoins;
             FBPlayerData.instance.SavePlayerData();
         }
         else

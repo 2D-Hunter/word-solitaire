@@ -29,7 +29,7 @@ public class BackgroundManager : MonoBehaviour
     {
         int bgIndex = GetBackgroundIndex(level);
         string imageName = "Background/bg-" + (bgIndex + 1); // bg1, bg2, etc.
-
+        Debug.Log("imageName: " + imageName);
         Sprite bgSprite = Resources.Load<Sprite>(imageName);
 
         if (bgSprite != null && backgroundImage != null)

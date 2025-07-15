@@ -33,6 +33,7 @@ public class CardManager : MonoBehaviour
         MakeRandomCardWild();
         //AnimateCardsFromDeck(); // 🔥 Fan out effect
     }
+
     public void AnimateCardsFromDeck()
     {
         float moveDuration = 0.5f;
@@ -69,6 +70,7 @@ public class CardManager : MonoBehaviour
     }
     public void AddTotalCardsToClearInList()
     {
+        Debug.Log("cardContainer.GetComponentsInChildren<Card>(): " + cardContainer.GetComponentsInChildren<Card>().Length);
         totalCardsToClear.AddRange(cardContainer.GetComponentsInChildren<Card>());
     }
     public void UpdateFaceUpCards(Card card, bool isFaceUp)

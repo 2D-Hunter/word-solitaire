@@ -27,13 +27,42 @@ public class GoalPopup : MonoBehaviour
     //float delay = 0f;
     float delayIncrement = 0.1f;
 
+    public GameObject mainGoal;
+    public GameObject mainGoal1;
+    public GameObject bonusGoal1;
+
+    public TextMeshProUGUI goal1;
+    public TextMeshProUGUI goal1Shadow;
+
+    public TextMeshProUGUI reward;
+    public TextMeshProUGUI rewardShadow;
+
+    public TextMeshProUGUI targetForBonus;
+    public TextMeshProUGUI targetForBonusShadow;
+
+    public GameObject bonusGoal_Points, bonusGoal_NumberOfCards;
+
+    public TextMeshProUGUI numberOfLetters;
+    public TextMeshProUGUI numberOfLettersShadow;
+    public TextMeshProUGUI totalWordToGetTxt;
+    public TextMeshProUGUI totalWordToGetTxtShadow;
+    public BonusGoalType currentBonusGoalType;
+    public GameObject hardLabel = null;
+
     private void Awake()
     {
         instance = this;
+        Debug.Log("____GameUtils.EffectiveCurrentLevel: "+ GameUtils.EffectiveCurrentLevel);
+        currentBonusGoalType = levelData.levels[GameUtils.EffectiveCurrentLevel].bonusGoalType;
+        if (levelData.levels[GameUtils.EffectiveCurrentLevel].isLevelHard)
+            hardLabel.SetActive(true);
+        else
+            hardLabel.SetActive(false);
         SetInit();
     }
     private void SetInit()
     {
+        SetBonusGoal(currentBonusGoalType);
         foreach (var star in stars)
         {
             star.alpha = 0;
@@ -48,8 +77,46 @@ public class GoalPopup : MonoBehaviour
         playBtnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         popupObj.anchoredPosition = new Vector2(0, -350);
 
-        currentLevel.text = currentLevelShadow.text = "Level " + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
-        goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelTarget.ToString();
+        currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
+        if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
+        {
+            mainGoal.SetActive(false);
+            mainGoal1.SetActive(true);
+            bonusGoal1.SetActive(true);
+
+            goal1.text = goal1Shadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].levelTarget.ToString();
+            targetForBonus.text = targetForBonusShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].targetPointsForBonus.ToString();
+            reward.text = rewardShadow.text = "Reward:   +" + levelData.levels[GameUtils.EffectiveCurrentLevel].reward.ToString();
+        }
+        else
+        {
+            mainGoal.SetActive(true);
+            mainGoal1.SetActive(false);
+            bonusGoal1.SetActive(false);
+
+            goal.text = goalShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].levelTarget.ToString();
+        }
+    }
+    void SetBonusGoal(BonusGoalType goalType)
+    {
+        bonusGoal_Points.SetActive(false);
+        bonusGoal_NumberOfCards.SetActive(false);
+        Debug.Log("_____currentBonusGoalType: " + currentBonusGoalType);
+        switch (goalType)
+        {
+            case BonusGoalType.None:
+
+                break;
+            case BonusGoalType.Points:
+                bonusGoal_Points.SetActive(true);
+                break;
+            case BonusGoalType.NumberOfCards:
+                bonusGoal_NumberOfCards.SetActive(true);
+                numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters.ToString() + "+ Card";
+                totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfWords.ToString();
+                break;
+        }
+
     }
 
     private void Start()

@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Word;
 
 public class MultiplayerEventHandler : MonoBehaviour
 {
+    public bool isMultiplayer = false;
     public string localPlayerID;
+    public MatchFound matchFound;
     private static MultiplayerEventHandler instance;
     public static MultiplayerEventHandler Instance
     {
@@ -30,7 +33,9 @@ public class MultiplayerEventHandler : MonoBehaviour
         {
             Debug.Log(">>>>>>>>>>>>>>>>>>>>>>" + msg.playerID);
             localPlayerID = msg.playerID;
-            Initiate.Fade("MultiplayerSelection", Color.black, 1f);
+            //Initiate.Fade("MultiplayerSelection", Color.black, 1f);
+            isMultiplayer = true;
+            SceneManager.LoadScene("Game");
             MatchMakingRequest matchMakingRequest = new MatchMakingRequest();
             matchMakingRequest.playerId = msg.playerID;
             matchMakingRequest.Type = BaseMessage.MsgType.MatchMaking;
@@ -48,5 +53,8 @@ public class MultiplayerEventHandler : MonoBehaviour
     private void OnMatchFound(MatchFound found)
     {
         Debug.Log(found.players.Count);
+        matchFound = found;
+        isMultiplayer = true;
+        SceneManager.LoadScene("Game");
     }
 }

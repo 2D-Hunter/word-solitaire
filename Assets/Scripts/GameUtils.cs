@@ -14,4 +14,14 @@ public static class GameUtils
     {
         return FBPlayerData.instance != null && FBPlayerData.instance.BUILD_TYPE == "Ios";
     }
+
+    public static int EffectiveCurrentLevel
+    {
+        get
+        {
+            return !InitManager.instance.isLevelRandomized
+                ? FBPlayerData.instance.CURRENT_LEVEL - 1
+                : InitManager.instance.nextRandomLevel;
+        }
+    }
 }

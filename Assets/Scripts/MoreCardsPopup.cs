@@ -22,11 +22,7 @@ public class MoreCardsPopup : MonoBehaviour
     
     float delayIncrement = 0.15f;
 
-    private float origScaleAmount = 1f;
-    private float scaleAmount = 1.1f;
-    private float duration = 0.1f;
-
-    int coinsRequired = 150;
+   
     public TextMeshProUGUI price;
     public TextMeshProUGUI priceShadow;
 
@@ -120,9 +116,11 @@ public class MoreCardsPopup : MonoBehaviour
     public void TapOnVideoAd()
     {
         FBPlayerData.instance.VibrationEffect();
+        FBPlayerData.instance.AD_TYPE = "MoreCards";
 
 #if UNITY_EDITOR
-        ClosePopupAndGiveRewards();
+        FBPlayerData.instance.ShowAdsNotAvailable("Ad not completed");
+        //ClosePopupAndGiveRewards();
             return;
 #endif
             Application.ExternalCall("ShowAd_Reward", "MoreCards");
@@ -130,6 +128,8 @@ public class MoreCardsPopup : MonoBehaviour
     public void TapOnCoins()
     {
         FBPlayerData.instance.VibrationEffect();
+        Debug.Log("TapOnCoins: " + FBPlayerData.instance.TOTAL_COINS);
+        Debug.Log("TapOnCoins: " + InitManager.instance.moreCardsPrice);
         if (FBPlayerData.instance.TOTAL_COINS >= InitManager.instance.moreCardsPrice)
         {
             InitManager.instance.buyMoreCardsCntr++;

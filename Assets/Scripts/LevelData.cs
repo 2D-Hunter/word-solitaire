@@ -8,7 +8,12 @@ public class LevelData : ScriptableObject
     {
         public int levelNumber;
         public int levelTarget;
-        public string description;
+        public BonusGoalType bonusGoalType;
+        public int targetPointsForBonus;
+        public int reward;
+        public int numberOfLetters;
+        public int numberOfWords;
+        public bool isLevelHard;
     }
 
     public LevelInfo[] levels;

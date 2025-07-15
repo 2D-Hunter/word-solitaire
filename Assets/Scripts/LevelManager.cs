@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class LevelManager : MonoBehaviour
 {
@@ -14,15 +15,20 @@ public class LevelManager : MonoBehaviour
     public TextMeshProUGUI currentLevelScore;
     public TextMeshProUGUI currentLevelScoreShadow;
 
+    public TextMeshProUGUI bonusTarget;
+    public TextMeshProUGUI bonusTargetShadow;
     private int currentLevelIndex = 0;
-
     public string levelNamePrefix = "Level-";
     public RectTransform levelsObj = null;
+
+
+
+
 
     void Awake()
     {
         instance = this;
-        Debug.Log("InitManager.instance: "+ InitManager.instance);
+        Debug.Log("InitManager.instance: " + InitManager.instance);
         if (InitManager.instance == null)
         {
             LoadLevel(2);
@@ -31,19 +37,20 @@ public class LevelManager : MonoBehaviour
         {
             if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
             {
-                LoadLevel(FBPlayerData.instance.CURRENT_LEVEL-1);
+                Debug.Log("Level Manager FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
+                LoadLevel(FBPlayerData.instance.CURRENT_LEVEL - 1);
             }
             else
             {
                 LoadLevel(FBPlayerData.instance.CURRENT_LEVEL);
             }
         }
-        
+
     }
 
     public void LoadLevel(int levelIndex)
     {
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             foreach (GameObject level in levels)
             {
@@ -56,15 +63,25 @@ public class LevelManager : MonoBehaviour
             levels[0] = null;
             Destroy(levels[1]);
             levels[1] = null;
-            //levels[0].SetActive(false);
-            //levels[1].SetActive(false);
-            string prefabName = levelNamePrefix + levelIndex;
+
+            // Determine which prefab to load
+            int prefabIndex = levelIndex;
+
+            // After level 50, randomly select from levels 25–50 using the shuffled pool
+            if (levelIndex > 50)
+            {
+                prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
+                Debug.Log("____prefabIndex: " + prefabIndex);
+            }
+
+            string prefabName = levelNamePrefix + prefabIndex;
+            Debug.Log("prefabName: " + prefabName);
             GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
-            levelPrefab.SetActive(true);
-            Debug.Log("Level Prefab: " + levelPrefab);
+
             if (levelPrefab != null)
             {
                 GameObject level = Instantiate(levelPrefab, levelsObj);
+                level.SetActive(true);
             }
             else
             {
@@ -72,31 +89,38 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        Debug.Log("levelIndex: " + levelIndex + "_____"+ levels.Length);
-
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             levelIndex++;
         }
-        if (levelIndex >= 0 && levelIndex < levels.Length)
+
+        if (levelIndex >= 0)
         {
-            levels[levelIndex-1].SetActive(true);
+            // Since you're not using the 'levels' array anymore for instantiated levels after level 2,
+            // You can remove this part or manage instantiated levels separately.
+            levels[levelIndex - 1].SetActive(true);
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
-            if (levelData != null && levelIndex < levelData.levels.Length)
+
+            if (levelData != null && levelIndex < 1000) // Arbitrary upper limit
             {
-                var levelInfo = levelData.levels[levelIndex-1];
-                UpdateLevelUI(levelIndex, levelInfo.levelTarget);
-                Debug.Log($"Loading Level: {levelInfo.levelNumber}");
-                //InitManager.instance.currentTarget = levelInfo.levelTarget;
+                LevelData.LevelInfo levelInfo = GetLevelInfo(levelIndex); // Uses shuffled logic
+
+                if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
+                    UpdateLevelUI(levelIndex, levelInfo.levelTarget);
+                else
+                    UpdateLevelUI(levelIndex, levelInfo.levelTarget, levelInfo.targetPointsForBonus);
+
                 if (InitManager.instance != null)
                 {
                     InitManager.instance.levelCompleted = false;
                     InitManager.instance.currentTarget = levelInfo.levelTarget;
                 }
-                    
-                Debug.Log("All Cards: "+ CardManager.instance.allCards.Count);
-                CardManager.instance.totalCardToGet = CardManager.instance.allCards.Count - (CardManager.instance.extraCards.Count + CardManager.instance.rightSideCards.Count);
+
+                Debug.Log("All Cards: " + CardManager.instance.allCards.Count);
+
+                CardManager.instance.totalCardToGet = CardManager.instance.allCards.Count
+                    - (CardManager.instance.extraCards.Count + CardManager.instance.rightSideCards.Count);
             }
             else
             {
@@ -107,9 +131,8 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogError("Invalid level index!");
         }
-        
     }
-    public void UpdateLevelUI(int levelNumber, int levelTarget)
+    public void UpdateLevelUI(int levelNumber, int levelTarget, int bt = -1)
     {
         if (currentLevelText != null)
         {
@@ -126,6 +149,33 @@ public class LevelManager : MonoBehaviour
         {
             currentLevelScore.text = "0";
             currentLevelScoreShadow.text = "0";
+        }
+
+        // Only update bonusTarget if bt was actually passed in
+        if (bt >= 0 && bonusTarget != null)
+        {
+            bonusTarget.text = $"{bt}";
+            bonusTargetShadow.text = $"{bt}";
+        }
+    }
+    public void UpdateCurrentTarget( int levelTarget, int bt = -1)
+    {
+        if (currentLevelTarget != null)
+        {
+            currentLevelTarget.text = $"{levelTarget}";
+            currentLevelTargetShadow.text = $"{levelTarget}";
+        }
+        if (currentLevelScore != null)
+        {
+            currentLevelScore.text = "0";
+            currentLevelScoreShadow.text = "0";
+        }
+
+        // Only update bonusTarget if bt was actually passed in
+        if (bt >= 0 && bonusTarget != null)
+        {
+            bonusTarget.text = $"{bt}";
+            bonusTargetShadow.text = $"{bt}";
         }
     }
 
@@ -145,5 +195,39 @@ public class LevelManager : MonoBehaviour
     public void RestartLevel()
     {
         LoadLevel(currentLevelIndex);
+    }
+
+
+
+
+
+    public LevelData.LevelInfo GetLevelInfo(int levelNumber)
+    {
+        int maxDefinedLevel = levelData.levels.Length;
+
+        if (levelNumber <= maxDefinedLevel)
+        {
+            return levelData.levels[levelNumber - 1];
+        }
+        else
+        {
+            // Get next from shuffled pool
+            int randomIndex = InitManager.instance.nextRandomLevel;
+
+            LevelData.LevelInfo original = levelData.levels[randomIndex];
+
+            // Clone and override level number
+            return new LevelData.LevelInfo
+            {
+                levelNumber = levelNumber,
+                levelTarget = original.levelTarget,
+                bonusGoalType = original.bonusGoalType,
+                targetPointsForBonus = original.targetPointsForBonus,
+                reward = original.reward,
+                numberOfLetters = original.numberOfLetters,
+                numberOfWords = original.numberOfWords,
+                isLevelHard = original.isLevelHard
+            };
+        }
     }
 }

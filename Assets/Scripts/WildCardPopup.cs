@@ -149,6 +149,14 @@ public class WildCardPopup : MonoBehaviour
     }
     public void OnTapVideoAd()
     {
+        FBPlayerData.instance.VibrationEffect();
+        FBPlayerData.instance.AD_TYPE = "WildCard";
+
+#if UNITY_EDITOR
+        FBPlayerData.instance.ShowAdsNotAvailable("Ad not available");
+        //ClosePopupAndGiveRewards();
+        return;
+#endif
         Application.ExternalCall("ShowAd_Reward", "WildCard");
     }
     public void ContinueGameAfterRewardAd()

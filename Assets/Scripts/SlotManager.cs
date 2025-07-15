@@ -58,6 +58,9 @@ public class SlotManager : MonoBehaviour
     private StarProgressBar starProgressBar;
     public Card extraCard;
     public Tutorial tutorial;
+
+    public BonusHud bonusHud;
+
     private void Awake()
     {
         instance = this;
@@ -99,7 +102,7 @@ public class SlotManager : MonoBehaviour
         
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
-
+        Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
         //Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
         if (currentSlotIndex != -1)
         {
@@ -365,9 +368,12 @@ public class SlotManager : MonoBehaviour
     public IEnumerator SubmitWord()
     {
         
-        if(GetSlotString().Length >= 4)
+        GameManager.instance.submittedWordLength = GetSlotString().Length;
+        GameManager.instance.animateBonusTarget = true;
+        if (GetSlotString().Length >= 4)
             Appreciations.instance.ShowAppreciation();
-        
+        if ( bonusHud.currentBonusGoalType == BonusGoalType.NumberOfCards && GetSlotString().Length >= bonusHud.levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters)
+            GameManager.instance.wordCounter++;
         GameManager.instance.hintText = "";
         GameManager.instance.foundValidWord = false;
         GameManager.instance.hintWord = "";
@@ -379,7 +385,8 @@ public class SlotManager : MonoBehaviour
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
-        
+        GameManager.instance.gainedPoint = GetSlotPoints();
+        Debug.Log("GameManager.instance.gainedPoint: " + GameManager.instance.gainedPoint);
         ScoreManager.instance.AddScore(GetSlotPoints());
         if (starProgressBar != null)
         {
@@ -438,7 +445,15 @@ public class SlotManager : MonoBehaviour
             }
         }
 
-            Vector2 targetPosition = Hud.instance.hudCard.position;
+        Vector2 targetPosition;
+        if(MultiplayerEventHandler.Instance.isMultiplayer)
+        {
+            targetPosition = FindObjectOfType<MultiplayerHud>().hudCard.position;
+        }
+        else
+        {
+            targetPosition = Hud.instance.hudCard.position;
+        }
         
         for (int i = slotsCard.Count-1; i >= 0; i--)
         {
@@ -475,7 +490,7 @@ public class SlotManager : MonoBehaviour
                     {
                         Debug.Log("card.tag inside: ");
                         InitManager.instance.currentTarget--;
-                        LevelManager.instance.UpdateLevelUI(LevelManager.instance.levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber, InitManager.instance.currentTarget);
+                        LevelManager.instance.UpdateCurrentTarget(InitManager.instance.currentTarget);
                         Debug.Log("InitManager.instance.currentTarget Hud.instance.DecreaseTarget");
                         Hud.instance.DecreaseTarget();
                     }
@@ -517,7 +532,7 @@ public class SlotManager : MonoBehaviour
                 FBPlayerData.instance.VibrationEffect();
                 yield return new WaitForSeconds(0.2f); // 0.3 sec delay between each
             }
-            Invoke("ShowAd", 1f);
+            Invoke("ShowAd_AfterTutorial", 1f);
 
 
             yield break;
@@ -586,6 +601,16 @@ public class SlotManager : MonoBehaviour
         }
         
     }
+    void ShowAd_AfterTutorial()
+    {
+        Debug.Log("___Show Interstitial");
+        // All tweens complete, now show interstitial and continue
+        Application.ExternalCall("ShowAd_Interstitial", "Tutorial");
+
+#if UNITY_EDITOR
+        FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
+#endif
+    }
     void ShowAd()
     {
         Debug.Log("___Show Interstitial");
@@ -603,7 +628,11 @@ public class SlotManager : MonoBehaviour
     IEnumerator LoadMenu()
     {
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0f);
+        if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
+        }
         FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
         //if (FBPlayerData.instance.CURRENT_LEVEL > 5)

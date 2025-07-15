@@ -33,17 +33,33 @@ public class Menu : MonoBehaviour
     public GameObject[] allUI;
     public GameObject connectingToServer = null;
 
+
+    private List<int> shuffledPool = new List<int>();
+    private int poolIndex = 0;
+    private const int startShuffleIndex = 25; // Level 41 (0-based)
+    private const int endShuffleIndex = 50;   // Up to level 50 (exclusive index)
+    int prefabIndex;
+
     private void Awake()
     {
-        
+        Debug.Log("___Menu FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
+        if (FBPlayerData.instance.CURRENT_LEVEL > 50)
+        {
+            InitManager.instance.isLevelRandomized = true;
+
+            prefabIndex = GetNextShuffledIndex() + 1; // +1 because pool is 0-based
+            Debug.Log("____prefabIndex: " + prefabIndex);
+            InitManager.instance.nextRandomLevel = prefabIndex;
+        }
 
         backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
         backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
 
         InitManager.instance.CurrentScene = "Menu";
         instance = this;
-        if(InitManager.instance)
-            currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
+        //if(InitManager.instance)
+        //    currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
+        currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
         overlayPanel.SetActive(false);
         
 
@@ -51,12 +67,13 @@ public class Menu : MonoBehaviour
     }
     private void Start()
     {
-        
+        MultiplayerEventHandler.Instance.isMultiplayer = false;
         PopupManager.instance.AssignUIContainer();
         //AnimateButton();
     }
     public void ShowGoalPopup()
     {
+        
         FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
         heartHud.SetAsLastSibling();
@@ -144,13 +161,73 @@ public class Menu : MonoBehaviour
         }
         connectingToServer.SetActive(true);
 
-        string url = $"ws://ec2-52-43-3-186.us-west-2.compute.amazonaws.com:8770/word";
-        MultiplayerEventHandler.Instance.SubscribeMultiplayerEvents();
-        WordServiceContainer.NetworkService.Connect(url, () =>
-        {
-            Debug.Log("Onconeect to server >>>>>>>");
-        });
+        //string url = $"ws://ec2-52-43-3-186.us-west-2.compute.amazonaws.com:8770/word";
+        //MultiplayerEventHandler.Instance.SubscribeMultiplayerEvents();
+        //WordServiceContainer.NetworkService.Connect(url, () =>
+        //{
+        //    Debug.Log("Onconeect to server >>>>>>>");
+        //});
 
         //Initiate.Fade("MultiplayerSelection", Color.black, 1f);
+    }
+
+    public LevelData.LevelInfo GetLevelInfo(int levelNumber)
+    {
+        int maxDefinedLevel = levelData.levels.Length;
+
+        if (levelNumber <= maxDefinedLevel)
+        {
+            return levelData.levels[levelNumber - 1];
+        }
+        else
+        {
+            // Get next from shuffled pool
+            int randomIndex = GetNextShuffledIndex();
+
+            LevelData.LevelInfo original = levelData.levels[randomIndex];
+
+            // Clone and override level number
+            return new LevelData.LevelInfo
+            {
+                levelNumber = levelNumber,
+                levelTarget = original.levelTarget,
+                bonusGoalType = original.bonusGoalType,
+                targetPointsForBonus = original.targetPointsForBonus,
+                reward = original.reward,
+                numberOfLetters = original.numberOfLetters,
+                numberOfWords = original.numberOfWords,
+                isLevelHard = original.isLevelHard
+            };
+        }
+    }
+
+    private int GetNextShuffledIndex()
+    {
+        // Reshuffle if first time or exhausted
+        if (shuffledPool == null || poolIndex >= shuffledPool.Count)
+        {
+            ShufflePool();
+        }
+
+        return shuffledPool[poolIndex++];
+    }
+
+    private void ShufflePool()
+    {
+        shuffledPool = new List<int>();
+
+        for (int i = startShuffleIndex; i < endShuffleIndex; i++)
+        {
+            shuffledPool.Add(i);
+        }
+
+        // Fisher–Yates Shuffle
+        for (int i = shuffledPool.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (shuffledPool[i], shuffledPool[j]) = (shuffledPool[j], shuffledPool[i]);
+        }
+
+        poolIndex = 0;
     }
 }

@@ -104,7 +104,22 @@ public class NoAdAvailable : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         if (InitManager.instance.CurrentScene == "Game")
         {
-            ClosePopup();
+            if (FBPlayerData.instance.AD_TYPE == "MoreCards")
+            {
+                FBPlayerData.instance.AD_TYPE = "";
+                PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+                PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
+            }
+            else if (FBPlayerData.instance.AD_TYPE == "WildCard")
+            {
+                FBPlayerData.instance.AD_TYPE = "";
+                PopupManager.instance.TogglePopup(PopupManager.instance.noAdAvailable);
+                PopupManager.instance.TogglePopup(PopupManager.instance.wildcardPopup);
+            }
+            else
+            {
+                ClosePopup();
+            }
         }
         else
         {

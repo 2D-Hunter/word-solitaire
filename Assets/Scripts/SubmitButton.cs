@@ -85,8 +85,7 @@ public class SubmitButton : MonoBehaviour
             tutorial.infoPanel.SetActive(false);
             spriteMask.SetActive(false);
             tutorial.gameObject.SetActive(false);
-            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
-            FBPlayerData.instance.SavePlayerData();
+            
 
         }
         FBPlayerData.instance.VibrationEffect();
