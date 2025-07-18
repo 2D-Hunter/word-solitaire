@@ -101,9 +101,26 @@ public class SlotManager : MonoBehaviour
         StartCoroutine(OnCardClicked_Coroutine(card));
     }
 
+    public void ReturnBackToDeck(Card card)
+    {
+        StartCoroutine(ReturnBackToDeckRoutine(card));
+    }
+
+    private IEnumerator ReturnBackToDeckRoutine(Card card) 
+    { 
+        yield return new WaitForEndOfFrame();
+        card.MoveBackToOriginalPosition(null,false);
+        yield return new WaitForSeconds(0.4f);
+        card.FlipImmediateBelowCards();
+        yield return new WaitForSeconds(0.2f);
+        card.GetComponent<Button>().enabled = true;
+        yield return new WaitForEndOfFrame();
+
+    }
+
     public IEnumerator OnCardClicked_Coroutine(Card card)
     {
-        yield return new WaitForSeconds(2f);
+       
         
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());

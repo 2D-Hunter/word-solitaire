@@ -108,7 +108,7 @@ public class Card : MonoBehaviour
         }
     }
     
-    public void MoveBackToOriginalPosition(Card tempCard)
+    public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true)
     {
 
         
@@ -185,7 +185,7 @@ public class Card : MonoBehaviour
                      RemoveCardsButton.instance.sendBackAll = false;
 
                  });
-
+                if(shouldcallbelow)
                 Invoke("SetFaceOfCard", 0.1f);
             
             

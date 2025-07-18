@@ -37,9 +37,10 @@ public class RemoveCardsButton : MonoBehaviour
         for (int i = 0; i < SlotManager.instance.slotsCard.Count; i++)
         {
             var card = SlotManager.instance.slotsCard[i];
-            SlotManager.instance.OnCardClicked(card);
+            Debug.Log("___Card::: " + card.name);
+            SlotManager.instance.ReturnBackToDeck(card);
             //Debug.Log("___Card::: " + card);
-            //card.FlipImmediateBelowCards();
+            //
             //card.MoveBackToOriginalPosition(card);
             //SlotManager.instance.ResetAfterCardBack(card);
             //SlotManager.instance.slotsCard.Remove(card);
