@@ -58,7 +58,7 @@ public class CardManager : MonoBehaviour
     }
     void MakeRandomCardWild()
     {
-        if (extraCards.Count == 0) return;
+        if (extraCards.Count == 0 || FBPlayerData.instance.CURRENT_LEVEL < 15) return;
         int randomIndex = Random.Range(0, extraCards.Count);
         Card randomCard = extraCards[randomIndex];
         randomCard.SetAsWild();
@@ -78,7 +78,7 @@ public class CardManager : MonoBehaviour
         //Debug.Log("Face-up cards: " + isFaceUp);
         if (isFaceUp)
         {
-            if (!allFaceUpCards.Contains(card))
+            if (!allFaceUpCards.Contains(card) && !card.isWildCard)
                 allFaceUpCards.Add(card);
         }
         else

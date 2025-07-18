@@ -111,22 +111,62 @@ public class CardData : MonoBehaviour
         card.cardData = this;
 
     }
-    List<char> GenerateAtLeastFiveVowels(int totalCards)
+    //List<char> GenerateAtLeastFiveVowels(int totalCards)
+    //{
+    //    string vowels = "AEIOU";
+    //    string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+    //    List<char> result = new List<char>();
+
+    //    // Ensure 5 vowels
+    //    for (int i = 0; i < 5; i++)
+    //        result.Add(vowels[Random.Range(0, vowels.Length)]);
+
+    //    // Fill remaining with random letters (vowels + consonants)
+    //    string allLetters = vowels + consonants;
+    //    for (int i = 5; i < totalCards; i++)
+    //        result.Add(allLetters[Random.Range(0, allLetters.Length)]);
+
+    //    // Shuffle
+    //    for (int i = result.Count - 1; i > 0; i--)
+    //    {
+    //        int j = Random.Range(0, i + 1);
+    //        (result[i], result[j]) = (result[j], result[i]);
+    //    }
+
+    //    return result;
+    //}
+    List<char> GenerateAtLeastFiveVowels(int totalCards, float difficulty = 0f)
     {
         string vowels = "AEIOU";
         string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+        string consonants2 = "BCDAFGHJKELMNPQRISTVWXOYZU";
+        string consonants3 = "BCADFGHJEKLMANPOQRSTUVWXYZI";
+
         List<char> result = new List<char>();
 
-        // Ensure 5 vowels
-        for (int i = 0; i < 5; i++)
+        difficulty = Mathf.Clamp01(difficulty);
+
+        // For 10 cards, map difficulty to 5–2 vowels (easy → hard)
+        int vowelCount = Mathf.RoundToInt(Mathf.Lerp(5, 2, difficulty));
+        if(vowelCount < 3)
+        {
+            consonants = consonants3;
+        }
+        if(vowelCount < 4)
+        {
+            consonants = consonants2;
+        }
+        int consonantCount = totalCards - vowelCount;
+
+        // Add vowels
+        for (int i = 0; i < vowelCount; i++)
             result.Add(vowels[Random.Range(0, vowels.Length)]);
 
-        // Fill remaining with random letters (vowels + consonants)
-        string allLetters = vowels + consonants;
-        for (int i = 5; i < totalCards; i++)
-            result.Add(allLetters[Random.Range(0, allLetters.Length)]);
+        // Add consonants
+        for (int i = 0; i < consonantCount; i++)
+            result.Add(consonants[Random.Range(0, consonants.Length)]);
 
-        // Shuffle
+        // Shuffle the result
         for (int i = result.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);

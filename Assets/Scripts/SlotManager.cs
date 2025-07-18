@@ -96,9 +96,14 @@ public class SlotManager : MonoBehaviour
             }
         }
     }
-
     public void OnCardClicked(Card card)
     {
+        StartCoroutine(OnCardClicked_Coroutine(card));
+    }
+
+    public IEnumerator OnCardClicked_Coroutine(Card card)
+    {
+        yield return new WaitForSeconds(2f);
         
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
@@ -106,7 +111,7 @@ public class SlotManager : MonoBehaviour
         //Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
         if (currentSlotIndex != -1)
         {
-            if (FBPlayerData.instance.CURRENT_LEVEL == 1) return;
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1) yield break;
             //card going back to place
             Debug.Log("___currentSlotIndex: " + currentSlotIndex + "____"+ (GetSlotString().Length-1));
             //if (currentSlotIndex == GetSlotString().Length-1)
@@ -125,7 +130,7 @@ public class SlotManager : MonoBehaviour
             if (card.GetComponent<Card>() != null)
             {
                 goingBack = true;
-                Sequence cardSequence = DOTween.Sequence();
+                //Sequence cardSequence = DOTween.Sequence();
                 card.MoveBackToOriginalPosition(card);
             }
             if (slotsCard.Count > 0)
@@ -133,7 +138,7 @@ public class SlotManager : MonoBehaviour
         }
         else
         {
-            if (SlotManager.instance.allSlotsOccupied) return;
+            if (SlotManager.instance.allSlotsOccupied) yield  break;
             Invoke("PlayCardPlacedSound", 0.2f);
             
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
@@ -278,6 +283,7 @@ public class SlotManager : MonoBehaviour
         }
         CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         AAA();
+        yield return new WaitForEndOfFrame();
     }
     void PlayCardPlacedSound()
     {
@@ -367,7 +373,8 @@ public class SlotManager : MonoBehaviour
 
     public IEnumerator SubmitWord()
     {
-        
+        GameManager.instance.foundWords.Add(GetSlotString());
+        WordnikDefinition.instance.FetchDefinition(SlotManager.instance.GetSlotString().ToLower());
         GameManager.instance.submittedWordLength = GetSlotString().Length;
         GameManager.instance.animateBonusTarget = true;
         if (GetSlotString().Length >= 4)
@@ -605,7 +612,7 @@ public class SlotManager : MonoBehaviour
     {
         Debug.Log("___Show Interstitial");
         // All tweens complete, now show interstitial and continue
-        Application.ExternalCall("ShowAd_Interstitial", "Tutorial");
+        AdTimerHandler.Instance.TryShowAd("Tutorial");
 
 #if UNITY_EDITOR
         FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
@@ -615,7 +622,7 @@ public class SlotManager : MonoBehaviour
     {
         Debug.Log("___Show Interstitial");
         // All tweens complete, now show interstitial and continue
-        Application.ExternalCall("ShowAd_Interstitial", "Levelup");
+        AdTimerHandler.Instance.TryShowAd("Levelup");
 
 #if UNITY_EDITOR
         FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");

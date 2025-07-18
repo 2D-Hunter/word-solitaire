@@ -108,8 +108,9 @@ public class Card : MonoBehaviour
         }
     }
     
-    public void MoveBackToOriginalPosition(Card card)
+    public void MoveBackToOriginalPosition(Card tempCard)
     {
+
         
         if (this.tag == "ExtraCard")
         {
@@ -117,14 +118,14 @@ public class Card : MonoBehaviour
             CardManager.instance.rightSideCards.Add(this);
             if (cardSequence != null && cardSequence.IsActive())
             {
-                cardSequence.Kill(); // Clean up old sequence explicitly
+                //cardSequence.Kill(); // Clean up old sequence explicitly
             }
 
-            cardSequence = DOTween.Sequence();
-            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.3f).SetEase(Ease.OutQuad));
-            cardSequence.Join(GetComponent<RectTransform>().DOScale(1f, 0.3f).SetEase(Ease.OutBack));
-            cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
-            cardSequence.OnComplete(() =>
+            var cardSequence1 = DOTween.Sequence();
+            cardSequence1.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.3f).SetEase(Ease.OutQuad));
+            cardSequence1.Join(GetComponent<RectTransform>().DOScale(1f, 0.3f).SetEase(Ease.OutBack));
+            cardSequence1.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
+            cardSequence1.OnComplete(() =>
             {
                 Debug.Log("Card has reached back into the original position.");
                 GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
@@ -140,14 +141,14 @@ public class Card : MonoBehaviour
 
             if (cardSequence != null && cardSequence.IsActive())
             {
-                cardSequence.Kill(); // Clean up old sequence explicitly
+                //cardSequence.Kill(); // Clean up old sequence explicitly
             }
 
-            cardSequence = DOTween.Sequence();
-            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.4f).SetEase(Ease.OutQuad));
-            cardSequence.Join(GetComponent<RectTransform>().DOScale(0.7f, 0.3f).SetEase(Ease.OutBack));
+            var cardSequence2 = DOTween.Sequence();
+            cardSequence2.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.4f).SetEase(Ease.OutQuad));
+            cardSequence2.Join(GetComponent<RectTransform>().DOScale(0.7f, 0.3f).SetEase(Ease.OutBack));
             //cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 10), 0.3f, RotateMode.Fast).SetEase(Ease.OutQuad));
-            cardSequence.Join(
+            cardSequence2.Join(
     GetComponent<RectTransform>()
         .DORotate(new Vector3(0, 0, -350), 0.3f, RotateMode.FastBeyond360)
         .SetEase(Ease.OutQuad)
@@ -160,8 +161,8 @@ public class Card : MonoBehaviour
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
                 RemoveCardsButton.instance.sendBackAll = false;
-                Destroy(card.gameObject);
-                card = null;
+                Destroy(gameObject);
+                //card = null;
             });
         }
         else
@@ -171,13 +172,13 @@ public class Card : MonoBehaviour
 
             if (cardSequence != null && cardSequence.IsActive())
             {
-                cardSequence.Kill(); // Clean up old sequence explicitly
+                //cardSequence.Kill(); // Clean up old sequence explicitly
             }
 
-            cardSequence = DOTween.Sequence();
-            cardSequence.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.2f).SetEase(Ease.OutQuad));
-                cardSequence.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
-                cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
+            var cardSequence3 = DOTween.Sequence();
+            cardSequence3.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.2f).SetEase(Ease.OutQuad));
+            cardSequence3.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
+            cardSequence3.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
                 .OnComplete(() =>
                  {
                      Debug.Log("sendBackAll000");
@@ -480,6 +481,14 @@ public class Card : MonoBehaviour
                     .OnComplete(() =>
                     {
                         isFlipping = false;
+
+                        if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.isWildCard)
+                            CardManager.instance.allFaceUpCards.Add(card);
+                        if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
+                            CardManager.instance.allFaceUpCards.Remove(card);
+
+
+                        Debug.Log("___Card flipped: "+slotManager.goingBack);
                             //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
                         });
             });
@@ -609,6 +618,7 @@ public class Card : MonoBehaviour
                 cardToFlip.rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                     .OnComplete(() =>
                     {
+
                         isFlipping = false;
                     });
             });

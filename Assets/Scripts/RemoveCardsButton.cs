@@ -14,13 +14,13 @@ public class RemoveCardsButton : MonoBehaviour
     private void Start()
     {
         instance = this;
-        gameObject.SetActive(false);
-        //SwapImage();
+        //gameObject.SetActive(false);
+        SwapImage();
     }
     
     public void SwapImage()
     {
-        return;
+        if (SlotManager.instance.slotsCard.Count <= 0) return;
         string imageToLoad = SlotManager.instance.isSlotOccupied[0] ? secondImage : firstImage;
         Sprite loadedSprite = Resources.Load<Sprite>(imageToLoad);
         if (loadedSprite != null)
@@ -29,7 +29,7 @@ public class RemoveCardsButton : MonoBehaviour
     }
     public void OnTapRemoveCards()
     {
-        return;
+        
         FBPlayerData.instance.VibrationEffect();
         sendBackAll = true;
         //Debug.Log("SlotManager.instance.slotsCard.Count: "+ SlotManager.instance.slotsCard.Count);
@@ -37,35 +37,36 @@ public class RemoveCardsButton : MonoBehaviour
         for (int i = 0; i < SlotManager.instance.slotsCard.Count; i++)
         {
             var card = SlotManager.instance.slotsCard[i];
-
-            card.FlipImmediateBelowCards();
-            //card.MoveBackToOriginalPosition();
+            SlotManager.instance.OnCardClicked(card);
+            //Debug.Log("___Card::: " + card);
+            //card.FlipImmediateBelowCards();
+            //card.MoveBackToOriginalPosition(card);
             //SlotManager.instance.ResetAfterCardBack(card);
             //SlotManager.instance.slotsCard.Remove(card);
 
 
         }
-        //Debug.Log("SlotManager.instance.slotsCard.Countt: " + SlotManager.instance.slotsCard.Count);
-        for (int j = 0; j < SlotManager.instance.slotsCard.Count; j++)
-        {
-            var card = SlotManager.instance.slotsCard[j];
-            SlotManager.instance.ResetAfterCardBack(card);
-        }
-        //Debug.Log("SlotManager.instance.slotsCard.Counttt: " + SlotManager.instance.slotsCard.Count);
-        //for (int k = 0; k < SlotManager.instance.slotsCard.Count; k++)
+        ////Debug.Log("SlotManager.instance.slotsCard.Countt: " + SlotManager.instance.slotsCard.Count);
+        //for (int j = 0; j < SlotManager.instance.slotsCard.Count; j++)
+        //{
+        //    var card = SlotManager.instance.slotsCard[j];
+        //    SlotManager.instance.ResetAfterCardBack(card);
+        //}
+        ////Debug.Log("SlotManager.instance.slotsCard.Counttt: " + SlotManager.instance.slotsCard.Count);
+        ////for (int k = 0; k < SlotManager.instance.slotsCard.Count; k++)
+        ////{
+        ////    Debug.Log("SlotManager.instance.slotsCard.Countttt");
+        ////    var card = SlotManager.instance.slotsCard[k];
+        ////    SlotManager.instance.slotsCard.RemoveAt(SlotManager.instance.slotsCard.Count-1);
+        ////}
+        //while (SlotManager.instance.slotsCard.Count > 0)
         //{
         //    Debug.Log("SlotManager.instance.slotsCard.Countttt");
-        //    var card = SlotManager.instance.slotsCard[k];
-        //    SlotManager.instance.slotsCard.RemoveAt(SlotManager.instance.slotsCard.Count-1);
+        //    SlotManager.instance.slotsCard.RemoveAt(SlotManager.instance.slotsCard.Count - 1);
         //}
-        while (SlotManager.instance.slotsCard.Count > 0)
-        {
-            Debug.Log("SlotManager.instance.slotsCard.Countttt");
-            SlotManager.instance.slotsCard.RemoveAt(SlotManager.instance.slotsCard.Count - 1);
-        }
-        SlotManager.instance.AAA();
+        //SlotManager.instance.AAA();
 
-        //Invoke("SetGoBackValue", 0.2f);
+        ////Invoke("SetGoBackValue", 0.2f);
     }
     private void SetGoBackValue()
     {

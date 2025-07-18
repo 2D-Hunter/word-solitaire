@@ -24,8 +24,12 @@ public class WordnikDefinition : MonoBehaviour
 
     private IEnumerator FetchDefinitionCoroutine(string word)
     {
-        if (Dictionary.instance.loading != null)
-            Dictionary.instance.loading.SetActive(true);
+        if(Dictionary.instance != null)
+        {
+            if (Dictionary.instance.loading != null)
+                Dictionary.instance.loading.SetActive(true);
+        }
+        
         
         //string requestUrl = $"{apiUrl}?action=query&prop=extracts&titles={word}&format=json&explaintext=true";
         string requestUrl = "https://897rjsp6dj.execute-api.us-west-2.amazonaws.com/wordgame/word?word="+word;
@@ -46,13 +50,22 @@ public class WordnikDefinition : MonoBehaviour
                 Debug.Log("API Response: " + jsonResponse);
 
                 string definition = ParseDefinition(jsonResponse);
-
-                Dictionary.instance.definition.text = string.IsNullOrEmpty(definition) ? "No definition found." : definition;
+                string def = string.IsNullOrEmpty(definition) ? "No definition found." : definition;
+                if (Dictionary.instance != null)
+                {
+                    Dictionary.instance.definition.text = string.IsNullOrEmpty(definition) ? "No definition found." : definition;
+                    
+                    Debug.Log("____definition.text: " + def);
+                }
+                GameManager.instance.SaveDefinition(word, def);
             }
         }
-
-        if (Dictionary.instance.loading != null)
-            Dictionary.instance.loading.SetActive(false);
+        if(Dictionary.instance != null)
+        {
+            if (Dictionary.instance.loading != null)
+                Dictionary.instance.loading.SetActive(false);
+        }
+        
     }
 
     private string ExtractDefinition(string fullExtract)

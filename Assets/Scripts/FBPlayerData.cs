@@ -300,6 +300,7 @@ public class FBPlayerData : MonoBehaviour
         {
             case "Levelup":
             case "Tutorial":
+                AdTimerHandler.Instance.shouldShowAd = false;
                 SlotManager.instance.ContinueGameAfterInterstitial();
                 break;
         }

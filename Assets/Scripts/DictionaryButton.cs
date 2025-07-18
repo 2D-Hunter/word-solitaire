@@ -13,7 +13,7 @@ public class DictionaryButton : MonoBehaviour
     {
         Debug.Log("________DictionaryButton: "+ MultiplayerEventHandler.Instance.isMultiplayer);
         //if (MultiplayerEventHandler.Instance.isMultiplayer)
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         instance = this;
     }
     public void SwapImage()

@@ -51,13 +51,18 @@ public class HintService : IHintService
         {
             for (int j = 0; j < chars.Length; j++)
             {
-                string word  = chars[i]+ chars[j];
-               
-                if(WordValidator.instance.isWordValid(word))
+                if (i == j)
                 {
-                    foundWord = word;
-                    return true;
+                    continue;
                 }
+                    string word = chars[i] + chars[j];
+
+                    if (WordValidator.instance.isWordValid(word))
+                    {
+                        foundWord = word;
+                        return true;
+                    }
+                
             }
         }
         foundWord = null;

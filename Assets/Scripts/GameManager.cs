@@ -64,6 +64,10 @@ public class GameManager : MonoBehaviour
     public GraphicRaycaster raycaster;
     public EventSystem eventSystem;
 
+    public List<string> foundWords = new List<string>();
+    public Dictionary<string, string> wordDefinitions = new Dictionary<string, string>();
+    public int currentIndex = 0;
+
 
 
     private void Awake()
@@ -378,6 +382,20 @@ public class GameManager : MonoBehaviour
     public void HideConnectionPopup()
     {
         connectionPopup.SetActive(false);
+    }
+    public void StoreWords(string word)
+    {
+        foundWords.Add(word);
+        currentIndex = Mathf.Max(0, foundWords.Count - 1); // Start with latest word
+    }
+    public void SaveDefinition(string word, string definition)
+    {
+        Debug.Log("___SaveDefinition: " + word);
+        Debug.Log("___SaveDefinition: " + definition);
+        if (!wordDefinitions.ContainsKey(word))
+        {
+            wordDefinitions[word] = definition;
+        }
     }
 
 }

@@ -19,7 +19,9 @@ public class Dictionary : MonoBehaviour
     public CanvasGroup bg = null;
     public CanvasGroup popup = null;
     public RectTransform popupObj = null;
+
     
+
 
 
     private void Awake()
@@ -70,7 +72,7 @@ public class Dictionary : MonoBehaviour
         {
             makeWords.SetActive(false);
             wordnikIcon.SetActive(true);
-            WordnikDefinition.instance.FetchDefinition(SlotManager.instance.GetSlotString().ToLower());
+            //WordnikDefinition.instance.FetchDefinition(SlotManager.instance.GetSlotString().ToLower());
         }
         else
         {
@@ -91,4 +93,24 @@ public class Dictionary : MonoBehaviour
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
     }
+    //private void UpdatePopup()
+    //{
+    //    if (GameManager.instance.foundWords.Count == 0) return;
+
+    //    string word = GameManager.instance.foundWords[GameManager.instance.currentIndex];
+
+    //    title.text = titleShadow.text = title2.text = title2Shadow.text = word;
+
+    //    if (wordDefinitions.TryGetValue(word, out string def))
+    //    {
+    //        definitionText.text = def;
+    //    }
+    //    else
+    //    {
+    //        definitionText.text = "Definition not found.";
+    //    }
+
+    //    indexText.text = $"{currentIndex + 1} of {foundWords.Count}";
+    //}
+
 }
