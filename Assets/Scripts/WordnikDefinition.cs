@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using TMPro;
 using Newtonsoft.Json.Linq;
 using System.Text; // Required for StringBuilder
+using System;
 
 public class WordnikDefinition : MonoBehaviour
 {
@@ -17,55 +18,55 @@ public class WordnikDefinition : MonoBehaviour
         instance = this;
     }
 
-    public void FetchDefinition(string word)
+    public void FetchDefinition(string word, Action<string> onDefinitionFetched = null)
     {
-        StartCoroutine(FetchDefinitionCoroutine(word));
+        StartCoroutine(FetchDefinitionCoroutine(word, onDefinitionFetched));
     }
 
-    private IEnumerator FetchDefinitionCoroutine(string word)
+    private IEnumerator FetchDefinitionCoroutine(string word, Action<string> onDefinitionFetched = null)
     {
-        if(Dictionary.instance != null)
-        {
-            if (Dictionary.instance.loading != null)
-                Dictionary.instance.loading.SetActive(true);
-        }
-        
-        
-        //string requestUrl = $"{apiUrl}?action=query&prop=extracts&titles={word}&format=json&explaintext=true";
-        string requestUrl = "https://897rjsp6dj.execute-api.us-west-2.amazonaws.com/wordgame/word?word="+word;
+        if (Dictionary.instance?.loading != null)
+            Dictionary.instance.loading.SetActive(true);
+
+        string requestUrl = $"https://897rjsp6dj.execute-api.us-west-2.amazonaws.com/wordgame/word?word={word}";
         Debug.Log("URL: " + requestUrl);
+
         using (UnityWebRequest webRequest = UnityWebRequest.Get(requestUrl))
         {
-            
             yield return webRequest.SendWebRequest();
+
+            string def = "No definition found.";
 
             if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error fetching definition: " + webRequest.error);
-                Dictionary.instance.definition.text = "Error fetching definition. Please try again.";
+                def = "Error fetching definition. Please try again.";
             }
             else
             {
                 string jsonResponse = webRequest.downloadHandler.text;
                 Debug.Log("API Response: " + jsonResponse);
 
-                string definition = ParseDefinition(jsonResponse);
-                string def = string.IsNullOrEmpty(definition) ? "No definition found." : definition;
-                if (Dictionary.instance != null)
-                {
-                    Dictionary.instance.definition.text = string.IsNullOrEmpty(definition) ? "No definition found." : definition;
-                    
-                    Debug.Log("____definition.text: " + def);
-                }
-                GameManager.instance.SaveDefinition(word, def);
+                string parsed = ParseDefinition(jsonResponse);
+                def = string.IsNullOrEmpty(parsed) ? "No definition found." : parsed;
             }
-        }
-        if(Dictionary.instance != null)
-        {
-            if (Dictionary.instance.loading != null)
+
+            // ? Save to GameManager
+            GameManager.instance.SaveDefinition(word.ToUpper(), def);
+
+            // ? Let UI know to refresh
+            onDefinitionFetched?.Invoke(def);
+
+            // ? Also update Dictionary instance if open
+            if (Dictionary.instance != null)
+            {
+                Dictionary.instance.definition.text = def;
+                Debug.Log("____definition.text: " + def);
+            }
+
+            if (Dictionary.instance?.loading != null)
                 Dictionary.instance.loading.SetActive(false);
         }
-        
     }
 
     private string ExtractDefinition(string fullExtract)

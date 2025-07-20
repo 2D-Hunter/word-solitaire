@@ -153,8 +153,8 @@ public class WildCardPopup : MonoBehaviour
         FBPlayerData.instance.AD_TYPE = "WildCard";
 
 #if UNITY_EDITOR
-        FBPlayerData.instance.ShowAdsNotAvailable("Ad not available");
-        //ClosePopupAndGiveRewards();
+        //FBPlayerData.instance.ShowAdsNotAvailable("Ad not available");
+        ContinueGameAfterRewardAd();
         return;
 #endif
         Application.ExternalCall("ShowAd_Reward", "WildCard");

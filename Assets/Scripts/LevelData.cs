@@ -14,6 +14,8 @@ public class LevelData : ScriptableObject
         public int numberOfLetters;
         public int numberOfWords;
         public bool isLevelHard;
+        public float estimatedMultiplier = 3f;
+        public float[] starThresholds = new float[] { 0.4f, 0.3f, 0.3f };
     }
 
     public LevelInfo[] levels;

@@ -109,13 +109,36 @@ public class SlotManager : MonoBehaviour
     private IEnumerator ReturnBackToDeckRoutine(Card card) 
     { 
         yield return new WaitForEndOfFrame();
-        card.MoveBackToOriginalPosition(null,false);
-        yield return new WaitForSeconds(0.4f);
-        card.FlipImmediateBelowCards();
-        yield return new WaitForSeconds(0.2f);
+        //card.MoveBackToOriginalPosition(null,false);
+        bool finished = false;
+        // ? Slight delay before flipping below cards
+        StartCoroutine(DelayedFlip(card, 0.45f)); // Delay based on how fast top card moves
+        //card.FlipImmediateBelowCards();
+        card.MoveBackToOriginalPosition(null, false, () => {
+            
+            finished = true;
+        });
+        yield return new WaitUntil(() => finished);
+        yield return new WaitForSeconds(0.1f); // Small buffer
+        //yield return new WaitForSeconds(0.4f);
+        //card.FlipImmediateBelowCards();
+        //ResetAfterCardBack(card);
+        //slotsCard.Remove(card);
+        //if (slotsCard.Count > 0)
+        //    slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
+
+        //CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
+        //AAA();
+        //yield return new WaitForSeconds(0.2f);
         card.GetComponent<Button>().enabled = true;
+        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         yield return new WaitForEndOfFrame();
 
+    }
+    private IEnumerator DelayedFlip(Card card, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        card.FlipImmediateBelowCards();
     }
 
     public IEnumerator OnCardClicked_Coroutine(Card card)

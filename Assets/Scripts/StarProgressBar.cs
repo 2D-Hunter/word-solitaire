@@ -3,67 +3,110 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+
 public class StarProgressBar : MonoBehaviour
 {
-    public Image fillBar;  // Assign the fill bar image
-    public GameObject[] stars;  // Assign 3 star images
-     float maxScore = 15f;  // Max score for 3 stars
+    [Header("UI References")]
+    public Image fillBar;                     // Fill bar image
+    public GameObject[] stars;                // 3 star icons
+    [SerializeField] private ParticleSystem[] starsParticle; // Star effects
+
+    [Header("Scoring")]
+    private float maxScore = 15f;
     private float currentScore = 0f;
-    int starValue = 25;
-    int starAmount = 0;
-    int brillianceScore = 0;
-    [SerializeField] private ParticleSystem[] starsParticle = null;
-    private bool[] starUnlocked = { false, false, false };
+
+    [Header("Brilliance")]
+    private int starValue = 25;
+    private int starAmount = 0;
+    private int brillianceScore = 0;
+    private bool[] starUnlocked = new bool[3];
+
+    [Header("Thresholds")]
+    [SerializeField] private float[] starThresholds;
+    [SerializeField] private LevelData levelData;
 
     void Start()
     {
-        brillianceScore = 0;
-        maxScore = TotalPoints();
-        UpdateStarBar(0);  // Initialize at 0%
-    }
-    public int CalculateMaxScoreByCards(int numberOfCards, int pointsPerCard)
-    {
-        return numberOfCards * pointsPerCard;
-    }
-    public int TotalPoints()
-    {
-        int totalPoints = 0;
+        ResetBar();
 
-        foreach (Card card in CardManager.instance.totalCardsToClear)
+        var level = levelData.levels[GameUtils.EffectiveCurrentLevel];
+        starThresholds = level.starThresholds;
+        maxScore = Mathf.RoundToInt(TotalPoints() * level.estimatedMultiplier);
+        Debug.Log($"💡 StarProgressBar Max Score for Level {GameUtils.EffectiveCurrentLevel+1}: {maxScore}");
+        Debug.Log($"💡 StarProgressBar Thresholds: {string.Join(", ", starThresholds)}");
+
+        UpdateStarBar(0);
+    }
+
+    public void UpdateStarBar(float scoreGained)
+    {
+        float previousFill = currentScore / maxScore;
+        currentScore += scoreGained;
+        currentScore = Mathf.Clamp(currentScore, 0, maxScore);
+        float newFill = Mathf.Clamp01(currentScore / maxScore);
+
+        fillBar.DOFillAmount(newFill, 0.5f).SetEase(Ease.OutQuad);
+
+        float cumulative = 0f;
+
+        for (int i = 0; i < stars.Length; i++)
         {
-            totalPoints += card.cardData.cardValue; // Add each card's points to the total
-        }
-        Debug.Log("totalPoints: "+ totalPoints);
-        return totalPoints;
-    }
+            cumulative += starThresholds[i];
 
-    // Call this method whenever the player earns points
-    public void UpdateStarBar(float score)
-    {
-        currentScore = Mathf.Clamp(score, 0, maxScore);  // Limit to maxScore
-        float fillAmount = currentScore / maxScore;  // Normalize to 0-1
-        fillBar.fillAmount = fillAmount;  // Update UI fill
-
-        
-
-
-        for(int i = 0; i < stars.Length; i++)
-        {
-            // Check if the fill amount meets the condition for the star index
-            if (fillAmount >= (i + 1) * 0.33f && !starUnlocked[i])
+            if (!starUnlocked[i] && previousFill < cumulative && newFill >= cumulative)
             {
-                stars[i].SetActive(true); // Activate the star
-                starsParticle[i].Stop(); // Stop any existing particle effect
-                starsParticle[i].Play(); // Play particle effect
-                starUnlocked[i] = true; // Mark this star as unlocked
-
-                starAmount++;
-                // SoundManager.Instance.PlayOneShot("ui_goal_complete");
+                UnlockStar(i);
             }
         }
     }
+
+    private void UnlockStar(int index)
+    {
+        if (index >= stars.Length) return;
+
+        stars[index].SetActive(true);
+        starUnlocked[index] = true;
+        starAmount++;
+
+        if (starsParticle != null && index < starsParticle.Length)
+        {
+            starsParticle[index].Stop();
+            starsParticle[index].Play();
+        }
+
+        // Optional: scale feedback
+        stars[index].transform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 1);
+
+        // Optional: play sound
+        // SoundManager.Instance.PlayOneShot("star_unlock");
+    }
+
     public int CalculateBrillianceScore()
     {
-        return brillianceScore = starValue * starAmount;
+        return brillianceScore = starAmount * starValue;
+    }
+
+    public int TotalPoints()
+    {
+        int totalPoints = 0;
+        foreach (Card card in CardManager.instance.totalCardsToClear)
+        {
+            totalPoints += card.cardData.cardValue;
+        }
+        return totalPoints;
+    }
+
+    public void ResetBar()
+    {
+        currentScore = 0f;
+        starAmount = 0;
+        fillBar.fillAmount = 0f;
+        for (int i = 0; i < stars.Length; i++)
+        {
+            stars[i].SetActive(false);
+            starUnlocked[i] = false;
+            if (starsParticle != null && i < starsParticle.Length)
+                starsParticle[i].Stop();
+        }
     }
 }

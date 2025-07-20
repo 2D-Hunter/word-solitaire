@@ -119,8 +119,8 @@ public class MoreCardsPopup : MonoBehaviour
         FBPlayerData.instance.AD_TYPE = "MoreCards";
 
 #if UNITY_EDITOR
-        FBPlayerData.instance.ShowAdsNotAvailable("Ad not completed");
-        //ClosePopupAndGiveRewards();
+        //FBPlayerData.instance.ShowAdsNotAvailable("Ad not completed");
+        ClosePopupAndGiveRewards();
             return;
 #endif
             Application.ExternalCall("ShowAd_Reward", "MoreCards");
