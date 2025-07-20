@@ -1,0 +1,212 @@
+{
+   "Guid" : "698b3bb4cbc0e4877b225366aedf8378",
+   "Id" : "Level7",
+   "LevelInfo" : {
+      "PrimaryGoal" : 0,
+      "Goals" : [
+      ],
+      "ShuffleCards" : false,
+      "UseSeededRandom" : false,
+      "PointsForEachStar" : [
+         40,
+         80,
+         110
+      ],
+      "Difficulty" : 0,
+      "Hand" : [
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "L",
+         "Z"
+      ],
+      "CustomStarScore" : false
+   },
+   "Layout" : [
+      {
+         "X" : 0.499999761581421,
+         "Y" : 3.45000004768372,
+         "Level" : 0,
+         "Tile" : "R",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.5,
+         "Y" : 2.45000004768372,
+         "Level" : 0,
+         "Tile" : "A",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.5,
+         "Y" : 1.44999992847443,
+         "Level" : 0,
+         "Tile" : "E",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.5,
+         "Y" : 3.45000004768372,
+         "Level" : 0,
+         "Tile" : "M",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.5,
+         "Y" : 2.45000004768372,
+         "Level" : 0,
+         "Tile" : "A",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.5,
+         "Y" : 1.44999992847443,
+         "Level" : 0,
+         "Tile" : "R",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.99999976158142,
+         "Y" : 0.449999928474426,
+         "Level" : 0,
+         "Tile" : "O",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.99999952316284,
+         "Y" : 0.449999928474426,
+         "Level" : 0,
+         "Tile" : "N",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.99999976158142,
+         "Y" : 0.449999928474426,
+         "Level" : 0,
+         "Tile" : "A",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.999999523162842,
+         "Y" : 2.95000004768372,
+         "Level" : 1,
+         "Tile" : "T",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.999999523162842,
+         "Y" : 1.94999992847443,
+         "Level" : 1,
+         "Tile" : "O",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.99999952316284,
+         "Y" : 2.95000004768372,
+         "Level" : 1,
+         "Tile" : "T",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.99999952316284,
+         "Y" : 1.94999992847443,
+         "Level" : 1,
+         "Tile" : "O",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.5,
+         "Y" : 0.949999928474426,
+         "Level" : 1,
+         "Tile" : "M",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.49999976158142,
+         "Y" : 0.949999928474426,
+         "Level" : 1,
+         "Tile" : "A",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.49999988079071,
+         "Y" : 2.45000004768372,
+         "Level" : 2,
+         "Tile" : "C",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.99999976158142,
+         "Y" : 1.44999992847443,
+         "Level" : 2,
+         "Tile" : "W",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.49999952316284,
+         "Y" : 2.45000004768372,
+         "Level" : 2,
+         "Tile" : "O",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      }
+   ]
+}

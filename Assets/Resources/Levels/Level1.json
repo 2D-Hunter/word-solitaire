@@ -1,0 +1,82 @@
+{
+   "Guid" : "ef85dad50519a4c798585920db400fd9",
+   "Id" : "Level1",
+   "LevelInfo" : {
+      "PrimaryGoal" : 0,
+      "Goals" : [
+      ],
+      "ShuffleCards" : false,
+      "UseSeededRandom" : false,
+      "PointsForEachStar" : [
+         1,
+         2,
+         3
+      ],
+      "Difficulty" : 0,
+      "Hand" : [
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?"
+      ],
+      "CustomStarScore" : false
+   },
+   "Layout" : [
+      {
+         "X" : 1.99999904632568,
+         "Y" : 1,
+         "Level" : 0,
+         "Tile" : "R",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.99999952316284,
+         "Y" : 1,
+         "Level" : 0,
+         "Tile" : "A",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.99999809265137,
+         "Y" : 1,
+         "Level" : 0,
+         "Tile" : "F",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.49999976158142,
+         "Y" : 1.5,
+         "Level" : 1,
+         "Tile" : "G",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.49999952316284,
+         "Y" : 1.5,
+         "Level" : 1,
+         "Tile" : "O",
+         "TileType" : 0,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      }
+   ]
+}

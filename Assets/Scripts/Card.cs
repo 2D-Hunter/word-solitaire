@@ -12,6 +12,7 @@ public class Card : MonoBehaviour
 {
     public RectTransform thisCard;
     public List<Card> belowCards;
+    public int Level;
     
     public RectTransform rectTransform;
     //public static Card instance;

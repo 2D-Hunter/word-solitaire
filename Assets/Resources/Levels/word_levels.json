@@ -1,0 +1,12 @@
+{
+    "gridSize": {
+        "rows": 5,
+        "cols": 5
+    },
+    "levels": [
+        {
+            "level": 1,
+            "layout": []
+        }
+    ]
+}

@@ -1,0 +1,532 @@
+{
+   "Guid" : "4dbd9dd308b1b4073a38a389400ef4a5",
+   "Id" : "Level90",
+   "LevelInfo" : {
+      "PrimaryGoal" : 0,
+      "Goals" : [
+         {
+            "Type" : 4,
+            "Arg" : 600
+         }
+      ],
+      "ShuffleCards" : true,
+      "UseSeededRandom" : false,
+      "PointsForEachStar" : [
+         232,
+         348,
+         464
+      ],
+      "Difficulty" : 2,
+      "Hand" : [
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?"
+      ],
+      "CustomStarScore" : false
+   },
+   "Layout" : [
+      {
+         "X" : 5.87615060806274,
+         "Y" : 3.13690662384033,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 5,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53699922561646,
+         "Y" : 0.984000444412231,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48445606231689,
+         "Y" : 0.982000112533569,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44945728778839,
+         "Y" : 0.976999998092651,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48745608329773,
+         "Y" : 1.97000002861023,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44745707511902,
+         "Y" : 1.97000002861023,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53999948501587,
+         "Y" : 1.97500014305115,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44745659828186,
+         "Y" : 2.95000052452087,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48245644569397,
+         "Y" : 2.94900012016296,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.52245473861694,
+         "Y" : 1.97000002861023,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.52745628356934,
+         "Y" : 2.94600033760071,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53999948501587,
+         "Y" : 2.95200037956238,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.51445579528809,
+         "Y" : 0.985000371932983,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0881087258458138,
+         "Y" : 3.11737537384033,
+         "Level" : 0,
+         "Tile" : "?",
+         "TileType" : 5,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53700017929077,
+         "Y" : 1.15600049495697,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48445534706116,
+         "Y" : 1.15400040149689,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44945728778839,
+         "Y" : 1.14900040626526,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44745659828186,
+         "Y" : 2.14200043678284,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48745727539063,
+         "Y" : 2.14200043678284,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53999948501587,
+         "Y" : 2.14700055122375,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 1.44745707511902,
+         "Y" : 3.12200045585632,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 2.48245716094971,
+         "Y" : 3.12100052833557,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.52245569229126,
+         "Y" : 2.14200043678284,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.51445579528809,
+         "Y" : 1.15700042247772,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 3.52745366096497,
+         "Y" : 3.11800074577332,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88615369796753,
+         "Y" : 2.89690661430359,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 2,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 4.53999853134155,
+         "Y" : 3.12400078773499,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 7,
+         "KeyLockType" : 0,
+         "Arg" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0981099084019661,
+         "Y" : 2.87737536430359,
+         "Level" : 1,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 7,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88615369796753,
+         "Y" : 2.65690636634827,
+         "Level" : 2,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 2,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0981099084019661,
+         "Y" : 2.63737511634827,
+         "Level" : 2,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 7,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88615369796753,
+         "Y" : 2.4169065952301,
+         "Level" : 3,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 4,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0981099084019661,
+         "Y" : 2.3973753452301,
+         "Level" : 3,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 3,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88415288925171,
+         "Y" : 2.17690658569336,
+         "Level" : 4,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 4,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0961090996861458,
+         "Y" : 2.15737533569336,
+         "Level" : 4,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 3,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88015365600586,
+         "Y" : 1.95690655708313,
+         "Level" : 5,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 3,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.092109888792038,
+         "Y" : 1.93737530708313,
+         "Level" : 5,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 4,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.88515329360962,
+         "Y" : 1.72090649604797,
+         "Level" : 6,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 3,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.0971095040440559,
+         "Y" : 1.70137524604797,
+         "Level" : 6,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 4,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.89015293121338,
+         "Y" : 1.50690650939941,
+         "Level" : 7,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 7,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.102108210325241,
+         "Y" : 1.48737525939941,
+         "Level" : 7,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 2,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.89015293121338,
+         "Y" : 1.27690649032593,
+         "Level" : 8,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 7,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.102108664810658,
+         "Y" : 1.25737524032593,
+         "Level" : 8,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 2,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.8901515007019,
+         "Y" : 1.04690647125244,
+         "Level" : 9,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 5,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.102107711136341,
+         "Y" : 1.02737522125244,
+         "Level" : 9,
+         "Tile" : "?",
+         "TileType" : 4,
+         "KeyLockType" : 1,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 5.89015293121338,
+         "Y" : 0.846906542778015,
+         "Level" : 10,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 5,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      },
+      {
+         "X" : 0.102108664810658,
+         "Y" : 0.827375292778015,
+         "Level" : 10,
+         "Tile" : "?",
+         "TileType" : 3,
+         "KeyLockType" : 1,
+         "Arg" : "",
+         "Arg1" : "",
+         "Arg2" : "",
+         "Angle" : 0
+      }
+   ]
+}

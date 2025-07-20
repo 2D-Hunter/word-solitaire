@@ -1,0 +1,35 @@
+{
+   "Guid" : "c9952b17e88c3d94b9332566ef4b9e2c",
+   "Id" : "APT_Level44",
+   "LevelInfo" : {
+      "PrimaryGoal" : 0,
+      "Goals" : [
+         {
+            "Type" : 0,
+            "Arg" : 0
+         }
+      ],
+      "ShuffleCards" : true,
+      "UseSeededRandom" : false,
+      "PointsForEachStar" : [
+         0,
+         0,
+         0
+      ],
+      "Difficulty" : 0,
+      "Hand" : [
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?",
+         "?"
+      ]
+   },
+   "Layout" : [
+   ]
+}

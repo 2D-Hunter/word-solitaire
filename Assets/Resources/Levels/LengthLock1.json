@@ -1,0 +1,20 @@
+{
+   "Guid" : "1de2fd390ff764785870f816f8fcee91",
+   "Id" : "LengthLock1",
+   "LevelInfo" : {
+      "PrimaryGoal" : 0,
+      "Goals" : [
+      ],
+      "ShuffleCards" : false,
+      "UseSeededRandom" : false,
+      "PointsForEachStar" : [
+      ],
+      "Difficulty" : 0,
+      "Hand" : [
+      ]
+   },
+   "Layout" : [
+   ],
+   "AltLayout" : [
+   ]
+}
