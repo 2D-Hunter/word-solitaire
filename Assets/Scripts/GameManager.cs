@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -65,8 +67,11 @@ public class GameManager : MonoBehaviour
     public EventSystem eventSystem;
 
     public List<string> foundWords = new List<string>();
-    public Dictionary<string, string> wordDefinitions = new Dictionary<string, string>();
+    //public Dictionary<string, string> wordDefinitions = new Dictionary<string, string>();
+    public Dictionary<string, string> wordDefinitions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public int currentIndex = 0;
+    public List<string> ReversedFoundWords => foundWords.AsEnumerable().Reverse().ToList();
+    public HashSet<string> definitionsBeingFetched = new HashSet<string>();
 
 
 

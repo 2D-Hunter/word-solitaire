@@ -47,6 +47,9 @@ public class SubmitButton : MonoBehaviour
         {
             pointTxt.text = SlotManager.instance.GetSlotPoints().ToString() + "<size=55>pts</size>";
             pointTxtShadow.text = SlotManager.instance.GetSlotPoints().ToString() + "<size=55>pts</size>";
+
+            //GameManager.instance.foundWords.Add(SlotManager.instance.GetSlotString());
+            //WordnikDefinition.instance.FetchDefinition(SlotManager.instance.GetSlotString().ToLower());
         }
         else
         {

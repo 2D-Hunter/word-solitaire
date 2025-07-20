@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
-
+using System;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
@@ -54,7 +54,7 @@ public class Card : MonoBehaviour
         if(this.tag == "ExtraCard")
         {
             rectTransform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>("ExtraCard");
-            int randomIndex = Random.Range(0, CardManager.instance.extraCards.Count);
+            int randomIndex = UnityEngine.Random.Range(0, CardManager.instance.extraCards.Count);
             
         }
         if (FBPlayerData.instance)
@@ -108,8 +108,9 @@ public class Card : MonoBehaviour
             gameObject.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
         }
     }
-    
-    public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true)
+
+    //public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true)
+    public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true, Action onComplete = null)
     {
 
         
@@ -162,7 +163,7 @@ public class Card : MonoBehaviour
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
                 RemoveCardsButton.instance.sendBackAll = false;
-                Destroy(gameObject);
+                //Destroy(gameObject);
                 //card = null;
             });
         }
@@ -181,24 +182,31 @@ public class Card : MonoBehaviour
             cardSequence3.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
             cardSequence3.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
                 .OnComplete(() =>
-                 {
-                     Debug.Log("sendBackAll000");
-                     RemoveCardsButton.instance.sendBackAll = false;
+                {
+                    Debug.Log("sendBackAll000");
+                    RemoveCardsButton.instance.sendBackAll = false;
 
-                 });
-                if(shouldcallbelow)
-                Invoke("SetFaceOfCard", 0.1f);
-            
-            
+                    if (shouldcallbelow)
+                        SetFaceOfCard();
+
+                    onComplete?.Invoke(); // ✅ THIS MUST BE HERE
+    });
+
+
         }
     }
     void SetFaceOfCard()
     {
-        Debug.Log("sendBackAll111: "+ RemoveCardsButton.instance.sendBackAll);
+        Debug.Log("SetFaceOfCard: " + belowCards.Count+"____"+ RemoveCardsButton.instance.sendBackAll);
         if (belowCards.Count == 0 && RemoveCardsButton.instance.sendBackAll)
         {
             GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(true);
             isFaceUp = false;
+        }
+        if(belowCards.Count == 0)
+        {
+            GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
+            isFaceUp = true;
         }
     }
     public void SetAsWild()
@@ -277,7 +285,7 @@ public class Card : MonoBehaviour
             }
             
             
-            isFlipping = false;
+            //isFlipping = false;
             Debug.Log("isFlipping000: " + isFlipping);
             slotManager.OnCardClicked(this);
             Debug.Log($"Card {name} was clicked!");
@@ -391,6 +399,7 @@ public class Card : MonoBehaviour
     
     public void FlipImmediateBelowCards()
     {
+        
         foreach (Card belowCard in belowCards)
         {
             if (belowCard == null) continue;
@@ -459,42 +468,84 @@ public class Card : MonoBehaviour
     }
     public void FlipCard(Card card)
     {
-        
-        Debug.Log("card.belowCards.Count: " +card.name + "______"+ belowCards.Count);
-        Debug.Log("isFlipping: " + isFlipping);
-        if (isFlipping) return;
+        if (card.isFlipping) return;
+            card.isFlipping = true;
+        Debug.Log("card.belowCards.Count: " + card.name + "______" + belowCards.Count);
+        //Debug.Log("isFlipping: " + isFlipping);
+        //if (isFlipping) return;
         //if (isFaceUp) return; 
         //isFlipping = true;
         float flipDuration = 0.2f;
         //for (int i = 0; i < belowCards.Count; i++)
         //{
-            RectTransform rectTransform = card.GetComponent<RectTransform>();
+        RectTransform rectTransform = card.GetComponent<RectTransform>();
 
         //isFaceUp = true;
         card.isFaceUp = true;
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
             .OnComplete(() =>
             {
-                
+
                 //isFaceUp = true;
                 UpdateCardFlipping(card);
                 rectTransform.DORotate(new Vector3(0, -90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                     .OnComplete(() =>
                     {
-                        isFlipping = false;
+                        card.isFlipping = false;
 
                         if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.isWildCard)
                             CardManager.instance.allFaceUpCards.Add(card);
                         if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
                             CardManager.instance.allFaceUpCards.Remove(card);
 
-
-                        Debug.Log("___Card flipped: "+slotManager.goingBack);
-                            //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
-                        });
+                        Debug.Log("___Card flipped: " + slotManager.goingBack);
+                        //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
+                    });
             });
         //}
     }
+    //public void FlipCard(Card card)
+    //{
+    //    if (card.isFlipping) return;
+    //    card.isFlipping = true;
+    //    Debug.Log("card.belowCards.Count: " +card.name + "______"+ belowCards.Count);
+    //    Debug.Log("isFlipping: " + isFlipping);
+        
+    //    //if (isFaceUp) return; 
+    //    //isFlipping = true;
+    //    float flipDuration = 0.2f;
+    //    //for (int i = 0; i < belowCards.Count; i++)
+    //    //{
+    //        RectTransform rectTransform = card.GetComponent<RectTransform>();
+    //    //rectTransform.DOKill(true);
+    //    //isFaceUp = true;
+    //    card.isFaceUp = true;
+    //    rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.Fast)
+    //        .SetEase(Ease.Linear)
+    //        .OnComplete(() =>
+    //        {
+                
+    //            //isFaceUp = true;
+    //            UpdateCardFlipping(card);
+    //            rectTransform.DORotate(new Vector3(0, -90, 0), flipDuration / 2, RotateMode.Fast)
+    //            .SetEase(Ease.Linear)
+    //                .OnComplete(() =>
+    //                {
+    //                    //rectTransform.localRotation = Quaternion.Euler(0, 180, 0); // ensure precision
+    //                    card.isFlipping = false;
+
+    //                    if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.isWildCard)
+    //                        CardManager.instance.allFaceUpCards.Add(card);
+    //                    if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
+    //                        CardManager.instance.allFaceUpCards.Remove(card);
+
+
+    //                    Debug.Log("___Card flipped: "+slotManager.goingBack);
+    //                        //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
+    //                    });
+    //        });
+    //    //}
+    //}
     
     private void UpdateCardFlipping(Card card)
     {
