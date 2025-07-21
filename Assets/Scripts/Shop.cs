@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 public class Shop : MonoBehaviour
 {
@@ -22,10 +23,18 @@ public class Shop : MonoBehaviour
     private RectTransform selectedImage;
     public GameObject noAds30Days = null;
     public GameObject noAds30Days_lock = null;
+    public GameObject[] priceList;
 
     private void Awake()
     {
+        Debug.Log("");
+        
+    }
+    private void Start()
+    {
+        
         ShowPopup();
+        SetLocalPrice(FBPlayerData.instance.GetProductsPrice());
     }
     private void SetInit()
     {
@@ -136,5 +145,43 @@ public class Shop : MonoBehaviour
         }
         selectedImage?.DOKill();
     }
+    void SetLocalPrice(string price)
+    {
+        if (string.IsNullOrEmpty(price)) return;
+
+        string[] prices = price.Split('|');
+
+        for (int i = 0; i < prices.Length && i < priceList.Length; i++)
+        {
+            Transform child0 = priceList[i].transform.GetChild(0);
+            Transform child1 = priceList[i].transform.GetChild(1);
+
+            Debug.Log($"Child 0 name: {child0.name}, has TMP: {child0.GetComponent<TextMeshProUGUI>() != null}");
+            Debug.Log($"Child 1 name: {child1.name}, has TMP: {child1.GetComponent<TextMeshProUGUI>() != null}");
+            string priceValue = prices[i];
+
+            var shadow = priceList[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            var main = priceList[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+
+            if (shadow != null)
+            {
+                shadow.text = priceValue;
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Shadow text not found in {priceList[i].name}");
+            }
+
+            if (main != null)
+            {
+                main.text = priceValue;
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Main price text not found in {priceList[i].name}");
+            }
+        }
+    }
+
 
 }
