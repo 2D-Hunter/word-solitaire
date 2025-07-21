@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
@@ -28,6 +29,11 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+      
         Debug.Log("InitManager.instance: " + InitManager.instance);
         if (InitManager.instance == null)
         {
@@ -45,7 +51,6 @@ public class LevelManager : MonoBehaviour
                 LoadLevel(FBPlayerData.instance.CURRENT_LEVEL);
             }
         }
-
     }
 
     public void LoadLevel(int levelIndex)
@@ -68,13 +73,14 @@ public class LevelManager : MonoBehaviour
             int prefabIndex = levelIndex;
 
             // After level 50, randomly select from levels 25–50 using the shuffled pool
-            if (levelIndex > 50)
+           /* if (levelIndex > 50)
             {
                 prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
                 Debug.Log("____prefabIndex: " + prefabIndex);
-            }
+            }*/
 
-            string prefabName = levelNamePrefix + prefabIndex;
+            BoardManager.instance.GenerateLevelByNumber(prefabIndex);
+            /*string prefabName = levelNamePrefix + prefabIndex;
             Debug.Log("prefabName: " + prefabName);
             GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
 
@@ -86,7 +92,7 @@ public class LevelManager : MonoBehaviour
             else
             {
                 Debug.LogError("Level prefab not found: " + prefabName);
-            }
+            }*/
         }
 
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)

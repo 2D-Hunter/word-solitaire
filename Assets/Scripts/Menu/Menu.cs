@@ -43,14 +43,14 @@ public class Menu : MonoBehaviour
     private void Awake()
     {
         Debug.Log("___Menu FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
-        if (FBPlayerData.instance.CURRENT_LEVEL > 50)
+      /*  if (FBPlayerData.instance.CURRENT_LEVEL > 50)
         {
             InitManager.instance.isLevelRandomized = true;
 
             prefabIndex = GetNextShuffledIndex() + 1; // +1 because pool is 0-based
             Debug.Log("____prefabIndex: " + prefabIndex);
             InitManager.instance.nextRandomLevel = prefabIndex;
-        }
+        }*/
 
         backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
         backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
