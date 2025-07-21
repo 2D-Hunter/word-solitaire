@@ -70,6 +70,8 @@ public class FBPlayerData : MonoBehaviour
 
     public string AD_TYPE;
 
+    string priceOfProducts;
+
 
     //worddict
     private void Awake()
@@ -104,8 +106,9 @@ public class FBPlayerData : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-       //FBPlayerData.instance.NO_ADS_30_DAYS = !ShouldShowAds();
+
+        //FBPlayerData.instance.NO_ADS_30_DAYS = !ShouldShowAds();
+        //OnCatalogReceived("₫99.00|₫199.00|₫299.00|₫399.00|₹499.00|₹599.00");
     }
 
     public void SavePlayerData()
@@ -449,6 +452,15 @@ public class FBPlayerData : MonoBehaviour
     {
         WildCardPopup wildCardPopup = FindObjectOfType<WildCardPopup>();
         wildCardPopup.ContinueGameAfterRewardAd();
+    }
+    public void OnCatalogReceived(string price)
+    {
+        Debug.Log("Price: " + price);
+        priceOfProducts = price;
+    }
+    public string GetProductsPrice()
+    {
+        return priceOfProducts;
     }
 
 }
