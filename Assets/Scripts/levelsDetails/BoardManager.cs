@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +38,7 @@ public class ObjectPoolCard<T>
 public class BoardManager : MonoBehaviour
 {
     [Header("Level Data Settings")]
-    public string levelFileName = "Random_RampTest1_Level6"; // Name of the JSON file (without .json extension)
+    public string levelRampFileName = "Random_RampTest1_Level6"; // Name of the JSON file (without .json extension)
     [Header("Visual Settings")]
     public float layoutScaleX = 100f;
     [Header("Visual Settings")]
@@ -52,8 +52,7 @@ public class BoardManager : MonoBehaviour
     [Tooltip("Additional offset to position the entire board on the canvas.")]
     public Vector2 boardOriginOffset = Vector2.zero; // Tweak this for overall centering
 
-    // Runtime storage for all active tiles, mapped by their exact position for blocking logic
-    private Dictionary<Rect, List<Card>> activeTilesMap = new Dictionary<Rect, List<Card>>();
+    
     [SerializeField]
     private List<Card> activeCards = new List<Card>();
     public bool collectionChecks = true;
@@ -62,6 +61,9 @@ public class BoardManager : MonoBehaviour
     ObjectPoolCard<GameObject> m_Pool;
     private int topLevel = -1;
     private LevelRamp loadedLevelRampData = null;
+    [SerializeField]
+    private int currentLevel = 0;
+    LetterBucket letterBucket = null;
     public ObjectPoolCard<GameObject> Pool
     {
         get
@@ -86,6 +88,8 @@ public class BoardManager : MonoBehaviour
                 {
                     go.SetActive(false);
                     var card = go.GetComponent<Card>();
+                    card.isFaceUp = false;
+                    card.cardFace.SetActive(true);
                     if (card != null) {
                         card.belowCards.Clear();
 
@@ -110,32 +114,34 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
-
+      
         if (loadedLevelRampData == null)
         {
-            LoadLevelDataFromJson(levelFileName);
+            LoadLevelDataFromJson(levelRampFileName);
         }
+
+     
 
 
     }
 
-    void LoadLevelDataFromJson(string fileName)
+    void LoadLevelDataFromJson(string fileRampName)
     {
         // Adjust path if your JSONs are in a different Resources subfolder (e.g., "Levels/")
 
-        string fullPath = "Levels/" + fileName;
+        string fullPathRamp = "Config/" + fileRampName;
 
-        TextAsset jsonTextAsset = Resources.Load<TextAsset>(fullPath);
+        TextAsset jsonTextAsset = Resources.Load<TextAsset>(fullPathRamp);
 
         if (jsonTextAsset == null)
         {
-            Debug.LogError($"JSON level file not found at: Resources/{fullPath}");
+            Debug.LogError($"JSON level file not found at: Resources/{fullPathRamp}");
             return;
         }
 
-        Debug.Log($"Loading level from JSON: {fullPath}");
+        Debug.Log($"Loading level from JSON: {fullPathRamp}");
         loadedLevelRampData = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelRamp>(jsonTextAsset.text);
-
+       
         Debug.Log($"Loading level from JSON: {loadedLevelRampData.Id}");
         Debug.Log($"Loading level from JSON: {loadedLevelRampData.Levels.Count}");
         if (loadedLevelRampData == null)
@@ -143,7 +149,38 @@ public class BoardManager : MonoBehaviour
             Debug.LogError("Failed to deserialize JSON level data. >>>>>>>");
             return;
         }
-       
+
+        string letterBucketPath = "Config/letterbucket";
+
+
+        TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
+
+        if (jsonLetterBucketTextAsset == null)
+        {
+            Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
+            return;
+        }
+        letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
+        if (letterBucket == null)
+        {
+            Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
+            return;
+        }
+
+        GenerateLevelByNumber(currentLevel);
+
+    }
+
+    public void NextLevel()
+    {
+        currentLevel++;
+        GenerateLevelByNumber(currentLevel);
+    }
+
+    public void PrevousLevel()
+    {
+        currentLevel--;
+        GenerateLevelByNumber(currentLevel);
     }
 
     public void GenerateLevelByNumber(int LevelNumber)
@@ -176,68 +213,71 @@ public class BoardManager : MonoBehaviour
     }
     private void GenerateBoardFromLevelData(GameLevelData levelData)
     {
-        var sortedLayoutTiles = levelData.Layout
-            .OrderBy(tld => tld.Level)
-            .GroupBy(tid => tid.Level)   // Higher Level means rendered on top        // Lower X for consistency
-            .ToDictionary(
-                group => group.Key, // Level as key
-                group => group.OrderBy(tld => tld.X).ToList() // Sort tiles within the level by X
-         );
-
-
         for (int i = 0; i < activeCards.Count; i++)
         {
-            var activeCard = activeCards[i].gameObject;
-            Pool.Release(activeCard);
+            var activeCard = activeCards[i];
+
+            Pool.Release(activeCard.gameObject);
         }
         activeCards.Clear();
-        foreach (var layoutTileData in sortedLayoutTiles)
+
+
+        var cardcount = levelData.Layout.FindAll(tile => tile.Tile == "?").Count;
+        int difficulty = loadedLevelRampData.Difficulties[currentLevel];
+        string letters = letterBucket.DefficultiMapLetterBucket[difficulty];
+        var generateLetter = GenerateAtLeastFiveVowels(levelData.Layout.Count, letters, difficulty);
+
+        for (var rowPairIndex = 0; rowPairIndex < levelData.Layout.Count; rowPairIndex++)
         {
-            int level = layoutTileData.Key;
-            Debug.Log($"Level {level}:");
-            if (level != topLevel && level > topLevel)
-                topLevel = level;
-            var rowtiles = layoutTileData.Value;
-            for (var rowPairIndex = 0; rowPairIndex < rowtiles.Count; rowPairIndex++)
+            var rowPair = levelData.Layout[rowPairIndex];
+
+            float scaledJsonX = rowPair.X * layoutScaleX;
+            float scaledJsonY = rowPair.Y * layoutScaleY;
+            GameObject tileGO = Pool.Get();//Instantiate(tilePrefab, boardParent, false);
+            rowPair.visual = tileGO;
+            tileGO.transform.SetParent(boardParent, false);
+            var canvas = tileGO.GetComponent<Canvas>();
+            canvas.sortingOrder = rowPair.Level;
+
+            RectTransform rectTransform = tileGO.GetComponent<RectTransform>();
+            Vector2 adjustedPosition;
+            if (rectTransform != null)
             {
-                var rowPair = rowtiles[rowPairIndex];
+                RectTransform parentRect = boardParent.GetComponent<RectTransform>();
+                Vector2 parentHalfSize = parentRect.rect.size / 2f;
 
-                float scaledJsonX = rowPair.X * layoutScaleX;
-                float scaledJsonY = rowPair.Y * layoutScaleY;
-                GameObject tileGO = Pool.Get();//Instantiate(tilePrefab, boardParent, false);
-                rowPair.visual = tileGO;
-                tileGO.transform.SetParent(boardParent, false);
-                RectTransform rectTransform = tileGO.GetComponent<RectTransform>();
-                Vector2 adjustedPosition;
-                if (rectTransform != null)
+                adjustedPosition = new Vector2(
+                    scaledJsonX - parentHalfSize.x + layoutScaleX / 2,
+                    scaledJsonY - parentHalfSize.y + layoutScaleY / 2
+                );
+
+                rectTransform.anchoredPosition = adjustedPosition;
+                rectTransform.localScale = Vector3.one;
+                var card = tileGO.GetComponent<Card>();
+                tileGO.name = "card" + "_" + rowPair.Level + "_" + rowPairIndex;
+                if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
-                    RectTransform parentRect = boardParent.GetComponent<RectTransform>();
-                    Vector2 parentHalfSize = parentRect.rect.size / 2f;
-
-                    adjustedPosition = new Vector2(
-                        scaledJsonX - parentHalfSize.x + layoutScaleX / 2,
-                        scaledJsonY - parentHalfSize.y + layoutScaleY / 2
-                    );
-
-                    rectTransform.anchoredPosition = adjustedPosition;
-                    rectTransform.localScale = Vector3.one;
-                    var card = tileGO.GetComponent<Card>();
-                    tileGO.name = card.name + "_" + level+"_"+rowPairIndex;
-
-                    if (card != null)
-                    {
-                        card.Level = level;
-                        activeCards.Add(card);
-                    }
-
+                    Debug.Log(generateLetter[rowPairIndex].ToString());
+                    card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
                 }
                 else
                 {
-                    Debug.LogWarning("Tile Prefab does not have a RectTransform. Ensure it's a UI element.");
+                    card.cardData.letterText.text = rowPair.Tile.ToString();
+                }
+                if (card != null)
+                {
+                    card.Level = rowPair.Level;
+                    activeCards.Add(card);
                 }
 
             }
+            else
+            {
+                Debug.LogWarning("Tile Prefab does not have a RectTransform. Ensure it's a UI element.");
+            }
+
         }
+
 
         for (int i = 0; i < activeCards.Count; i++)
         {
@@ -250,14 +290,14 @@ public class BoardManager : MonoBehaviour
             if (TrySetFaceUpCard(activeCards[i]))
             {
                 //Debug.Log(activeCards[i].name +"_"+ tileLayoutDatas.Count);
-                
-                    activeCards[i].isFaceUp = true;
-                    activeCards[i].cardFace.SetActive(false);
+
+                activeCards[i].isFaceUp = true;
+                activeCards[i].cardFace.SetActive(false);
 
 
             }
         }
-       
+
     }
 
 
@@ -362,5 +402,41 @@ public class BoardManager : MonoBehaviour
         float height = Vector3.Distance(corners[0], corners[1]);
         return new Rect(corners[0], new Vector2(width, height));
     }
+
+
+    List<char> GenerateAtLeastFiveVowels(int totalCards, string consonants = "BCDFGHJKLMNPQRSTVWXYZ",float difficulty = 0f,string vowels = "AEIOU")
+    {
+        List<char> result = new List<char>();
+
+        // Clamp difficulty between 0 and 2, then normalize
+        float normalizedDifficulty = Mathf.Clamp(difficulty, 0f, 2f) / 2f;
+
+        // Map difficulty to 5–2 vowels (easy → hard)
+        int vowelCount = Mathf.RoundToInt(Mathf.Lerp(5, 2, normalizedDifficulty));
+        int consonantCount = totalCards - vowelCount;
+
+        // Expand consonant set based on difficulty
+        string extendedConsonants = consonants;
+        if (vowelCount < 3) extendedConsonants += "AEIOU";  // increase confusion at hard difficulty
+        else if (vowelCount < 4) extendedConsonants += "UOY"; // mild confusion at medium-hard
+
+        // Add vowels
+        for (int i = 0; i < vowelCount; i++)
+            result.Add(vowels[UnityEngine.Random.Range(0, vowels.Length)]);
+
+        // Add consonants
+        for (int i = 0; i < consonantCount; i++)
+            result.Add(extendedConsonants[UnityEngine.Random.Range(0, extendedConsonants.Length)]);
+
+        // Shuffle result
+        for (int i = result.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (result[i], result[j]) = (result[j], result[i]);
+        }
+
+        return result;
+    }
+
 
 }

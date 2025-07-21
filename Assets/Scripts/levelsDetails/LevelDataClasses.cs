@@ -103,3 +103,8 @@ public class Unlocks
 }
 
 
+public class LetterBucket
+{
+    // Runtime storage for all active tiles, mapped by their exact position for blocking logic
+    public Dictionary<int, string> DefficultiMapLetterBucket = new Dictionary<int, string>();
+}
