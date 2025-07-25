@@ -34,7 +34,10 @@ public class PopupManager : MonoBehaviour
     private GameObject currentPopup;
     private GameObject currentPopup2;
     private GameObject currentPopup3;
+    private GameObject currentPopup4;
+    private GameObject currentPopup5;
     public RectTransform uiContainer;
+    public GameObject levelupPopup;
 
     private void Awake()
     {
@@ -63,7 +66,8 @@ public class PopupManager : MonoBehaviour
     {
         if(currentPopup == null)
         {
-            SoundManager.instance.PlaySFX("PopupAppear");
+            if(InitManager.instance.CurrentScene != "Levelup")
+                SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup = Instantiate(prefab, uiContainer);
         }
         else
@@ -96,6 +100,30 @@ public class PopupManager : MonoBehaviour
         {
             Destroy(currentPopup3);
             currentPopup3 = null;
+        }
+    }
+    public void ShowDictionary(GameObject prefab)
+    {
+        if (currentPopup4 == null)
+        {
+            currentPopup4 = Instantiate(prefab, uiContainer);
+        }
+        else
+        {
+            Destroy(currentPopup4);
+            currentPopup4 = null;
+        }
+    }
+    public void ShowGoalPopup(GameObject prefab)
+    {
+        if (currentPopup5 == null)
+        {
+            currentPopup5 = Instantiate(prefab, uiContainer);
+        }
+        else
+        {
+            Destroy(currentPopup5);
+            currentPopup5 = null;
         }
     }
 }

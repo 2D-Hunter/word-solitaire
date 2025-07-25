@@ -75,14 +75,14 @@ public class CardData : MonoBehaviour
                     return;
                 }
 
-                int batchSize = 10; // or 5 if you're spawning in 5s
+                int batchSize = (letterBatches.Count == 0) ? 10 : 5; // 10 for first batch, 5 for the rest
                 int batchIndex = index / batchSize;
                 int localIndex = index % batchSize;
 
                 // Ensure enough batches exist
                 while (letterBatches.Count <= batchIndex)
                 {
-                    List<char> newBatch = GenerateAtLeastFiveVowels(batchSize);
+                    List<char> newBatch = GenerateHelpfulLetters(batchSize);
                     letterBatches.Add(newBatch);
                     Debug.Log($"Generated batch {letterBatches.Count - 1}: " + string.Join(", ", newBatch));
                 }
@@ -111,70 +111,7 @@ public class CardData : MonoBehaviour
         card.cardData = this;
 
     }
-    //List<char> GenerateAtLeastFiveVowels(int totalCards)
-    //{
-    //    string vowels = "AEIOU";
-    //    string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
-    //    List<char> result = new List<char>();
-
-    //    // Ensure 5 vowels
-    //    for (int i = 0; i < 5; i++)
-    //        result.Add(vowels[Random.Range(0, vowels.Length)]);
-
-    //    // Fill remaining with random letters (vowels + consonants)
-    //    string allLetters = vowels + consonants;
-    //    for (int i = 5; i < totalCards; i++)
-    //        result.Add(allLetters[Random.Range(0, allLetters.Length)]);
-
-    //    // Shuffle
-    //    for (int i = result.Count - 1; i > 0; i--)
-    //    {
-    //        int j = Random.Range(0, i + 1);
-    //        (result[i], result[j]) = (result[j], result[i]);
-    //    }
-
-    //    return result;
-    //}
-    List<char> GenerateAtLeastFiveVowels(int totalCards, float difficulty = 0f)
-    {
-        string vowels = "AEIOU";
-        string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
-        string consonants2 = "BCDAFGHJKELMNPQRISTVWXOYZU";
-        string consonants3 = "BCADFGHJEKLMANPOQRSTUVWXYZI";
-
-        List<char> result = new List<char>();
-
-        difficulty = Mathf.Clamp01(difficulty);
-
-        // For 10 cards, map difficulty to 5–2 vowels (easy → hard)
-        int vowelCount = Mathf.RoundToInt(Mathf.Lerp(5, 2, difficulty));
-        if(vowelCount < 3)
-        {
-            consonants = consonants3;
-        }
-        if(vowelCount < 4)
-        {
-            consonants = consonants2;
-        }
-        int consonantCount = totalCards - vowelCount;
-
-        // Add vowels
-        for (int i = 0; i < vowelCount; i++)
-            result.Add(vowels[Random.Range(0, vowels.Length)]);
-
-        // Add consonants
-        for (int i = 0; i < consonantCount; i++)
-            result.Add(consonants[Random.Range(0, consonants.Length)]);
-
-        // Shuffle the result
-        for (int i = result.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            (result[i], result[j]) = (result[j], result[i]);
-        }
-
-        return result;
-    }
+    
     public int GetCardValue(char letter)
     {
         char uppercaseLetter = char.ToUpper(letter);
@@ -186,97 +123,38 @@ public class CardData : MonoBehaviour
         return 0;
     }
 
-    //___________
+    public List<char> GenerateHelpfulLetters(int count = 10)
+    {
+        Debug.Log("GenerateHelpfulLetters");
+        string vowels = "AEIOU";
+        string weightedPool = "EEEAAARRRNNNTTTLLSSSIIIOOUDGBCMPFHVWYJKXZQ";
 
-    //public static class SmartLetterGenerator
-    //{
-    //    private static readonly string vowels = "AEIOU";
-    //    private static readonly string weightedPool = "EEEAAARRRNNNTTTLLSSSIIIOOUDGBCMPFHVWYJKXZQ";
+        List<char> letters = new List<char>();
 
-    //    public static List<char> GenerateHelpfulLetters(int count = 5)
-    //    {
-    //        List<char> letters = new List<char>();
+        // Ensure at least one vowel
+        letters.Add(vowels[Random.Range(0, vowels.Length)]);
 
-    //        // Always inject at least 1 vowel
-    //        letters.Add(vowels[Random.Range(0, vowels.Length)]);
+        // Fill the rest with letters from the weighted pool
+        for (int i = 1; i < count; i++)
+        {
+            letters.Add(weightedPool[Random.Range(0, weightedPool.Length)]);
+        }
 
-    //        // Fill rest from weighted pool
-    //        for (int i = 1; i < count; i++)
-    //        {
-    //            letters.Add(weightedPool[Random.Range(0, weightedPool.Length)]);
-    //        }
+        Shuffle(letters);
+        return letters;
+    }
 
-    //        // Shuffle so vowel isn't always first
-    //        Shuffle(letters);
-
-    //        return letters;
-    //    }
-
-    //    private static void Shuffle(List<char> list)
-    //    {
-    //        for (int i = list.Count - 1; i > 0; i--)
-    //        {
-    //            int j = Random.Range(0, i + 1);
-    //            (list[i], list[j]) = (list[j], list[i]);
-    //        }
-    //    }
-    //}
-    //List<char> moreLetters = SmartLetterGenerator.GenerateHelpfulLetters(5);
-    //int nextLetterIndex = 0;
-
-    //public void RevealNextLetter()
-    //{
-    //    if (nextLetterIndex < moreLetters.Count)
-    //    {
-    //        char next = moreLetters[nextLetterIndex];
-    //        nextLetterIndex++;
-
-    //        // Add letter to player hand
-    //        AddLetterToHand(next);
-    //    }
-    //}
-
-    //___________
-
-    //private void OnValidate()
-    //{
-    //    //if (Card.instance.gameObject.tag != "ExtraCard")
-    //    //{
-    //    Debug.Log("________OnValidate");
-    //    letterText.text = letter.ToString();
-    //    valueText.text = GetCardValue(letter).ToString();
-    //}
-
-
-    //void Start()
-    //{
-    //    Debug.Log("Card");
-    //    instance = this;
-    //    letterText.text = letter.ToString();
-    //    valueText.text = GetCardValue(letter).ToString();
-    //    cardValue = GetCardValue(letter);
-    //    Debug.Log($"{gameObject.name} assigned letter: {letter} assigned value: {cardValue}");
-    //}
-    //public int GetCardValue(char letter)
-    //{
-    //    char uppercaseLetter = char.ToUpper(letter);
-    //    if (letterValues.TryGetValue(uppercaseLetter, out int value))
-    //    {
-    //        return value;
-    //    }
-    //    return 0;
-    //}
-
-    //void Start()
-    //{
-    //    Debug.Log("Card");
-    //    instance = this;
-    //    char randomLetter = (char)('A' + Random.Range(0, 26));
-    //    letterText.text = randomLetter.ToString();
-    //    valueText.text = GetCardValue(randomLetter).ToString();
-    //    cardValue = GetCardValue(randomLetter);
-    //    Debug.Log($"{gameObject.name} assigned letter: {randomLetter} assigned value: {cardValue}");
-    //}
+    /// <summary>
+    /// Shuffles a list of characters in-place using the Fisher-Yates algorithm.
+    /// </summary>
+    private void Shuffle(List<char> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
     int GetCardIndexFromName(string name)
     {
         if (name == "Card") return 0;
@@ -291,4 +169,43 @@ public class CardData : MonoBehaviour
         Debug.LogWarning("Card name format invalid: " + name);
         return -1;
     }
+
+ //   •	Level 1 → difficulty = 0.01 (easy)
+	//•	Level 50 → difficulty = 0.5 (medium)
+	//•	Level 100+ → difficulty = 1.0 (hard)
+
+    //public List<char> GenerateHelpfulLetters(int count, float difficulty = 0f)
+    //{
+    //    string vowels = "AEIOU";
+    //    string consonantsEasy = "BCDFGHJKLMNPQRSTVWXYZ";
+    //    string consonantsMed = "BCDAFGHJKELMNPQRISTVWXOYZU";
+    //    string consonantsHard = "BCADFGHJEKLMANPOQRSTUVWXYZI";
+
+    //    difficulty = Mathf.Clamp01(difficulty); // Ensure range [0, 1]
+
+    //    // Map difficulty to vowel count (e.g., 5 → 2)
+    //    int vowelCount = Mathf.RoundToInt(Mathf.Lerp(count >= 10 ? 5 : 3, 2, difficulty));
+    //    int consonantCount = count - vowelCount;
+
+    //    // Choose harder consonants based on difficulty
+    //    string consonantPool = consonantsEasy;
+    //    if (difficulty > 0.5f) consonantPool = consonantsMed;
+    //    if (difficulty > 0.75f) consonantPool = consonantsHard;
+
+    //    List<char> result = new List<char>();
+
+    //    // Add vowels
+    //    for (int i = 0; i < vowelCount; i++)
+    //        result.Add(vowels[Random.Range(0, vowels.Length)]);
+
+    //    // Add consonants
+    //    for (int i = 0; i < consonantCount; i++)
+    //        result.Add(consonantPool[Random.Range(0, consonantPool.Length)]);
+
+    //    // Shuffle
+    //    Shuffle(result);
+    //    return result;
+    //}
+    //float difficulty = Mathf.Clamp01(FBPlayerData.instance.CURRENT_LEVEL / 100f);
+    //List<char> newBatch = GenerateHelpfulLetters(batchSize, difficulty);
 }

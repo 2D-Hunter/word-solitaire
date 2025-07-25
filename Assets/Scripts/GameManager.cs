@@ -72,7 +72,10 @@ public class GameManager : MonoBehaviour
     public int currentIndex = 0;
     public List<string> ReversedFoundWords => foundWords.AsEnumerable().Reverse().ToList();
     public HashSet<string> definitionsBeingFetched = new HashSet<string>();
+    public GameObject levelupStars = null;
+    public int earnedStarsInTheLevel = 0;
 
+    public CanvasGroup[] allGameStuffs = null;
 
 
     private void Awake()

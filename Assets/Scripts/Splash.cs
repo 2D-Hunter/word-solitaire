@@ -10,7 +10,7 @@ public class Splash : MonoBehaviour
     {
         Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 #if UNITY_EDITOR
-        FBPlayerData.instance.CURRENT_LEVEL = 42;
+        FBPlayerData.instance.CURRENT_LEVEL = 3;
         LoadScene();
 #endif
     }

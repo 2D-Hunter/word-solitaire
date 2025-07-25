@@ -20,7 +20,7 @@ public class GoalPopup : MonoBehaviour
     public TextMeshProUGUI currentLevelShadow;
     public TextMeshProUGUI goal;
     public TextMeshProUGUI goalShadow;
-
+    public GameObject[] starsObj;
     public CanvasGroup[] stars = null;
     public RectTransform[] starsRectTransform = null;
 
@@ -145,6 +145,15 @@ public class GoalPopup : MonoBehaviour
     }
     void AppearStars()
     {
+        if(InitManager.instance.CurrentScene == "Levelup")
+        {
+            int earnedStars = GameManager.instance.earnedStarsInTheLevel;
+
+            for (int i = 0; i < earnedStars && i < starsObj.Length; i++)
+            {
+                starsObj[i].SetActive(true);
+            }
+        }
         float delay = 0.1f;
         for (int i = 0; i < stars.Length; i++)
         {
@@ -163,7 +172,7 @@ public class GoalPopup : MonoBehaviour
     public void ClosePopup()
     {
         FBPlayerData.instance.VibrationEffect();
-        if (HeartManager.instance.CanPlay())
+        if (InitManager.instance.CurrentScene == "Levelup")
         {
             bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
             popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
@@ -171,33 +180,64 @@ public class GoalPopup : MonoBehaviour
         }
         else
         {
-            PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
-            PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
+            if (HeartManager.instance.CanPlay())
+            {
+                bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
+                popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
+                popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
+            }
+            else
+            {
+                PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
+                PopupManager.instance.TogglePopup(PopupManager.instance.outOfHeartsPopup);
+            }
         }
         
     }
     public void OnTapClose()
     {
         FBPlayerData.instance.VibrationEffect();
-        bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup));
+            
+        if (InitManager.instance.CurrentScene == "Levelup")
+        {
+            Invoke("BringStars", 0.3f);
+            bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => PopupManager.instance.ShowGoalPopup(PopupManager.instance.goalPopup));
+        }
+        else
+            bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(() => PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup));
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-350, 0.4f).SetEase(Ease.InBack);
     }
+    void BringStars()
+    {
+
+        GameManager.instance.levelupStars.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+    }
     public void RemoveThis()
     {
-        if (Menu.instance.overlayPanel.activeSelf)
+        if (InitManager.instance.CurrentScene == "Levelup")
         {
-            //Initiate.Fade("Game", Color.black, 1f);
-            SceneManager.LoadScene("Game");
+            Initiate.Fade("Game", Color.black, 1f);
         }
+        else
+            if (Menu.instance.overlayPanel.activeSelf)
+            {
+                //Initiate.Fade("Game", Color.black, 1f);
+                SceneManager.LoadScene("Game");
+            }
         PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
-
-
     }
     public void StartGame()
     {
-        Menu.instance.overlayPanel.SetActive(true);
-        ClosePopup();
+        if (InitManager.instance.CurrentScene == "Levelup")
+        {
+            Initiate.Fade("Game", Color.black, 1f);
+        }
+        else
+        {
+            Menu.instance.overlayPanel.SetActive(true);
+            ClosePopup();
+        }
         
     }
     private void OnDestroy()

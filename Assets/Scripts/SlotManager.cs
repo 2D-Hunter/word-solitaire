@@ -58,6 +58,8 @@ public class SlotManager : MonoBehaviour
     private StarProgressBar starProgressBar;
     public Card extraCard;
     public Tutorial tutorial;
+    public string bestWord = "";
+    public int bestScore = 0;
 
     public BonusHud bonusHud;
 
@@ -67,7 +69,8 @@ public class SlotManager : MonoBehaviour
     }
     void Start()
     {
-        
+        bestWord = "";
+        bestScore = 0;
         isSlotOccupied = new List<bool>(new bool[cardSlots.Count]);
         slotToCardMap = new Dictionary<RectTransform, Transform>();
         //originalPositions = new Dictionary<RectTransform, Vector2>();
@@ -433,6 +436,7 @@ public class SlotManager : MonoBehaviour
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
         GameManager.instance.gainedPoint = GetSlotPoints();
+        FigureOutBestWord(GetSlotString());
         Debug.Log("GameManager.instance.gainedPoint: " + GameManager.instance.gainedPoint);
         ScoreManager.instance.AddScore(GetSlotPoints());
         if (starProgressBar != null)
@@ -670,7 +674,9 @@ public class SlotManager : MonoBehaviour
     }
     public void ContinueGameAfterInterstitial()
     {
-        StartCoroutine(LoadMenu());
+        InitManager.instance.CurrentScene = "Levelup";
+        PopupManager.instance.TogglePopup(PopupManager.instance.levelupPopup);
+        //StartCoroutine(LoadMenu());
     }
     IEnumerator LoadMenu()
     {
@@ -690,5 +696,17 @@ public class SlotManager : MonoBehaviour
         Debug.Log("FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
         Initiate.Fade("Menu", Color.black, 1f);
 
+    }
+    void FigureOutBestWord(string word)
+    {
+        int score = GameManager.instance.gainedPoint; // your existing scoring logic
+
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestWord = word;
+        }
+
+        // ...continue normal flow
     }
 }
