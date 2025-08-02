@@ -76,7 +76,7 @@ public class BackButton : MonoBehaviour
                     });
                 }
                 CoinManager.instance.SpendCoins(counter);
-
+                AnalyticsManager.Instance.TrackCoinsSpent("Flip back Extra Card", counter);
                 counter += 5;
                 UpdateText();
                 //var card = CardManager.instance.rightSideCards.RemoveAt(CardManager.instance.rightSideCards.Count-1);

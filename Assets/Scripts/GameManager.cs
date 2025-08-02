@@ -77,6 +77,9 @@ public class GameManager : MonoBehaviour
 
     public CanvasGroup[] allGameStuffs = null;
 
+    public RectTransform coinHudRect = null;
+    
+
 
     private void Awake()
     {
@@ -100,11 +103,24 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        if(FBPlayerData.instance.CURRENT_LEVEL >= 11)
+        if(InitManager.instance.isReplay)
+            AnalyticsManager.Instance.TrackLevelStart(FBPlayerData.instance.CURRENT_LEVEL-1);
+        else
+            AnalyticsManager.Instance.TrackLevelStart(FBPlayerData.instance.CURRENT_LEVEL);
+
+        if (FBPlayerData.instance.CURRENT_LEVEL == 11)
+        {
+            if(InitManager.instance.isReplay)
+                wildCardBtn.SetActive(false);
+            else
+                wildCardBtn.SetActive(true);
+        }
+        else if (FBPlayerData.instance.CURRENT_LEVEL > 11)
             wildCardBtn.SetActive(true);
         else
             wildCardBtn.SetActive(false);
-        if(FBPlayerData.instance.CURRENT_LEVEL == 11)
+
+        if(FBPlayerData.instance.CURRENT_LEVEL == 11 && !InitManager.instance.isReplay)
         {
             boosterTutorial.SetActive(true);
         }
@@ -136,7 +152,14 @@ public class GameManager : MonoBehaviour
             tutorial.SetActive(false);
             hudMask.SetActive(false);
         }
-        if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 26)
+        {
+            if(InitManager.instance.isReplay)
+                bonusHud.SetActive(false);
+            else
+                bonusHud.SetActive(true);
+        }
+        else if(FBPlayerData.instance.CURRENT_LEVEL > 26)
             bonusHud.SetActive(true);
         else
             bonusHud.SetActive(false);
@@ -360,7 +383,7 @@ public class GameManager : MonoBehaviour
         newCard.tag = "WildCard";
         newCard.isWildCard = true;
         newCard.isFaceUp = true;
-
+        AnalyticsManager.Instance.TrackBoosterUsed("Wild Card");
         RectTransform cardTransform = newCard.GetComponent<RectTransform>();
 
         // Update visuals
@@ -404,6 +427,20 @@ public class GameManager : MonoBehaviour
         {
             wordDefinitions[word] = definition;
         }
+    }
+    public void SetPosOfCoinHud()
+    {
+        coinHudRect.anchoredPosition = new Vector2(-240f, 45f);
+    }
+    public void SetOriginalPosOfCoinHud()
+    {
+        Invoke("ResetCoinHud", 1.5f);
+        
+    }
+    void ResetCoinHud()
+    {
+        if (InitManager.instance.CurrentScene == "Game")
+            GameCoinHud.instance.ResetCoinHud();
     }
 
 }

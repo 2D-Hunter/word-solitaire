@@ -92,6 +92,7 @@ public class Dictionary : MonoBehaviour
             makeWords.SetActive(false);
             wordnikIcon.SetActive(true);
             UpdatePopup();
+            
         }
         else
         {
@@ -128,10 +129,20 @@ public class Dictionary : MonoBehaviour
     }
     private void UpdatePopup()
     {
+        
         var words = currentDisplayWords;
+
+        foreach (string wrd in words)
+        {
+            Debug.Log("Wordsss:  " + wrd);
+        }
         if (words == null || words.Count == 0) return;
 
         string word = words[GameManager.instance.currentIndex];
+        Debug.Log("UpdatePopup Dictionary: "+word);
+        AnalyticsManager.Instance.TrackDictionaryOpened(word);
+        //Debug.Log(currentDisplayWords. + "  Wordsss");
+        //Debug.Log(word + "  Wordsss");
         title.text = titleShadow.text = title2.text = title2Shadow.text = word;
 
         // Fetching logic

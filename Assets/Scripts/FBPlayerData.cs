@@ -16,6 +16,8 @@ public class FBPlayerData : MonoBehaviour
     [HideInInspector]
     public bool IsIos = false;
 
+    public string Mobile_OS = "Android";
+
    
 
     [HideInInspector]
@@ -71,6 +73,7 @@ public class FBPlayerData : MonoBehaviour
     public string AD_TYPE;
 
     string priceOfProducts;
+    string currencyCode;
 
 
     //worddict
@@ -149,7 +152,7 @@ public class FBPlayerData : MonoBehaviour
 
 
         Debug.Log("_______________ RecievePlayerData222 " + data);
-        CheckExpiaryDate_RemoveAds();
+        
 
         if (splash == null)
             splash = FindObjectOfType<Splash>();
@@ -176,10 +179,12 @@ public class FBPlayerData : MonoBehaviour
         if (osType == "IOS")
         {
             IsIos = true;
+            Mobile_OS = "IOS";
         }
         else
         {
             IsIos = false;
+            Mobile_OS = "Android";
         }
     }
     public void OnAdStarted()
@@ -243,11 +248,13 @@ public class FBPlayerData : MonoBehaviour
     {
         Debug.Log("Device Type: " + type);
         DeviceType = type;
+        CheckExpiaryDate_RemoveAds();
     }
     public void GetProductsAfterPurchase(string productId)
     {
         Debug.Log("Get Product After Purchase: " + productId);
         productID = productId;
+        string price = "";
         PopupManager.instance.TogglePopup(PopupManager.instance.loading);
         PopupManager.instance.ToggleShop();
         switch (productId)
@@ -259,6 +266,19 @@ public class FBPlayerData : MonoBehaviour
             case "coins_34000":
             case "coins_70400":
                 PopupManager.instance.TogglePopup(PopupManager.instance.purchasedItemPopup);
+                if (productID == "no_ads_30_days")
+                    price = "$11.99";
+                else if (productID == "coins_2000")
+                    price = "$5.99";
+                else if (productID == "coins_6000")
+                    price = "$11.99";
+                else if (productID == "coins_16000")
+                    price = "$28.99";
+                else if (productID == "coins_34000")
+                    price = "$59.99";
+                else if (productID == "coins_70400")
+                    price = "$89.99";
+                AnalyticsManager.Instance.TrackPurchase(productID, price, currencyCode);
                 break;
         }
         SavePlayerData();
@@ -266,19 +286,55 @@ public class FBPlayerData : MonoBehaviour
 
     public void GetRewardAfterVideoAd(string index)
     {
-        Debug.Log("___CollectAdReward_AfterRewardAd: " + index);
-        switch (InitManager.instance.currentReward)
+        Debug.Log("Collecting ad reward after rewarded video. Index: " + index);
+
+        if (!int.TryParse(index, out int rewardIndex))
+        {
+            Debug.LogWarning("Invalid index passed to GetRewardAfterVideoAd: " + index);
+            return;
+        }
+
+        var rewardType = InitManager.instance.currentReward;
+        var dailyRewards = FindObjectOfType<DailyRewards>();
+        if (dailyRewards == null)
+        {
+            Debug.LogError("DailyRewards instance not found.");
+            return;
+        }
+
+        switch (rewardType)
         {
             case "100_coins":
+                GrantAdReward("Coins", 100, rewardIndex, dailyRewards);
+                break;
+
             case "150_coins":
+                GrantAdReward("Coins", 150, rewardIndex, dailyRewards);
+                break;
+
             case "250_coins":
+                GrantAdReward("Coins", 250, rewardIndex, dailyRewards);
+                break;
+
             case "1_wild_card":
-                FindObjectOfType<DailyRewards>().CollectAdReward_AfterRewardAd(int.Parse(index));
+                GrantAdReward("Wild Card", 1, rewardIndex, dailyRewards);
+                break;
+
+            default:
+                Debug.LogWarning("Unhandled reward type: " + rewardType);
                 break;
         }
     }
+
+    private void GrantAdReward(string rewardName, int amount, int index, DailyRewards dailyRewards)
+    {
+        TrackAdRewardGranted(rewardName, amount);
+        dailyRewards.CollectAdReward_AfterRewardAd(index);
+        Debug.Log($"Granted ad reward: {amount} {rewardName} for index {index}");
+    }
     public void Get5CardsAfterVideoAd()
     {
+        TrackAdRewardGranted("5 Extra Cards", 5);
         StartCoroutine(DelayedGet5Cards());
     }
 
@@ -458,9 +514,68 @@ public class FBPlayerData : MonoBehaviour
         Debug.Log("Price: " + price);
         priceOfProducts = price;
     }
+    public void GetCurrency(string currency)
+    {
+        Debug.Log("Currency: " + currency);
+        currencyCode = currency;
+    }
     public string GetProductsPrice()
     {
         return priceOfProducts;
+    }
+    public void StartGameSession()
+    {
+        //AnalyticsManager.Instance.TrackSessionStart();
+    }
+    public void EndGameSession()
+    {
+        //AnalyticsManager.Instance.TrackSessionEnd();
+    }
+    public void TrackAdShown(string data)
+    {
+        string[] parts = data.Split('|');
+        string adType = parts[0];
+        string placement = parts[1];
+
+        Debug.Log("TrackAdShown AdType: " + adType + "  Placement: " + placement);
+        AnalyticsManager.Instance.TrackAdShown(adType, placement);
+    }
+    public void TrackAdCompleted(string data)
+    {
+        string[] parts = data.Split('|');
+        string adType = parts[0];
+        string placement = parts[1];
+
+        Debug.Log("TrackAdShown AdType: " + adType + "  Placement: " + placement);
+        AnalyticsManager.Instance.TrackAdCompleted(adType, placement);
+    }
+    public void TrackAdRewardGranted(string rewardType, int amount)
+    {
+        Debug.Log("TrackAdShown AdType: " + rewardType + "  Amount: " + amount);
+        AnalyticsManager.Instance.TrackAdRewardGranted(rewardType, amount);
+    }
+    public void GiveReward(string reason)
+    {
+        Debug.Log("Reason for giving reward: " + reason);
+        switch(reason)
+        {
+            case "FollowPage":
+                CoinManager.instance.AddCoins(50);
+                break;
+            case "GoinGroup":
+                CoinManager.instance.AddCoins(50);
+                break;
+            case "InviteFriend":
+                CoinManager.instance.AddCoins(25);
+                break;
+            case "ShareGame":
+                CoinManager.instance.AddCoins(100);
+                break;
+        }
+    }
+    public void ShowCoinAnimation()
+    {
+        InitManager.instance.ShowCoinAnim();
     }
 
 }

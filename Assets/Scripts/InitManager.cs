@@ -6,7 +6,7 @@ public class InitManager:MonoBehaviour
 {
     public static InitManager instance;
 
-    public string version = "1.0.12";
+    public string version = "1.0.0";
     public int currentLevel = 3;
     public int nextRandomLevel;
     public bool isLevelRandomized = false;
@@ -29,6 +29,10 @@ public class InitManager:MonoBehaviour
     public List<char> letters = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
     public List<char> letters1 = new List<char> { 'A', 'C', 'P', 'T', 'O', 'S', 'A', 'S', 'R', 'J' };
     public string CurrentScene = "Splash";
+    public bool isReplay = false;
+    public bool receivedBonusCoins = false;
+    public GameObject coinAnimPrefab;
+    private GameObject coinAnimInstance;
 
     private void Awake()
     {
@@ -52,5 +56,22 @@ public class InitManager:MonoBehaviour
         var levelInfo = levelData.levels[currentLevel - 1];
         Debug.Log("___Level Info: " + levelInfo.levelNumber + "_____Target: "+levelInfo.levelTarget);
     }
-    
+    public void ShowCoinAnim()
+    {
+        Invoke("PlayCoinSound", 0.5f);
+        
+        coinAnimInstance = Instantiate(coinAnimPrefab, transform);
+
+    }
+    void PlayCoinSound()
+    {
+        SoundManager.instance.PlaySFX("GetCoins", 0.8f);
+    }
+    public IEnumerator RemoveCoinAnim(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(coinAnimInstance);
+        coinAnimInstance = null;
+    }
+
 }

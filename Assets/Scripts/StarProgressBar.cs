@@ -28,12 +28,18 @@ public class StarProgressBar : MonoBehaviour
     void Start()
     {
         ResetBar();
-
-        var level = levelData.levels[GameUtils.EffectiveCurrentLevel];
-        starThresholds = level.starThresholds;
-        maxScore = Mathf.RoundToInt(TotalPoints() * level.estimatedMultiplier);
-        Debug.Log($"💡 StarProgressBar Max Score for Level {GameUtils.EffectiveCurrentLevel+1}: {maxScore}");
-        Debug.Log($"💡 StarProgressBar Thresholds: {string.Join(", ", starThresholds)}");
+        if (InitManager.instance.isReplay)
+        {
+            var level = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2];
+            starThresholds = level.starThresholds;
+            maxScore = Mathf.RoundToInt(TotalPoints() * level.estimatedMultiplier);
+        }
+        else
+        {
+            var level = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1];
+            starThresholds = level.starThresholds;
+            maxScore = Mathf.RoundToInt(TotalPoints() * level.estimatedMultiplier);
+        }
 
         UpdateStarBar(0);
     }
@@ -42,7 +48,7 @@ public class StarProgressBar : MonoBehaviour
     {
         float previousFill = currentScore / maxScore;
         currentScore += scoreGained;
-        GameManager.instance.totalPoint = (int)currentScore;
+        //GameManager.instance.totalPoint = (int)currentScore;
         Debug.Log("UpdateStarBar: currentScore: " + currentScore);
         currentScore = Mathf.Clamp(currentScore, 0, maxScore);
         float newFill = Mathf.Clamp01(currentScore / maxScore);

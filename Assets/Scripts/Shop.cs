@@ -94,6 +94,9 @@ public class Shop : MonoBehaviour
             Application.ExternalCall("CallInAppPurchase", productId);
         else
             StartCoroutine(GetProductAfterPurchase(productId));
+#if UNITY_EDITOR
+        StartCoroutine(GetProductAfterPurchase(productId));
+#endif
 
     }
     IEnumerator GetProductAfterPurchase(string productId)

@@ -106,6 +106,29 @@ public class PurchasedItemPopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        if (FBPlayerData.instance.productID != "no_ads_30_days")
+        {
+            FBPlayerData.instance.ShowCoinAnimation();
+            switch (FBPlayerData.instance.productID)
+            {
+                case "coins_2000":
+                    CoinManager.instance.AddCoins(2000);
+                    break;
+                case "coins_6000":
+                    CoinManager.instance.AddCoins(6000);
+                    break;
+                case "coins_16000":
+                    CoinManager.instance.AddCoins(16000);
+                    break;
+                case "coins_34000":
+                    CoinManager.instance.AddCoins(34000);
+                    break;
+                case "coins_70400":
+                    CoinManager.instance.AddCoins(70400);
+                    break;
+            }
+        }
+
         FBPlayerData.instance.VibrationEffect();
         sparkle.SetActive(false);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
@@ -115,7 +138,11 @@ public class PurchasedItemPopup : MonoBehaviour
     }
     void RemoveThis()
     {
-        if (PopupManager.instance != null && PopupManager.instance.purchasedItemPopup != null)
+        if (FBPlayerData.instance.productID != "no_ads_30_days" && InitManager.instance.CurrentScene=="Game")
+        {
+            GameManager.instance.SetPosOfCoinHud();
+        }
+            if (PopupManager.instance != null && PopupManager.instance.purchasedItemPopup != null)
         {
             PopupManager.instance.TogglePopup(PopupManager.instance.purchasedItemPopup);
         }
@@ -127,23 +154,23 @@ public class PurchasedItemPopup : MonoBehaviour
             
             case "coins_2000":
                 purchasedItems[0].SetActive(true);
-                CoinManager.instance.AddCoins(2000);
+                //CoinManager.instance.AddCoins(2000);
                 break;
             case "coins_6000":
                 purchasedItems[1].SetActive(true);
-                CoinManager.instance.AddCoins(6000);
+                //CoinManager.instance.AddCoins(6000);
                 break;
             case "coins_16000":
                 purchasedItems[2].SetActive(true);
-                CoinManager.instance.AddCoins(16000);
+                //CoinManager.instance.AddCoins(16000);
                 break;
             case "coins_34000":
                 purchasedItems[3].SetActive(true);
-                CoinManager.instance.AddCoins(34000);
+                //CoinManager.instance.AddCoins(34000);
                 break;
             case "coins_70400":
                 purchasedItems[4].SetActive(true);
-                CoinManager.instance.AddCoins(70400);
+                //CoinManager.instance.AddCoins(70400);
                 break;
             case "no_ads_30_days":
                 TextMeshProUGUI[] texts = collectBtn.GetComponentsInChildren<TextMeshProUGUI>();

@@ -52,12 +52,23 @@ public class GoalPopup : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        Debug.Log("____GameUtils.EffectiveCurrentLevel: "+ GameUtils.EffectiveCurrentLevel);
-        currentBonusGoalType = levelData.levels[GameUtils.EffectiveCurrentLevel].bonusGoalType;
-        if (levelData.levels[GameUtils.EffectiveCurrentLevel].isLevelHard)
-            hardLabel.SetActive(true);
+        if(InitManager.instance.CurrentScene == "Levelup")
+        {
+            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-2].bonusGoalType;
+            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].isLevelHard)
+                hardLabel.SetActive(true);
+            else
+                hardLabel.SetActive(false);
+        }
         else
-            hardLabel.SetActive(false);
+        {
+            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].bonusGoalType;
+            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
+                hardLabel.SetActive(true);
+            else
+                hardLabel.SetActive(false);
+        }
+        
         SetInit();
     }
     private void SetInit()
@@ -76,26 +87,79 @@ public class GoalPopup : MonoBehaviour
         playBtn.alpha = 0;
         playBtnRectTransform.localScale = new Vector3(0.7f, 0.7f, 1);
         popupObj.anchoredPosition = new Vector2(0, -350);
-
-        currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
-        if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
+        if (InitManager.instance.CurrentScene == "Levelup")
         {
-            mainGoal.SetActive(false);
-            mainGoal1.SetActive(true);
-            bonusGoal1.SetActive(true);
+            currentLevel.text = currentLevelShadow.text = "Level " + (FBPlayerData.instance.CURRENT_LEVEL-1).ToString();
+            if (FBPlayerData.instance.CURRENT_LEVEL > 26)
+            {
+                mainGoal.SetActive(false);
+                mainGoal1.SetActive(true);
+                bonusGoal1.SetActive(true);
+                int levelIndex = FBPlayerData.instance.CURRENT_LEVEL - (InitManager.instance.CurrentScene == "Levelup" ? 2 : 1);
 
-            goal1.text = goal1Shadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].levelTarget.ToString();
-            targetForBonus.text = targetForBonusShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].targetPointsForBonus.ToString();
-            reward.text = rewardShadow.text = "Reward:   +" + levelData.levels[GameUtils.EffectiveCurrentLevel].reward.ToString();
+                // Safety check to avoid out-of-bounds access
+                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Length - 1);
+
+                var level = levelData.levels[levelIndex];
+
+                goal1.text = goal1Shadow.text = level.levelTarget.ToString();
+                targetForBonus.text = targetForBonusShadow.text = level.targetPointsForBonus.ToString();
+                reward.text = rewardShadow.text = $"Reward:   +{level.reward}";
+            }
+            else
+            {
+                mainGoal.SetActive(true);
+                mainGoal1.SetActive(false);
+                bonusGoal1.SetActive(false);
+                if (InitManager.instance.CurrentScene == "Levelup")
+                {
+                    goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].levelTarget.ToString();
+                }
+                else
+                {
+                    goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelTarget.ToString();
+                }
+            }
         }
         else
         {
-            mainGoal.SetActive(true);
-            mainGoal1.SetActive(false);
-            bonusGoal1.SetActive(false);
+            currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
 
-            goal.text = goalShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].levelTarget.ToString();
+            if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
+            {
+
+                mainGoal.SetActive(false);
+                mainGoal1.SetActive(true);
+                bonusGoal1.SetActive(true);
+                int levelIndex = FBPlayerData.instance.CURRENT_LEVEL-1;
+
+                // Safety check to avoid out-of-bounds access
+                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Length - 1);
+
+                var level = levelData.levels[levelIndex];
+
+                goal1.text = goal1Shadow.text = level.levelTarget.ToString();
+                targetForBonus.text = targetForBonusShadow.text = level.targetPointsForBonus.ToString();
+                reward.text = rewardShadow.text = $"Reward:   +{level.reward}";
+            }
+            else
+            {
+                mainGoal.SetActive(true);
+                mainGoal1.SetActive(false);
+                bonusGoal1.SetActive(false);
+                if (InitManager.instance.CurrentScene == "Levelup")
+                {
+                    goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].levelTarget.ToString();
+                }
+                else
+                {
+                    goal.text = goalShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelTarget.ToString();
+                }
+            }
+
+
         }
+        
     }
     void SetBonusGoal(BonusGoalType goalType)
     {
@@ -112,8 +176,16 @@ public class GoalPopup : MonoBehaviour
                 break;
             case BonusGoalType.NumberOfCards:
                 bonusGoal_NumberOfCards.SetActive(true);
-                numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters.ToString() + "+ Card";
-                totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfWords.ToString();
+                if (InitManager.instance.CurrentScene == "Levelup")
+                {
+                    numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfLetters.ToString() + "+ Card";
+                    totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfWords.ToString();
+                }
+                else
+                {
+                    numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].numberOfLetters.ToString() + "+ Card";
+                    totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].numberOfWords.ToString();
+                }
                 break;
         }
 
@@ -231,10 +303,12 @@ public class GoalPopup : MonoBehaviour
     {
         if (InitManager.instance.CurrentScene == "Levelup")
         {
+            InitManager.instance.isReplay = true;
             Initiate.Fade("Game", Color.black, 1f);
         }
         else
         {
+            InitManager.instance.receivedBonusCoins = false;
             Menu.instance.overlayPanel.SetActive(true);
             ClosePopup();
         }

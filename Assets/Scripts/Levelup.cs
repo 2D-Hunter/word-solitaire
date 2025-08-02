@@ -36,6 +36,13 @@ public class Levelup : MonoBehaviour
     public CanvasGroup bestWordTxtTitle;
     public CanvasGroup bestWordTxtCG;
     public CanvasGroup pointsTxtCG;
+    public LevelData levelData;
+
+    public RectTransform bonusGoalLevelup = null;
+    public GameObject bonusGoalHud = null;
+    public GameObject coinHud = null;
+
+    private float finalPos;
 
     private void Awake()
     {
@@ -43,20 +50,39 @@ public class Levelup : MonoBehaviour
     }
     private void Start()
     {
+        AnalyticsManager.Instance.TrackLevelComplete(FBPlayerData.instance.CURRENT_LEVEL, GameManager.instance.earnedStarsInTheLevel, GameManager.instance.totalPoint);
+        AnalyticsManager.Instance.TrackBestWord(FBPlayerData.instance.CURRENT_LEVEL, SlotManager.instance.bestWord, SlotManager.instance.bestScore, GameManager.instance.totalPoint);
+        AnalyticsManager.Instance.TrackAllWordsCreated(GameManager.instance.foundWords);
         Debug.Log("Levelup Start");
         Debug.Log("Best Word: " + SlotManager.instance.bestWord);
         Debug.Log("Score of Best Word: " + SlotManager.instance.bestScore);
         bestWordTxtTitle.alpha = 0;
         bestWordTxtCG.alpha = 0;
         pointsTxtCG.alpha = 0;
+
+        if ((FBPlayerData.instance.CURRENT_LEVEL - 1) <= 25)
+        {
+            coinHud.SetActive(false);
+            bonusGoalHud.SetActive(false);
+            finalPos = 225f;
+        }
+        else
+        {
+            coinHud.SetActive(true);
+            bonusGoalHud.GetComponent<RectTransform>().localScale = Vector3.zero;
+            bonusGoalHud.SetActive(true);
+            
+            finalPos = 70f;
+        }
         SetInit();
         
         //popupRectTransform.anchoredPosition = new Vector2(0, -350f);
     }
     public void ShowPunchline()
     {
+        AnimateTotalScore(GameManager.instance.totalPoint);
         int rnd = Random.Range(1, 26);
-        string message = $"Only {SlotManager.instance.bestScore}% players made a better word!";
+        string message = $"Only {rnd}% players made a better word!";
         StartCoroutine(TypeText(message));
     }
 
@@ -78,10 +104,14 @@ public class Levelup : MonoBehaviour
     private void SetInit()
     {
         InitManager.instance.CurrentScene = "Levelup";
-        titleTxt_LevelNumber.text = titleTxtShadow_LevelNumber.text = "Level "+(FBPlayerData.instance.CURRENT_LEVEL).ToString();
-        titleTxt_TotalScore.text = "Score "+GameManager.instance.totalPoint.ToString();
+        titleTxt_LevelNumber.text = titleTxtShadow_LevelNumber.text = "Level "+(FBPlayerData.instance.CURRENT_LEVEL-1).ToString();
+        titleTxt_TotalScore.text = "Score 0";
         bestWordTxt.text = SlotManager.instance.bestWord;
         pointsTxt.text = SlotManager.instance.bestScore.ToString()+" pts";
+        Debug.Log("Levelup SetInit: "+ FBPlayerData.instance.TOTAL_COINS);
+        Debug.Log("Levelup SetInit: "+ levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].reward);
+
+        
         
 
         //GameManager.instance.overlayPanel.SetActive(false);
@@ -91,9 +121,9 @@ public class Levelup : MonoBehaviour
         continueBtnCG.alpha = 0;
         dictionaryBtnCG.alpha = 0;
         title.GetComponent<RectTransform>().anchoredPosition = new Vector2(title.GetComponent<RectTransform>().anchoredPosition.x, 1000);//815
-        replayBtn.GetComponent<RectTransform>().anchoredPosition = new Vector2(replayBtn.GetComponent<RectTransform>().anchoredPosition.x, -1000);//-815
-        continueBtn.GetComponent<RectTransform>().anchoredPosition = new Vector2(continueBtn.GetComponent<RectTransform>().anchoredPosition.x, -1000);//-815
-        dictionaryBtn.GetComponent<RectTransform>().anchoredPosition = new Vector2(dictionaryBtn.GetComponent<RectTransform>().anchoredPosition.x, -1000);//-815
+        bonusGoalLevelup.anchoredPosition = new Vector2(0, -1000);//-815
+        //continueBtn.GetComponent<RectTransform>().anchoredPosition = new Vector2(continueBtn.GetComponent<RectTransform>().anchoredPosition.x, -1000);//-815
+        //dictionaryBtn.GetComponent<RectTransform>().anchoredPosition = new Vector2(dictionaryBtn.GetComponent<RectTransform>().anchoredPosition.x, -1000);//-815
         brillance.GetComponent<RectTransform>().localScale = new Vector3(0f, 0f, 0f);
         for (int i = 0; i < GameManager.instance.allGameStuffs.Length; i++)
         {
@@ -101,7 +131,7 @@ public class Levelup : MonoBehaviour
             GameManager.instance.allGameStuffs[i].alpha = 1;
         }
         ShowPopup();
-
+        
     }
     
     public void ShowPopup()
@@ -125,13 +155,37 @@ public class Levelup : MonoBehaviour
         dictionaryBtnCG.DOFade(1f, 0.3f).SetEase(Ease.OutExpo);
 
         title.GetComponent<RectTransform>().DOAnchorPosY(815f, 0.3f).SetEase(Ease.OutExpo);
-        replayBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
-        continueBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
-        dictionaryBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
+        bonusGoalLevelup.DOAnchorPosY(finalPos, 0.3f).SetEase(Ease.OutExpo);
+        if(bonusGoalHud.activeSelf)
+        {
+            bonusGoalHud.GetComponent<RectTransform>().DOScale(1f, 0.5f)
+                .SetEase(Ease.OutBack).SetDelay(0.3f).OnComplete(CheckBonusCoins);
+        }
+        
+        //replayBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
+        //continueBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
+        //dictionaryBtnCG.GetComponent<RectTransform>().DOAnchorPosY(-815f, 0.3f).SetEase(Ease.OutExpo);
 
         bestWordTxtTitle.DOFade(1f, 0.5f).SetEase(Ease.OutExpo).SetDelay(0.3f);
         bestWordTxtCG.DOFade(1f, 0.5f).SetEase(Ease.OutExpo).SetDelay(0.5f);
         pointsTxtCG.DOFade(1f, 0.5f).SetEase(Ease.OutExpo).SetDelay(0.7f).OnComplete(ShowPunchline);
+    }
+    void CheckBonusCoins()
+    {
+        if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].reward != 0 && !InitManager.instance.receivedBonusCoins)
+        {
+            InitManager.instance.isReplay = false;
+            
+            Debug.Log("FindObjectOfType<BonusHud>().bonusTargetAchieved: " + FindObjectOfType<BonusHud>().bonusTargetAchieved);
+            if (FindObjectOfType<BonusHud>().bonusTargetAchieved)
+            {
+                InitManager.instance.receivedBonusCoins = true;
+                CoinManager.instance.AddCoins(levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].reward);
+                FBPlayerData.instance.ShowCoinAnimation();
+            }
+            
+        }
+        
     }
     public void ClosePopup()
     {
@@ -180,6 +234,7 @@ public class Levelup : MonoBehaviour
     }
     public void TapOnContinue()
     {
+        InitManager.instance.isReplay = false;
         StartCoroutine(LoadMenu());
     }
     IEnumerator LoadMenu()
@@ -190,7 +245,7 @@ public class Levelup : MonoBehaviour
         {
             FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
         }
-        FBPlayerData.instance.CURRENT_LEVEL++;
+        //FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
         //if (FBPlayerData.instance.CURRENT_LEVEL > 5)
         //{
@@ -206,6 +261,15 @@ public class Levelup : MonoBehaviour
         FBPlayerData.instance.VibrationEffect();
         Invoke("RemoveStars", 0.05f);
         PopupManager.instance.ShowGoalPopup(PopupManager.instance.goalPopup);
+    }
+    public void AnimateTotalScore(int targetScore)
+    {
+        int current = 0;
+        DOTween.To(() => current, x => {
+            current = x;
+            titleTxt_TotalScore.text = "Score "+ current.ToString();
+        }, targetScore, 1f)
+        .SetEase(Ease.OutCubic);
     }
 
 }

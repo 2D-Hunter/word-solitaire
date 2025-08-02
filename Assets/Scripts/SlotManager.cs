@@ -106,6 +106,7 @@ public class SlotManager : MonoBehaviour
 
     public void ReturnBackToDeck(Card card)
     {
+        
         StartCoroutine(ReturnBackToDeckRoutine(card));
     }
 
@@ -114,15 +115,29 @@ public class SlotManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         //card.MoveBackToOriginalPosition(null,false);
         bool finished = false;
+        GetSlotString();
+        GameManager.instance.isValidWord = false;
+        isSlotOccupied[0] = false;
+        allSlotsOccupied = false;
+        GameManager.instance.scoreMultiplier = 1;
+        RemoveCardsButton.instance.SwapImage();
+        GreenTabHandler.instance.HandleGreenTab(GetSlotString());
+        SubmitButton.instance.SwapImage();
+        DictionaryButton.instance.SwapImage();
         // ? Slight delay before flipping below cards
-        StartCoroutine(DelayedFlip(card, 0.45f)); // Delay based on how fast top card moves
+        StartCoroutine(DelayedFlip(card, 0.3f)); // Delay based on how fast top card moves
+        //yield return DelayedFlip(card, 0.3f);
         //card.FlipImmediateBelowCards();
+        ResetAfterCardBack(card);
+        slotsCard.Remove(card);
+        card.GetComponent<Button>().enabled = true;
+        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         card.MoveBackToOriginalPosition(null, false, () => {
             
             finished = true;
         });
         yield return new WaitUntil(() => finished);
-        yield return new WaitForSeconds(0.1f); // Small buffer
+        
         //yield return new WaitForSeconds(0.4f);
         //card.FlipImmediateBelowCards();
         //ResetAfterCardBack(card);
@@ -133,8 +148,7 @@ public class SlotManager : MonoBehaviour
         //CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         //AAA();
         //yield return new WaitForSeconds(0.2f);
-        card.GetComponent<Button>().enabled = true;
-        CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
+        
         yield return new WaitForEndOfFrame();
 
     }
@@ -142,6 +156,8 @@ public class SlotManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         card.FlipImmediateBelowCards();
+        //yield return new WaitForEndOfFrame();
+        //
     }
 
     public IEnumerator OnCardClicked_Coroutine(Card card)
@@ -165,6 +181,7 @@ public class SlotManager : MonoBehaviour
                     slotsContainer.transform.SetAsLastSibling();
                 }
 
+            FBPlayerData.instance.VibrationEffect();
             ResetAfterCardBack(card);
             slotsCard.Remove(card);
             
@@ -182,7 +199,8 @@ public class SlotManager : MonoBehaviour
         else
         {
             if (SlotManager.instance.allSlotsOccupied) yield  break;
-            Invoke("PlayCardPlacedSound", 0.2f);
+            FBPlayerData.instance.VibrationEffect();
+            Invoke("PlayCardPlacedSound", 0);
             
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
             {
@@ -331,7 +349,7 @@ public class SlotManager : MonoBehaviour
     void PlayCardPlacedSound()
     {
         SoundManager.instance.PlaySFX("CardPlaced");
-        Invoke("PlayCardTakeSound", 0.7f);
+        Invoke("PlayCardTakeSound", 0.5f);
     }
     void PlayCardTakeSound()
     {
@@ -416,14 +434,24 @@ public class SlotManager : MonoBehaviour
 
     public IEnumerator SubmitWord()
     {
+        AnalyticsManager.Instance.TrackWordCreated(SlotManager.instance.GetSlotString(), FBPlayerData.instance.CURRENT_LEVEL, GetSlotPoints());
         GameManager.instance.foundWords.Add(GetSlotString());
         WordnikDefinition.instance.FetchDefinition(SlotManager.instance.GetSlotString().ToLower());
         GameManager.instance.submittedWordLength = GetSlotString().Length;
         GameManager.instance.animateBonusTarget = true;
-        if (GetSlotString().Length >= 4)
+        if (GetSlotString().Length >= 5)
             Appreciations.instance.ShowAppreciation();
-        if ( bonusHud.currentBonusGoalType == BonusGoalType.NumberOfCards && GetSlotString().Length >= bonusHud.levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters)
-            GameManager.instance.wordCounter++;
+        if(InitManager.instance.isReplay)
+        {
+            if (bonusHud.currentBonusGoalType == BonusGoalType.NumberOfCards && GetSlotString().Length >= bonusHud.levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfLetters)
+                GameManager.instance.wordCounter++;
+        }
+        else
+        {
+            if (bonusHud.currentBonusGoalType == BonusGoalType.NumberOfCards && GetSlotString().Length >= bonusHud.levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].numberOfLetters)
+                GameManager.instance.wordCounter++;
+        }
+        
         GameManager.instance.hintText = "";
         GameManager.instance.foundValidWord = false;
         GameManager.instance.hintWord = "";
@@ -477,8 +505,10 @@ public class SlotManager : MonoBehaviour
                     prevBrillanceScore = FBPlayerData.instance.BRILLIANCE;
                 else
                     prevBrillanceScore = PlayerPrefs.GetInt("BrillianceScore");
-
-                InitManager.instance.brillianceScore = prevBrillanceScore + starProgressBar.CalculateBrillianceScore();
+                if (!InitManager.instance.isReplay)
+                    InitManager.instance.brillianceScore = prevBrillanceScore + starProgressBar.CalculateBrillianceScore();
+                else
+                    InitManager.instance.brillianceScore = prevBrillanceScore;
                 if (GameUtils.IsFacebookBuild())
                     FBPlayerData.instance.BRILLIANCE = InitManager.instance.brillianceScore;
                 else
@@ -579,11 +609,12 @@ public class SlotManager : MonoBehaviour
             {
                 RectTransform card = CardManager.instance.extraCards[i].GetComponent<RectTransform>();
                 card.gameObject.SetActive(false);
+                FBPlayerData.instance.VibrationEffect();
                 SoundManager.instance.PlaySFX("CardTurn", 0.3f);
                 FBPlayerData.instance.VibrationEffect();
                 yield return new WaitForSeconds(0.2f); // 0.3 sec delay between each
             }
-            Invoke("ShowAd_AfterTutorial", 1f);
+            Invoke("ShowAd", 1f);
 
 
             yield break;
@@ -636,6 +667,7 @@ public class SlotManager : MonoBehaviour
                     FBPlayerData.instance.VibrationEffect();
                 //Debug.Log("_______canvasGroup.alpha: "+canvasGroup.alpha);
                 card.gameObject.SetActive(false);
+                    FBPlayerData.instance.VibrationEffect();
                     completedTweens++;
                     Debug.Log("Card Count: " + cardCount);
                     Debug.Log("Card Count Completed Tween: " + completedTweens);
@@ -656,7 +688,8 @@ public class SlotManager : MonoBehaviour
     {
         Debug.Log("___Show Interstitial");
         // All tweens complete, now show interstitial and continue
-        AdTimerHandler.Instance.TryShowAd("Tutorial");
+        //AdTimerHandler.Instance.TryShowAd("Tutorial");
+        FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
 
 #if UNITY_EDITOR
         FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
@@ -666,28 +699,41 @@ public class SlotManager : MonoBehaviour
     {
         Debug.Log("___Show Interstitial");
         // All tweens complete, now show interstitial and continue
-        AdTimerHandler.Instance.TryShowAd("Levelup");
+        if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        {
+            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
+            FBPlayerData.instance.CURRENT_LEVEL++;
+            FBPlayerData.instance.SavePlayerData();
+            Initiate.Fade("Game", Color.black, 1f);
+        }
+        else
+        {
+            AdTimerHandler.Instance.TryShowAd("Levelup");
 
-#if UNITY_EDITOR
-        FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
-#endif
+//#if UNITY_EDITOR
+//            FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
+//#endif
+        }
+
+
     }
     public void ContinueGameAfterInterstitial()
     {
+        Debug.Log("_____ContinueGameAfterInterstitial");
         InitManager.instance.CurrentScene = "Levelup";
+        if(!InitManager.instance.isReplay)
+            FBPlayerData.instance.CURRENT_LEVEL++;
+        FBPlayerData.instance.SavePlayerData();
+        
         PopupManager.instance.TogglePopup(PopupManager.instance.levelupPopup);
+        Debug.Log("_____ContinueGameAfterInterstitial: Levelup");
         //StartCoroutine(LoadMenu());
     }
     IEnumerator LoadMenu()
     {
 
         yield return new WaitForSeconds(0f);
-        if(FBPlayerData.instance.CURRENT_LEVEL == 2)
-        {
-            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
-        }
-        FBPlayerData.instance.CURRENT_LEVEL++;
-        FBPlayerData.instance.SavePlayerData();
+        
         //if (FBPlayerData.instance.CURRENT_LEVEL > 5)
         //{
         //    FBPlayerData.instance.CURRENT_LEVEL = 1;

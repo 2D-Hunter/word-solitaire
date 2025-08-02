@@ -69,6 +69,7 @@ public class PopupManager : MonoBehaviour
             if(InitManager.instance.CurrentScene != "Levelup")
                 SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup = Instantiate(prefab, uiContainer);
+            AnalyticsManager.Instance.TrackPopupOpened(prefab.name +" Popup Opened");
         }
         else
         {
@@ -83,6 +84,7 @@ public class PopupManager : MonoBehaviour
         {
             SoundManager.instance.PlaySFX("PopupAppear");
             currentPopup2 = Instantiate(shop, uiContainer);
+            AnalyticsManager.Instance.TrackPopupOpened("Shop Popup Opened");
         }
         else
         {
@@ -107,6 +109,7 @@ public class PopupManager : MonoBehaviour
         if (currentPopup4 == null)
         {
             currentPopup4 = Instantiate(prefab, uiContainer);
+            AnalyticsManager.Instance.TrackPopupOpened("Dictionary Popup Opened");
         }
         else
         {
@@ -119,6 +122,7 @@ public class PopupManager : MonoBehaviour
         if (currentPopup5 == null)
         {
             currentPopup5 = Instantiate(prefab, uiContainer);
+            AnalyticsManager.Instance.TrackPopupOpened("Goal Popup Opened");
         }
         else
         {

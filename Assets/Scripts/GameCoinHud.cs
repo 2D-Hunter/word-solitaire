@@ -11,6 +11,7 @@ public class GameCoinHud : MonoBehaviour
     public Canvas canvas = null;
     private RectTransform rectTransform;
     RectTransform canvasRect;
+    private Vector2 originalPos;
 
     private void Awake()
     {
@@ -19,6 +20,7 @@ public class GameCoinHud : MonoBehaviour
         rectTransform = gameObject.GetComponent<RectTransform>();
         canvasRect = canvas.GetComponent<RectTransform>();
         gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(canvasRect.rect.width, gameObject.GetComponent<RectTransform>().anchoredPosition.y);
+        originalPos = gameObject.GetComponent<RectTransform>().anchoredPosition;
     }
     public void Show()
     {
@@ -36,5 +38,9 @@ public class GameCoinHud : MonoBehaviour
         {
             rectTransform.DOKill();
         });
+    }
+    public void ResetCoinHud()
+    {
+        gameObject.GetComponent<RectTransform>().anchoredPosition = originalPos;
     }
 }

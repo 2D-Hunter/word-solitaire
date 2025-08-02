@@ -42,7 +42,10 @@ public class LevelManager : MonoBehaviour
             }
             else
             {
-                LoadLevel(FBPlayerData.instance.CURRENT_LEVEL);
+                if(InitManager.instance.isReplay)
+                    LoadLevel(FBPlayerData.instance.CURRENT_LEVEL-1);
+                else
+                    LoadLevel(FBPlayerData.instance.CURRENT_LEVEL);
             }
         }
 

@@ -13,6 +13,8 @@ public class Splash : MonoBehaviour
         FBPlayerData.instance.CURRENT_LEVEL = 3;
         LoadScene();
 #endif
+
+
     }
     public void LoadScene()
     {

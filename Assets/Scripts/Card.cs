@@ -533,7 +533,8 @@ public class Card : MonoBehaviour
     //                    //rectTransform.localRotation = Quaternion.Euler(0, 180, 0); // ensure precision
     //                    card.isFlipping = false;
 
-    //                    if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.isWildCard)
+    //                    if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.is
+    //                    Card)
     //                        CardManager.instance.allFaceUpCards.Add(card);
     //                    if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
     //                        CardManager.instance.allFaceUpCards.Remove(card);

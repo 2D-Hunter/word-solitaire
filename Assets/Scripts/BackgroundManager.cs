@@ -21,7 +21,12 @@ public class BackgroundManager : MonoBehaviour
 
     public void OnLevelChanged(int level)
     {
-        LoadBackgroundForLevel(level);
+        if((FBPlayerData.instance.CURRENT_LEVEL == 11 || FBPlayerData.instance.CURRENT_LEVEL == 26 || FBPlayerData.instance.CURRENT_LEVEL == 41) && InitManager.instance.isReplay)
+        {
+            LoadBackgroundForLevel(level-1);
+        }
+        else
+            LoadBackgroundForLevel(level);
         
     }
 

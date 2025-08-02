@@ -70,6 +70,7 @@ public class Menu : MonoBehaviour
         MultiplayerEventHandler.Instance.isMultiplayer = false;
         PopupManager.instance.AssignUIContainer();
         //AnimateButton();
+        
     }
     public void ShowGoalPopup()
     {

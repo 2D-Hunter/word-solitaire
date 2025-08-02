@@ -134,10 +134,12 @@ public class MoreCardsPopup : MonoBehaviour
         {
             InitManager.instance.buyMoreCardsCntr++;
             CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
+            AnalyticsManager.Instance.TrackCoinsSpent("Bought 5 Extra Cards", InitManager.instance.moreCardsPrice);
             ClosePopupAndGiveRewards();
         }
         else
         {
+            PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
             PopupManager.instance.ToggleShop();
         }
     }
