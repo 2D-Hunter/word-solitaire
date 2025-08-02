@@ -165,7 +165,7 @@ public class FBPlayerData : MonoBehaviour
         Application.ExternalCall("ClearFBData");
 
     }
-    public void GetMyName(string myName)
+    public void GetPlayerName(string myName)
     {
         Debug.Log(" __________ PlayerName:" + myName);
         PlayerName = myName;
