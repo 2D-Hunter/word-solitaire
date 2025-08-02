@@ -237,7 +237,7 @@ public class BoardManager : MonoBehaviour
             rowPair.visual = tileGO;
             tileGO.transform.SetParent(boardParent, false);
             var canvas = tileGO.GetComponent<Canvas>();
-            canvas.sortingOrder = rowPair.Level;
+            canvas.sortingOrder = (rowPair.Level+1);
 
             RectTransform rectTransform = tileGO.GetComponent<RectTransform>();
             Vector2 adjustedPosition;

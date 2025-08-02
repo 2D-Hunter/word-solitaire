@@ -58,7 +58,7 @@ public class PopupManager : MonoBehaviour
     public void AssignUIContainer()
     {
         Debug.Log("AssignUIContainer");
-        uiContainer = GameObject.Find("UI-Panel").GetComponent<RectTransform>();
+        uiContainer = GameObject.Find("UIPanel").GetComponent<RectTransform>();
     }
 
 
