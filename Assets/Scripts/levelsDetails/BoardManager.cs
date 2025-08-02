@@ -185,7 +185,7 @@ public class BoardManager : MonoBehaviour
 
     public void GenerateLevelByNumber(int LevelNumber)
     {
-      
+        return;
         if (loadedLevelRampData == null)
         {
             Debug.LogError("Failed to deserialize JSON level data.");

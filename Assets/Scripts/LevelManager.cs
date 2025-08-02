@@ -82,7 +82,7 @@ public class LevelManager : MonoBehaviour
                 Debug.Log("____prefabIndex: " + prefabIndex);
             }*/
 
-            BoardManager.instance.GenerateLevelByNumber(prefabIndex-1);
+            //BoardManager.instance.GenerateLevelByNumber(prefabIndex-1);
             /*string prefabName = levelNamePrefix + prefabIndex;
             Debug.Log("prefabName: " + prefabName);
             GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
