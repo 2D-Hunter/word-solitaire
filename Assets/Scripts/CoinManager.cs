@@ -36,6 +36,7 @@ public class CoinManager : MonoBehaviour
         Debug.Log("AddCoins: " + FBPlayerData.instance.TOTAL_COINS);
         SaveCoins();
         OnCoinsUpdated.Invoke(FBPlayerData.instance.TOTAL_COINS);
+        
     }
 
     public bool SpendCoins(int amount)

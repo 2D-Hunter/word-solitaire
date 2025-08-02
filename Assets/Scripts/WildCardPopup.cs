@@ -173,9 +173,13 @@ public class WildCardPopup : MonoBehaviour
     
     public void OnTapCoins()
     {
-        if (CoinManager.instance.totalCoins >= coinsRequired)
+        FBPlayerData.instance.VibrationEffect();
+        Debug.Log("____OnTapCoins: " + FBPlayerData.instance.TOTAL_COINS + coinsRequired);
+        Debug.Log("____OnTapCoins: " + coinsRequired);
+        if (FBPlayerData.instance.TOTAL_COINS >= coinsRequired)
         {
             CoinManager.instance.SpendCoins(coinsRequired);
+            AnalyticsManager.Instance.TrackCoinsSpent("Bought Wild Card", coinsRequired);
             FBPlayerData.instance.TOTAL_WILD_CARD++;
             FBPlayerData.instance.SavePlayerData();
             FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
@@ -187,6 +191,7 @@ public class WildCardPopup : MonoBehaviour
         }
         else
         {
+            PopupManager.instance.TogglePopup(PopupManager.instance.wildcardPopup);
             PopupManager.instance.ToggleShop();
         }
         

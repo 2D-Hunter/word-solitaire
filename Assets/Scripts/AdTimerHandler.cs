@@ -5,8 +5,8 @@ public class AdTimerHandler : MonoBehaviour
     public static AdTimerHandler Instance;
 
     [Header("Interstitial Timing")]
-    public float minAdInterval = 20f; // 2 minutes
-    public float maxAdInterval = 80f; // 3 minutes
+    public float minAdInterval = 200f; 
+    public float maxAdInterval = 300f; 
 
     private float adTimer;
     private float nextAdTime;
@@ -46,9 +46,26 @@ public class AdTimerHandler : MonoBehaviour
     }
     public void TryShowAd(string adPlacement)
     {
-        if (shouldShowAd)
+        Debug.Log("_____shouldShowAd: " + shouldShowAd);
+        if(FBPlayerData.instance.NO_ADS_30_DAYS)
         {
-            Application.ExternalCall("ShowAd_Interstitial", adPlacement);
+            SlotManager.instance.ContinueGameAfterInterstitial();
         }
+        else
+        {
+            if (shouldShowAd)
+            {
+                Application.ExternalCall("ShowAd_Interstitial", adPlacement);
+
+    #if UNITY_EDITOR
+                    SlotManager.instance.ContinueGameAfterInterstitial();
+    #endif
+            }
+            else
+            {
+                SlotManager.instance.ContinueGameAfterInterstitial();
+            }
+        }
+        
     }
 }

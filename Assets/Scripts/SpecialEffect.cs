@@ -40,4 +40,8 @@ public class SpecialEffect : MonoBehaviour
             yield return new WaitForSeconds(delayBetweenLoops);
         }
     }
+    private void OnDestroy()
+    {
+        shimmer?.DOKill();
+    }
 }

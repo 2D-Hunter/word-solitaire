@@ -99,7 +99,8 @@ public class HintService : IHintService
             var word = matchWords[0];
             int indexofWild = cardsChars.IndexOf("*");
             var cardChar = word[indexofWild];
-            wildCard.cardData.letter = cardChar;
+            wildCard.cardData.letter = char.ToUpper(cardChar);//cardChar
+            Debug.Log("_____wildCard.cardData.letter: "+ wildCard.cardData.letter);
         }
         else
         {

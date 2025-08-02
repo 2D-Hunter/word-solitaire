@@ -29,7 +29,11 @@ public class Hud : MonoBehaviour
     }
     void LoadHUDImages()
     {
-        bool isHardLevel = levelData.levels[GameUtils.EffectiveCurrentLevel].isLevelHard;
+        bool isHardLevel;
+        if (InitManager.instance.isReplay)
+             isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].isLevelHard;
+        else
+             isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].isLevelHard;
 
         if (isHardLevel)
         {
@@ -71,8 +75,17 @@ public class Hud : MonoBehaviour
                             bonusHud.DecreaseTarget();
                         break;
                     case BonusGoalType.NumberOfCards:
-                        if (GameManager.instance.submittedWordLength >= levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters && GameManager.instance.animateBonusTarget && !bonusHud.bonusTargetAchieved)
-                            bonusHud.AnimateNumberOfWordsAchieved();
+                        if(InitManager.instance.isReplay)
+                        {
+                            if (GameManager.instance.submittedWordLength >= levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfLetters && GameManager.instance.animateBonusTarget && !bonusHud.bonusTargetAchieved)
+                                bonusHud.AnimateNumberOfWordsAchieved();
+                        }
+                        else
+                        {
+                            if (GameManager.instance.submittedWordLength >= levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].numberOfLetters && GameManager.instance.animateBonusTarget && !bonusHud.bonusTargetAchieved)
+                                bonusHud.AnimateNumberOfWordsAchieved();
+                        }
+                        
                         break;
                 }
                 GameManager.instance.animateBonusTarget = false;

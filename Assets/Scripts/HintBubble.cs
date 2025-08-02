@@ -32,6 +32,7 @@ public class HintBubble : MonoBehaviour
             {
                 bubble1.SetActive(true);
                 hintTxt.text = GameManager.instance.hintText;
+                AnalyticsManager.Instance.TrackHintUsed(FBPlayerData.instance.CURRENT_LEVEL, GameManager.instance.hintText);
             }
             else
                 bubble2.SetActive(true);
@@ -43,6 +44,7 @@ public class HintBubble : MonoBehaviour
             {
                 bubble1.SetActive(true);
                 hintTxt.text = GameManager.instance.hintText;
+                AnalyticsManager.Instance.TrackHintUsed(FBPlayerData.instance.CURRENT_LEVEL, GameManager.instance.hintText);
             }
             else
             {

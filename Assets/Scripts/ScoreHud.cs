@@ -46,7 +46,9 @@ public class ScoreHUD : MonoBehaviour
         //{
             displayedScore = score;
             scoreText.text = scoreTextShadow.text = displayedScore.ToString();
-            Debug.Log("UpdateScoreUI");
+        GameManager.instance.totalPoint = displayedScore;
+        Debug.Log("____GameManager.instance.totalPoint: " + GameManager.instance.totalPoint);
+        Debug.Log("UpdateScoreUI");
         //}
     }
 

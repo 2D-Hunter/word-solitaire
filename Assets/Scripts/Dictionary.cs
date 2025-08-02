@@ -58,7 +58,12 @@ public class Dictionary : MonoBehaviour
     }
     public void ShowPopup()
     {
-        bg.DOFade(0.4f, 0.6f).SetEase(Ease.OutBack);
+        if (InitManager.instance.CurrentScene == "Levelup")
+        {
+            bg.DOFade(0.8f, 0.6f).SetEase(Ease.OutBack);
+        }
+        else
+            bg.DOFade(0.4f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupObj.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
 
@@ -87,6 +92,7 @@ public class Dictionary : MonoBehaviour
             makeWords.SetActive(false);
             wordnikIcon.SetActive(true);
             UpdatePopup();
+            
         }
         else
         {
@@ -101,20 +107,42 @@ public class Dictionary : MonoBehaviour
     }
     public void ClosePopup()
     {
+        if(InitManager.instance.CurrentScene == "Levelup")
+            Invoke("BringStars", 0.3f);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-283, 0.4f).SetEase(Ease.InBack);
     }
+    void BringStars()
+    {
+
+        GameManager.instance.levelupStars.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+    }
     void RemoveThis()
     {
-        PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
+        if (InitManager.instance.CurrentScene == "Levelup")
+        {
+            PopupManager.instance.ShowDictionary(PopupManager.instance.dictionaryPopup);
+        }
+        else
+            PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
     }
     private void UpdatePopup()
     {
+        
         var words = currentDisplayWords;
+
+        foreach (string wrd in words)
+        {
+            Debug.Log("Wordsss:  " + wrd);
+        }
         if (words == null || words.Count == 0) return;
 
         string word = words[GameManager.instance.currentIndex];
+        Debug.Log("UpdatePopup Dictionary: "+word);
+        AnalyticsManager.Instance.TrackDictionaryOpened(word);
+        //Debug.Log(currentDisplayWords. + "  Wordsss");
+        //Debug.Log(word + "  Wordsss");
         title.text = titleShadow.text = title2.text = title2Shadow.text = word;
 
         // Fetching logic

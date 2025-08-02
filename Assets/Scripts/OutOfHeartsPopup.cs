@@ -131,6 +131,7 @@ public class OutOfHeartsPopup : MonoBehaviour
         if (CoinManager.instance.totalCoins >= coinsRequired)
         {
             CoinManager.instance.SpendCoins(coinsRequired);
+            AnalyticsManager.Instance.TrackCoinsSpent("Refill Heart from OutOfHearts Popup", coinsRequired);
             HeartManager.instance.RefillHearts(amountToIncreaseBy);
             ClosePopup();
         }

@@ -200,6 +200,8 @@ public class DailyRewards : MonoBehaviour
         collectButton.SetActive(false);
         FindObjectOfType<GiftNotification>().UpdateRewardsText();
         CoinManager.instance.AddCoins(25);
+        FBPlayerData.instance.ShowCoinAnimation();
+        AnalyticsManager.Instance.TrackFreeReward("Coins", 25);
     }
 
     // ---------- COLLECT AD REWARD ----------
@@ -249,17 +251,30 @@ public class DailyRewards : MonoBehaviour
         }
         FindObjectOfType<GiftNotification>().UpdateRewardsText();
 
-        if(index == 0)
+        if (index == 0)
+        {
             CoinManager.instance.AddCoins(100);
+            FBPlayerData.instance.ShowCoinAnimation();
+            AnalyticsManager.Instance.TrackFreeReward("Coins", 100);
+        }
         else if (index == 1)
+        {
             CoinManager.instance.AddCoins(150);
+            FBPlayerData.instance.ShowCoinAnimation();
+            AnalyticsManager.Instance.TrackFreeReward("Coins", 150);
+        }
         else if (index == 2)
+        {
             CoinManager.instance.AddCoins(250);
+            FBPlayerData.instance.ShowCoinAnimation();
+            AnalyticsManager.Instance.TrackFreeReward("Coins", 250);
+        }
         else if (index == 3)
         {
             // reward a Wild Card
             FBPlayerData.instance.TOTAL_WILD_CARD++;
             FBPlayerData.instance.SavePlayerData();
+            AnalyticsManager.Instance.TrackFreeReward("Wild Card", 1);
         }
 
     }

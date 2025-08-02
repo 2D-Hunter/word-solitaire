@@ -111,6 +111,7 @@ public class QuitPopup : MonoBehaviour
         {
             //Initiate.Fade("Menu", Color.black, 1f);
             HeartManager.instance.LoseHeart();
+            InitManager.instance.isReplay = false;
             SceneManager.LoadScene("Menu");
         }
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);

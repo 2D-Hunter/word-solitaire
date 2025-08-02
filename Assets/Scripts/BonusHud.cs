@@ -34,12 +34,29 @@ public class BonusHud : MonoBehaviour
 
     private void Start()
     {
-        currentBonusGoalType = levelData.levels[GameUtils.EffectiveCurrentLevel].bonusGoalType;
+        if(InitManager.instance.isReplay)
+        {
+            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-2].bonusGoalType;
+        }
+        else
+        {
+            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].bonusGoalType;
+        }
+        
         SetBonusGoal(currentBonusGoalType);
         tickMark.SetActive(false);
         bonusTargetAchieved = false;
-        bonusTxt.text = bonusShadowTxt.text = levelData.levels[GameUtils.EffectiveCurrentLevel].targetPointsForBonus.ToString();
-        currentTarget = levelData.levels[GameUtils.EffectiveCurrentLevel].targetPointsForBonus;
+        if (InitManager.instance.isReplay)
+        {
+            bonusTxt.text = bonusShadowTxt.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].targetPointsForBonus.ToString();
+            currentTarget = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].targetPointsForBonus;
+        }
+        else
+        {
+            bonusTxt.text = bonusShadowTxt.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].targetPointsForBonus.ToString();
+            currentTarget = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].targetPointsForBonus;
+        }
+            
     }
     void SetBonusGoal(BonusGoalType goalType)
     {
@@ -56,8 +73,17 @@ public class BonusHud : MonoBehaviour
                 break;
             case BonusGoalType.NumberOfCards:
                 bonusGoal_NumberOfCards.SetActive(true);
-                numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfLetters.ToString() + "+ Card";
-                totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/"+levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfWords.ToString();
+                if (InitManager.instance.isReplay)
+                {
+                    numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfLetters.ToString() + "+ Card";
+                    totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfWords.ToString();
+                }
+                else
+                {
+                    numberOfLetters.text = numberOfLettersShadow.text = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].numberOfLetters.ToString() + "+ Card";
+                    totalWordToGetTxt.text = totalWordToGetTxtShadow.text = "0/" + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].numberOfWords.ToString();
+                }
+                    
                 break;
         }
 
@@ -125,8 +151,10 @@ public class BonusHud : MonoBehaviour
     }
     public void AnimateNumberOfWordsAchieved()
     {
-
-        totalWordToGetTxt.text = totalWordToGetTxtShadow.text = GameManager.instance.wordCounter.ToString() + "/"+ levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfWords.ToString();
+        if(InitManager.instance.isReplay)
+            totalWordToGetTxt.text = totalWordToGetTxtShadow.text = GameManager.instance.wordCounter.ToString() + "/"+ levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfWords.ToString();
+        else
+            totalWordToGetTxt.text = totalWordToGetTxtShadow.text = GameManager.instance.wordCounter.ToString() + "/" + levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].numberOfWords.ToString();
         RectTransform targetTransform = totalWordToGetTxt.GetComponent<RectTransform>();
 
         targetTransform.DOScale(3f, 0.1f)
@@ -137,8 +165,17 @@ public class BonusHud : MonoBehaviour
                 .SetEase(Ease.OutExpo)
                 .OnComplete(() =>
                 {
-                    if (GameManager.instance.wordCounter >= levelData.levels[GameUtils.EffectiveCurrentLevel].numberOfWords)
-                        Invoke("GrantBonus", 0.3f);
+                    if (InitManager.instance.isReplay)
+                    {
+                        if (GameManager.instance.wordCounter >= levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].numberOfWords)
+                            Invoke("GrantBonus", 0.3f);
+                    }
+                    else
+                    {
+                        if (GameManager.instance.wordCounter >= levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].numberOfWords)
+                            Invoke("GrantBonus", 0.3f);
+                    }
+                        
 
                 });
             });
@@ -146,7 +183,7 @@ public class BonusHud : MonoBehaviour
     void GrantBonus()
     {
         bonusTargetAchieved = true;
-        CoinManager.instance.AddCoins(levelData.levels[GameUtils.EffectiveCurrentLevel].reward);
+        
 
         tickMark.SetActive(true);
         canvasGroup_Tick.alpha = 0f;
