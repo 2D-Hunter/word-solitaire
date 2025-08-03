@@ -45,7 +45,7 @@ public class SlotManager : MonoBehaviour
     public RectTransform slotRect;
      float animDuration = 0.3f;
      float height = 400f;
-     Vector3 startScale = new Vector3(2f, 2f, 2f);
+     Vector3 startScale = new Vector3(1.3f, 1.3f, 1.3f);
      Vector3 endScale = new Vector3(0.83f, 0.83f, 0.83f);
      Vector3 endScale_ExtraCard = new Vector3(0.875f, 0.875f, 0.875f);
 
@@ -269,8 +269,9 @@ public class SlotManager : MonoBehaviour
                 {
                     card.GetComponent<RectTransform>().GetChild(i).localRotation = Quaternion.Euler(0, 0, 0);
                 }
-
-                Vector2 startPos = cardRect.anchoredPosition;
+                AnimateCardToSlot(card, cardRect, targetPosition, 
+                    animDuration, startScale, endScale, endScale_ExtraCard);
+                /*Vector2 startPos = cardRect.anchoredPosition;
 
                 cardRect.DOMove(targetPosition, animDuration).SetEase(Ease.Linear);
 
@@ -290,7 +291,7 @@ public class SlotManager : MonoBehaviour
                 }
                 if (card.isWildCard)
                 {
-                    activeTrail_WildCard = Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
+                    activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position); //Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
                 }
 
                 float apexY = Mathf.Max(startPos.y, targetPosition.y) + height;
@@ -333,11 +334,12 @@ public class SlotManager : MonoBehaviour
                     {
                         if (card.isWildCard)
                         {
-                            Destroy(activeTrail_WildCard, 0.3f); // Add a delay if needed for particles to finish
-                            activeTrail_WildCard = null;
+                            *//*  Destroy(activeTrail_WildCard, 0.3f); // Add a delay if needed for particles to finish
+                              activeTrail_WildCard = null;*//*
+                            StartCoroutine(ReturnTrailToPoolDelayed(activeTrail_WildCard, 0.3f));
                         }
                     }
-                });
+                });*/
 
 
             }
@@ -345,6 +347,100 @@ public class SlotManager : MonoBehaviour
         CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         AAA();
         yield return new WaitForEndOfFrame();
+    }
+
+
+    public void AnimateCardToSlot(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
+    {
+        Vector2 startPos = cardRect.anchoredPosition;
+        float apexHeight;
+        Transform trail = null;
+
+        // Decide arc height and manage card category
+        switch (cardRect.tag)
+        {
+            case "ExtraCard":
+                apexHeight = 800f;
+                CardManager.instance.rightSideCards.Remove(card);
+                break;
+            case "WildCard":
+                apexHeight = 200f;
+                break;
+            default:
+                apexHeight = 400f;
+                break;
+        }
+
+        // Handle wild card trail effect using pool
+        if (card.isWildCard)
+        {
+            activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position); //Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
+        }
+
+        float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
+        Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
+        Vector2[] pathPoints = new Vector2[]
+        {
+            cardRect.parent.TransformPoint(startPos),     // start
+            cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)), // mid arc point
+            targetPosition       // end (must be world space!)
+        };
+        // Create full tween sequence
+        Sequence motionSequence = DOTween.Sequence();
+
+        // Vertical arc animation
+        Debug.Log("pathPoints[1] >>>"+pathPoints[1]);
+        motionSequence.Append(cardRect.DOMove(pathPoints[1], animDuration).SetEase(Ease.OutQuad));
+        motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.OutQuad));
+        // Join scaling and rotation
+        motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
+        motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+
+        // Optional bounce-in scale
+        cardRect.DOScale(startScale, animDuration / 4).SetEase(Ease.OutQuad);
+
+        // On every frame of animation
+        motionSequence.OnUpdate(() =>
+        {
+            if (card.isWildCard)
+            {
+                if (activeTrail_WildCard != null)
+                {
+                    activeTrail_WildCard.transform.position = cardRect.position;
+                }
+            }
+        });
+
+        // Final callback
+        motionSequence.OnComplete(() =>
+        {
+            Debug.Log("Card reached the slot with projectile motion!");
+
+            if (cardRect.tag == "WildCard")
+            {
+                FBPlayerData.instance.TOTAL_WILD_CARD--;
+                FBPlayerData.instance.SavePlayerData();
+                FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
+            }
+
+            slotsCard[^1].GetComponent<Button>().enabled = true;
+
+            if (trail != null)
+            {
+                StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
+                trail = null;
+            }
+        });
+
+        motionSequence.Play();
+    }
+
+    
+
+    private IEnumerator ReturnTrailToPoolDelayed(GameObject trailObj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        TrailEffectPool.Instance.ReturnTrailEffect(trailObj);
     }
     void PlayCardPlacedSound()
     {

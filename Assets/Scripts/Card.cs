@@ -750,7 +750,7 @@ public class Card : MonoBehaviour
             if (!otherCard.gameObject.activeInHierarchy)
                 continue;
 
-            int otherIndex = otherCard.transform.GetSiblingIndex();
+            int otherIndex = otherCard.Level;
 
             if (otherIndex > targetIndex)
             {

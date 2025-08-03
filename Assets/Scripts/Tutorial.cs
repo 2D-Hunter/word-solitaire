@@ -153,7 +153,7 @@ public class Tutorial : MonoBehaviour
         cardTransform.DORotate(new Vector3(0, 0, rotationAmount), duration * 0.25f)
             .SetEase(Ease.InOutSine)
             .SetLoops(4, LoopType.Yoyo)
-            .ChangeStartValue(new Vector3(0, 0, -rotationAmount))
+            .ChangeStartValue(new Vector3(0, 0, 0))
             .OnComplete(() =>
             {
                 cardTransform.DORotate(Vector3.zero, 0.2f).SetEase(Ease.OutQuad);
