@@ -32,6 +32,11 @@ public class CardManager : MonoBehaviour
         Debug.Log("____Card Data CardManager");
         MakeRandomCardWild();
         //AnimateCardsFromDeck(); // 🔥 Fan out effect
+        for (int i = 0; i < extraCards.Count; i++)
+        {
+            var card = extraCards[i];
+            card.GetComponent<Canvas>().sortingOrder = i + 1;
+        }
     }
 
     public void AnimateCardsFromDeck()
