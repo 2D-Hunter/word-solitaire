@@ -178,14 +178,14 @@ public class SlotManager : MonoBehaviour
                 if (card.transform.tag == "ExtraCard")
                 {
                     GameObject slotsContainer = GameObject.Find("UI-Panel/Extra Cards");
-                    slotsContainer.transform.SetAsLastSibling();
+                   // slotsContainer.transform.SetAsLastSibling();
                 }
 
             FBPlayerData.instance.VibrationEffect();
             ResetAfterCardBack(card);
             slotsCard.Remove(card);
             
-            card.GetComponent<RectTransform>().SetAsLastSibling();
+           // card.GetComponent<RectTransform>().SetAsLastSibling();
             card.FlipImmediateBelowCards();
             if (card.GetComponent<Card>() != null)
             {
@@ -361,7 +361,7 @@ public class SlotManager : MonoBehaviour
         {
             case "ExtraCard":
                 apexHeight = 800f;
-                CardManager.instance.rightSideCards.Remove(card);
+                CardManager.instance.rightSideCards.RemoveCard(card);
                 break;
             case "WildCard":
                 apexHeight = 200f;

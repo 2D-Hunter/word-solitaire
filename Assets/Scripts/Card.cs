@@ -117,7 +117,7 @@ public class Card : MonoBehaviour
         if (this.tag == "ExtraCard")
         {
             Debug.Log("MoveBackToOriginalPosition Extra Card");
-            CardManager.instance.rightSideCards.Add(this);
+            CardManager.instance.rightSideCards.AddCard(this);
             if (cardSequence != null && cardSequence.IsActive())
             {
                 //cardSequence.Kill(); // Clean up old sequence explicitly
@@ -299,15 +299,15 @@ public class Card : MonoBehaviour
                 
         }
     }
-    static int level = 1;
+   
     public void OnExtraCardClick()
     {
         Debug.Log("OnExtraCardClick: "+ FBPlayerData.instance.CURRENT_LEVEL + "____" + InitManager.instance.tutorialCntr);
 
-        level++;
+       
         Card eCard = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1];
         Debug.Log("OnExtraCardClick: " + eCard.name);
-        eCard.GetComponent<Canvas>().sortingOrder = level;
+        eCard.GetComponent<Canvas>().sortingOrder = CardManager.instance.rightSideCards.Count+1;
         RectTransform rectTransform = eCard.GetComponent<RectTransform>();
         if (!isFaceUp)
         {
@@ -609,7 +609,7 @@ public class Card : MonoBehaviour
             }
 
             CardManager.instance.extraCards.Remove(eCard);
-            CardManager.instance.rightSideCards.Add(eCard);
+            CardManager.instance.rightSideCards.AddCard(eCard);
             CardManager.instance.allFaceUpCards = CardManager.instance.allFaceUpCards.Except(CardManager.instance.rightSideCards).ToList();
             CardManager.instance.UpdateFaceUpCards(eCard, eCard.isFaceUp);
         }
@@ -648,8 +648,8 @@ public class Card : MonoBehaviour
             cardToFlip.GetComponent<Image>().sprite = Resources.Load<Sprite>("FaceUpCard_0");
         
         cardToFlip.isFaceUp = false;
-        Card.level--;
-        cardToFlip.rectTransform.SetAsLastSibling();
+        
+       // cardToFlip.rectTransform.SetAsLastSibling();
         int leveIIndex = CardManager.instance.extraCards.Count;
         cardToFlip.GetComponent<Canvas>().sortingOrder = leveIIndex;
         cardToFlip.rectTransform.DOAnchorPosX(originalPosOfExtraCards[CardManager.instance.extraCards.Count], 0.3f);
@@ -671,7 +671,7 @@ public class Card : MonoBehaviour
         if (CardManager.instance.rightSideCards.Count > 1)
         {
             var cardToMove = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
-            CardManager.instance.rightSideCards.Remove(cardToMove);
+            CardManager.instance.rightSideCards.RemoveCard(cardToMove);
             CardManager.instance.extraCards.Add(cardToMove);
             CardManager.instance.UpdateFaceUpCards(cardToMove, cardToMove.isFaceUp);
             CardManager.instance.UpdateFaceUpCards(CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1], true);

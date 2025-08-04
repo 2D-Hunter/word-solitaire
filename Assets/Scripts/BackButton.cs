@@ -82,7 +82,7 @@ public class BackButton : MonoBehaviour
                 //var card = CardManager.instance.rightSideCards.RemoveAt(CardManager.instance.rightSideCards.Count-1);
                 var card = CardManager.instance.rightSideCards[CardManager.instance.rightSideCards.Count - 1];
                 card.FlipCardBack();
-                CardManager.instance.rightSideCards.Remove(card);
+                CardManager.instance.rightSideCards.RemoveCard(card);
                 GameCoinHud.instance.Show();
             }
             else

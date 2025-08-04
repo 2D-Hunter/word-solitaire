@@ -155,7 +155,7 @@ public class ExtraCard : MonoBehaviour
         
             
         //}
-        Debug.Log("Hiiiii: " + ExtraCardManager.instance.rightSideCards.Count);
+        
         if (ExtraCardManager.instance.rightSideCards.Count <= 1)
         {
             BackButton.instance.HideThis();
