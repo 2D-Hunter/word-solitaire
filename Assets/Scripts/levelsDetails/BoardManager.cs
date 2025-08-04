@@ -254,15 +254,22 @@ public class BoardManager : MonoBehaviour
                 rectTransform.anchoredPosition = adjustedPosition;
                 rectTransform.localScale = Vector3.one;
                 var card = tileGO.GetComponent<Card>();
+             
                 tileGO.name = "card" + "_" + rowPair.Level + "_" + rowPairIndex;
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
                     Debug.Log(generateLetter[rowPairIndex].ToString());
+                    int cardValue = card.cardData.GetCardValue(generateLetter[rowPairIndex]);
+                    card.cardData.valueText.text = cardValue.ToString();
+                    card.cardData.cardValue = cardValue;
                     card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
                 }
                 else
                 {
+                    int cardValue = card.cardData.GetCardValue(rowPair.Tile[0]);
                     card.cardData.letterText.text = rowPair.Tile.ToString();
+                    card.cardData.valueText.text = cardValue.ToString();
+                    card.cardData.cardValue = cardValue;
                 }
                 if (card != null)
                 {

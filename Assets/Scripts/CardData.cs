@@ -117,6 +117,7 @@ public class CardData : MonoBehaviour
         char uppercaseLetter = char.ToUpper(letter);
         if (letterValues.TryGetValue(uppercaseLetter, out int value))
         {
+            Debug.Log("________GetCardValue: uppercaseLetter" + uppercaseLetter);
             Debug.Log("________GetCardValue: "+value);
             return value;
         }
