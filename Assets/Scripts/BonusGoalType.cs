@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum BonusGoalType
 {
-    None,
+    None=0,
     Points,
     NumberOfCards
     // Add more if needed

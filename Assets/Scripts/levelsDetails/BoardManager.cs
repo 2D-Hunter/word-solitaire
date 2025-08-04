@@ -171,7 +171,7 @@ public class BoardManager : MonoBehaviour
         }
 
         //GenerateLevelByNumber(currentLevel);
-        //prepareGoalData();
+       // prepareGoalData();
 
 
     }
@@ -201,8 +201,26 @@ public class BoardManager : MonoBehaviour
             else
             {
                 var level = levelData.levels[i];
-                level.levelNumber = currentLevel;
-               //level.
+                level.levelNumber = i;
+                level.starThresholds.Clear();
+                level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);
+                level.bonusGoalType = (BonusGoalType) UnityEngine.Random.Range(1, 3);
+                if(level.bonusGoalType == BonusGoalType.Points)
+                {
+                    level.targetPointsForBonus = UnityEngine.Random.Range(130, 275);
+                    level.numberOfWords = 0;
+                    level.numberOfLetters = 0;
+                }
+                else if(level.bonusGoalType != BonusGoalType.NumberOfCards) {
+
+                    level.targetPointsForBonus = 0;
+                    level.numberOfWords = UnityEngine.Random.Range(2, 5);
+                    level.numberOfLetters = UnityEngine.Random.Range(3, 6);
+
+
+
+                }
+                
             }
         }
     }
