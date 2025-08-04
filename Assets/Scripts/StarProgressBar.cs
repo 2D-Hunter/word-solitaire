@@ -22,7 +22,7 @@ public class StarProgressBar : MonoBehaviour
     private bool[] starUnlocked = new bool[3];
 
     [Header("Thresholds")]
-    [SerializeField] private float[] starThresholds;
+    [SerializeField] private List<float> starThresholds;
     [SerializeField] private LevelData levelData;
 
     void Start()

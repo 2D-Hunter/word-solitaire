@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Tilemaps;
+using static LevelData;
 
 
 public class ObjectPoolCard<T>
@@ -170,7 +171,40 @@ public class BoardManager : MonoBehaviour
         }
 
         //GenerateLevelByNumber(currentLevel);
+        //prepareGoalData();
 
+
+    }
+
+    private void prepareGoalData()
+    {
+        for (int i = 0; i < loadedLevelRampData.Levels.Count; i++)
+        {
+            string LevelfullPath = "Levels/" + loadedLevelRampData.Levels[i];
+
+            TextAsset jsonTextAssetLevel = Resources.Load<TextAsset>(LevelfullPath);
+            if (jsonTextAssetLevel == null)
+            {
+                Debug.LogError($"JSON level file not found at: Resources/{LevelfullPath}");
+                return;
+            }
+
+            Debug.Log($"Loading level from JSON: {LevelfullPath}");
+            GameLevelData loadedLevelData = JsonUtility.FromJson<GameLevelData>(jsonTextAssetLevel.text);
+            if (i < 50)
+            {
+            /*    var level = levelData.levels[i];
+                level.levelNumber = currentLevel;
+                level.starThresholds.Clear();
+                level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);*/
+            }
+            else
+            {
+                var level = levelData.levels[i];
+                level.levelNumber = currentLevel;
+               //level.
+            }
+        }
     }
 
     public void NextLevel()
@@ -212,9 +246,8 @@ public class BoardManager : MonoBehaviour
             return;
         }
         
-         LevelData.LevelInfo levelInfo = new LevelData.LevelInfo();
-        levelInfo.levelNumber = currentLevel;
-        levelInfo.levelTarget = currentLevel;
+        
+
         GenerateBoardFromLevelData(loadedLevelData);
     }
     private void GenerateBoardFromLevelData(GameLevelData levelData)

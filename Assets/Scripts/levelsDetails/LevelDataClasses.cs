@@ -21,7 +21,7 @@ public class LevelInfo
     public List<string> Goals; // Assuming goals are strings, though empty in example
     public bool ShuffleCards;
     public bool UseSeededRandom;
-    public List<int> PointsForEachStar;
+    public List<float> PointsForEachStar;
     public int Difficulty;
     public List<string> Hand; // Assuming hand letters are strings
     public bool CustomStarScore;

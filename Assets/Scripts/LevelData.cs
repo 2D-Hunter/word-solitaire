@@ -16,7 +16,7 @@ public class LevelData : ScriptableObject
         public int numberOfWords;
         public bool isLevelHard;
         public float estimatedMultiplier = 3f;
-        public float[] starThresholds = new float[] { 0.4f, 0.3f, 0.3f };
+        public List<float> starThresholds = new List<float> { 0.4f, 0.3f, 0.3f };
     }
 
     public List<LevelInfo>   levels;
