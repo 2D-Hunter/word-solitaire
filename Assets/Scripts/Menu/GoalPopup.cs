@@ -62,16 +62,12 @@ public class GoalPopup : MonoBehaviour
         }
         else
         {
-            int bonusIndex = 26;
-            if(FBPlayerData.instance.CURRENT_LEVEL > 50)
-            {
-                bonusIndex = UnityEngine.Random.Range(26, 49);
-            }
-            currentBonusGoalType = levelData.levels[bonusIndex].bonusGoalType;
-            //if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
-            //    hardLabel.SetActive(true);
-            //else
-            //    hardLabel.SetActive(false);
+            
+            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].bonusGoalType;
+            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
+                hardLabel.SetActive(true);
+            else
+                hardLabel.SetActive(false);
         }
         
         SetInit();
