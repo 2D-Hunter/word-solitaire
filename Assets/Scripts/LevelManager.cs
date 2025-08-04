@@ -107,7 +107,8 @@ public class LevelManager : MonoBehaviour
         {
             // Since you're not using the 'levels' array anymore for instantiated levels after level 2,
             // You can remove this part or manage instantiated levels separately.
-            levels[levelIndex - 1].SetActive(true);
+            if(FBPlayerData.instance.CURRENT_LEVEL <= 2)
+                levels[levelIndex - 1].SetActive(true);
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
 
@@ -212,7 +213,7 @@ public class LevelManager : MonoBehaviour
 
     public LevelData.LevelInfo GetLevelInfo(int levelNumber)
     {
-        int maxDefinedLevel = levelData.levels.Length;
+        int maxDefinedLevel = levelData.levels.Count;
 
         if (levelNumber <= maxDefinedLevel)
         {

@@ -174,7 +174,7 @@ public class Menu : MonoBehaviour
 
     public LevelData.LevelInfo GetLevelInfo(int levelNumber)
     {
-        int maxDefinedLevel = levelData.levels.Length;
+        int maxDefinedLevel = levelData.levels.Count;
 
         if (levelNumber <= maxDefinedLevel)
         {

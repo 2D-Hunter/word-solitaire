@@ -64,6 +64,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField]
     private int currentLevel = 0;
     LetterBucket letterBucket = null;
+
+    public LevelData levelData;
     public ObjectPoolCard<GameObject> Pool
     {
         get
@@ -167,7 +169,7 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        GenerateLevelByNumber(currentLevel);
+        //GenerateLevelByNumber(currentLevel);
 
     }
 
@@ -209,6 +211,10 @@ public class BoardManager : MonoBehaviour
             Debug.LogError("Failed to deserialize JSON level data.");
             return;
         }
+        
+         LevelData.LevelInfo levelInfo = new LevelData.LevelInfo();
+        levelInfo.levelNumber = currentLevel;
+        levelInfo.levelTarget = currentLevel;
         GenerateBoardFromLevelData(loadedLevelData);
     }
     private void GenerateBoardFromLevelData(GameLevelData levelData)

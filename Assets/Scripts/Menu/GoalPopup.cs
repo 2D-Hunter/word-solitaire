@@ -62,11 +62,16 @@ public class GoalPopup : MonoBehaviour
         }
         else
         {
-            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].bonusGoalType;
-            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
-                hardLabel.SetActive(true);
-            else
-                hardLabel.SetActive(false);
+            int bonusIndex = 26;
+            if(FBPlayerData.instance.CURRENT_LEVEL > 50)
+            {
+                bonusIndex = UnityEngine.Random.Range(26, 49);
+            }
+            currentBonusGoalType = levelData.levels[bonusIndex].bonusGoalType;
+            //if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
+            //    hardLabel.SetActive(true);
+            //else
+            //    hardLabel.SetActive(false);
         }
         
         SetInit();
@@ -98,7 +103,7 @@ public class GoalPopup : MonoBehaviour
                 int levelIndex = FBPlayerData.instance.CURRENT_LEVEL - (InitManager.instance.CurrentScene == "Levelup" ? 2 : 1);
 
                 // Safety check to avoid out-of-bounds access
-                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Length - 1);
+                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Count - 1);
 
                 var level = levelData.levels[levelIndex];
 
@@ -134,7 +139,7 @@ public class GoalPopup : MonoBehaviour
                 int levelIndex = FBPlayerData.instance.CURRENT_LEVEL-1;
 
                 // Safety check to avoid out-of-bounds access
-                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Length - 1);
+                levelIndex = Mathf.Clamp(levelIndex, 0, levelData.levels.Count - 1);
 
                 var level = levelData.levels[levelIndex];
 
