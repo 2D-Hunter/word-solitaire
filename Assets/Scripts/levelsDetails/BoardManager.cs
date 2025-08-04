@@ -171,7 +171,7 @@ public class BoardManager : MonoBehaviour
         }
 
         //GenerateLevelByNumber(currentLevel);
-       // prepareGoalData();
+        //prepareGoalData();
 
 
     }
@@ -211,7 +211,7 @@ public class BoardManager : MonoBehaviour
                     level.numberOfWords = 0;
                     level.numberOfLetters = 0;
                 }
-                else if(level.bonusGoalType != BonusGoalType.NumberOfCards) {
+                else if(level.bonusGoalType == BonusGoalType.NumberOfCards) {
 
                     level.targetPointsForBonus = 0;
                     level.numberOfWords = UnityEngine.Random.Range(2, 5);
