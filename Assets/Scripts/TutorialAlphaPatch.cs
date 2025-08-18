@@ -19,8 +19,8 @@ public class TutorialAlphaPatch : MonoBehaviour
         if (eventSystem == null)
             eventSystem = EventSystem.current;
 
-        if (raycaster == null)
-            raycaster = FindObjectOfType<GraphicRaycaster>();
+        //if (raycaster == null)
+        //    raycaster = FindObjectOfType<GraphicRaycaster>();
     }
 
     //void OnMouseDown() // Detects click on SpriteRenderer with Collider

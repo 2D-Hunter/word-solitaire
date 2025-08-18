@@ -49,7 +49,7 @@ public class AdTimerHandler : MonoBehaviour
         Debug.Log("_____shouldShowAd: " + shouldShowAd);
         if(FBPlayerData.instance.NO_ADS_30_DAYS)
         {
-            SlotManager.instance.ContinueGameAfterInterstitial();
+            FBPlayerData.instance.ContinueGameAfterInterstitial(adPlacement);
         }
         else
         {
@@ -57,13 +57,13 @@ public class AdTimerHandler : MonoBehaviour
             {
                 Application.ExternalCall("ShowAd_Interstitial", adPlacement);
 
-    #if UNITY_EDITOR
-                    SlotManager.instance.ContinueGameAfterInterstitial();
-    #endif
+#if UNITY_EDITOR
+                FBPlayerData.instance.ContinueGameAfterInterstitial(adPlacement);
+#endif
             }
             else
             {
-                SlotManager.instance.ContinueGameAfterInterstitial();
+                FBPlayerData.instance.ContinueGameAfterInterstitial(adPlacement);
             }
         }
         

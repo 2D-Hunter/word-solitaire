@@ -53,7 +53,7 @@ public class BoardManager : MonoBehaviour
     [Tooltip("Additional offset to position the entire board on the canvas.")]
     public Vector2 boardOriginOffset = Vector2.zero; // Tweak this for overall centering
 
-    
+
     [SerializeField]
     private List<Card> activeCards = new List<Card>();
     public bool collectionChecks = true;
@@ -93,7 +93,8 @@ public class BoardManager : MonoBehaviour
                     var card = go.GetComponent<Card>();
                     card.isFaceUp = false;
                     card.cardFace.SetActive(true);
-                    if (card != null) {
+                    if (card != null)
+                    {
                         card.belowCards.Clear();
 
 
@@ -107,7 +108,7 @@ public class BoardManager : MonoBehaviour
     }
 
     public static BoardManager instance;
-    public static BoardManager Instance { get { return instance; }  }
+    public static BoardManager Instance { get { return instance; } }
 
     private void Awake()
     {
@@ -117,13 +118,13 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
-      
+
         if (loadedLevelRampData == null)
         {
             LoadLevelDataFromJson(levelRampFileName);
         }
 
-     
+
 
 
     }
@@ -144,7 +145,7 @@ public class BoardManager : MonoBehaviour
 
         Debug.Log($"Loading level from JSON: {fullPathRamp}");
         loadedLevelRampData = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelRamp>(jsonTextAsset.text);
-       
+
         Debug.Log($"Loading level from JSON: {loadedLevelRampData.Id}");
         Debug.Log($"Loading level from JSON: {loadedLevelRampData.Levels.Count}");
         if (loadedLevelRampData == null)
@@ -193,10 +194,10 @@ public class BoardManager : MonoBehaviour
             GameLevelData loadedLevelData = JsonUtility.FromJson<GameLevelData>(jsonTextAssetLevel.text);
             if (i < 50)
             {
-            /*    var level = levelData.levels[i];
-                level.levelNumber = currentLevel;
-                level.starThresholds.Clear();
-                level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);*/
+                /*    var level = levelData.levels[i];
+                    level.levelNumber = currentLevel;
+                    level.starThresholds.Clear();
+                    level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);*/
             }
             else
             {
@@ -204,14 +205,15 @@ public class BoardManager : MonoBehaviour
                 level.levelNumber = i;
                 level.starThresholds.Clear();
                 level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);
-                level.bonusGoalType = (BonusGoalType) UnityEngine.Random.Range(1, 3);
-                if(level.bonusGoalType == BonusGoalType.Points)
+                level.bonusGoalType = (BonusGoalType)UnityEngine.Random.Range(1, 3);
+                if (level.bonusGoalType == BonusGoalType.Points)
                 {
                     level.targetPointsForBonus = UnityEngine.Random.Range(130, 275);
                     level.numberOfWords = 0;
                     level.numberOfLetters = 0;
                 }
-                else if(level.bonusGoalType == BonusGoalType.NumberOfCards) {
+                else if (level.bonusGoalType == BonusGoalType.NumberOfCards)
+                {
 
                     level.targetPointsForBonus = 0;
                     level.numberOfWords = UnityEngine.Random.Range(2, 5);
@@ -220,7 +222,7 @@ public class BoardManager : MonoBehaviour
 
 
                 }
-                
+
             }
         }
     }
@@ -263,8 +265,8 @@ public class BoardManager : MonoBehaviour
             Debug.LogError("Failed to deserialize JSON level data.");
             return;
         }
-        
-        
+
+
 
         GenerateBoardFromLevelData(loadedLevelData);
     }
@@ -294,7 +296,7 @@ public class BoardManager : MonoBehaviour
             rowPair.visual = tileGO;
             tileGO.transform.SetParent(boardParent, false);
             var canvas = tileGO.GetComponent<Canvas>();
-            canvas.sortingOrder = (rowPair.Level+1);
+            canvas.sortingOrder = (rowPair.Level + 1);
 
             RectTransform rectTransform = tileGO.GetComponent<RectTransform>();
             Vector2 adjustedPosition;
@@ -311,7 +313,7 @@ public class BoardManager : MonoBehaviour
                 rectTransform.anchoredPosition = adjustedPosition;
                 rectTransform.localScale = Vector3.one;
                 var card = tileGO.GetComponent<Card>();
-             
+
                 tileGO.name = "card" + "_" + rowPair.Level + "_" + rowPairIndex;
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
@@ -383,17 +385,17 @@ public class BoardManager : MonoBehaviour
             if (otherRect == null) continue;
 
             Rect otherWorldRect = GetWorldRect(otherRect);
-            if (isFaceup==false)
+            if (isFaceup == false)
             {
                 if (targetWorldRect.Overlaps(otherWorldRect) && (targetCard.Level - card.Level) == 1)
                 {
-                   
+
 
                     intersectingCards.Add(card);
                 }
             }
-           
-            
+
+
         }
 
         return intersectingCards.Count > 0;
@@ -402,7 +404,7 @@ public class BoardManager : MonoBehaviour
 
     public bool TrySetFaceUpCard(Card targetCard)
     {
-      
+
 
         RectTransform targetRect = targetCard.GetComponent<RectTransform>();
         if (targetRect == null)
@@ -436,9 +438,9 @@ public class BoardManager : MonoBehaviour
         foreach (var card in belowlst)
         {
             var alluplevelCard = activeCards.FindAll(cardObj => cardObj.Level > card.Level);
-         
+
             RectTransform targetCardRect = card.GetComponent<RectTransform>();
-           
+
             if (targetCardRect == null) continue;
 
             Rect targetWorldRect = GetWorldRect(targetCardRect);
@@ -468,7 +470,7 @@ public class BoardManager : MonoBehaviour
     }
 
 
-    List<char> GenerateAtLeastFiveVowels(int totalCards, string consonants = "BCDFGHJKLMNPQRSTVWXYZ",float difficulty = 0f,string vowels = "AEIOU")
+    List<char> GenerateAtLeastFiveVowels(int totalCards, string consonants = "BCDFGHJKLMNPQRSTVWXYZ", float difficulty = 0f, string vowels = "AEIOU")
     {
         List<char> result = new List<char>();
 

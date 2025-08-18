@@ -43,11 +43,11 @@ public class Card : MonoBehaviour
 
     private float[] originalPosOfExtraCards = { -180f, -165f, -150f, -135f, -120f, -105, -90, -75, -60, -45, -30, -15, 0, 15, 30 };
 
-
-
+    
 
     private void Awake()
     {
+        
         if (thisCard == null)
             thisCard = GetComponent<RectTransform>();
         Debug.Log("______this.tag: "+ this.tag);
@@ -255,7 +255,8 @@ public class Card : MonoBehaviour
         {
             if (!isFaceUp) return;
             Debug.Log("InitManager.instance.tutorialCntr:  " + cardData.letter+"_____"+ FBPlayerData.instance.CURRENT_LEVEL+"_____"+ InitManager.instance.tutorialCntr);
-            if(!FBPlayerData.instance.TUTORIAL_1_COMPLETED || !FBPlayerData.instance.TUTORIAL_2_COMPLETED)
+            
+            if (!FBPlayerData.instance.TUTORIAL_1_COMPLETED || !FBPlayerData.instance.TUTORIAL_2_COMPLETED)
             {
                 if (cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
                 {
@@ -757,5 +758,6 @@ public class Card : MonoBehaviour
 
         return false;
     }
+    
 
 }

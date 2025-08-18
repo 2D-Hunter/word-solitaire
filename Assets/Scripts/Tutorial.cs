@@ -49,7 +49,7 @@ public class Tutorial : MonoBehaviour
         cardF.GetComponent<Button>().enabled = false;
         cardA.GetComponent<Button>().enabled = false;
         cardR.GetComponent<Button>().enabled = false;
-        
+
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
         {
             SetHandPosition(-211f, handRectTransform.anchoredPosition.y);
@@ -72,7 +72,7 @@ public class Tutorial : MonoBehaviour
             cardU.GetComponent<Button>().enabled = false;
             cardG1.GetComponent<Button>().enabled = false;
         }
-        if(FBPlayerData.instance.CURRENT_LEVEL > 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL > 2)
         {
             cardJ.GetComponent<RectTransform>().GetChild(4).gameObject.SetActive(false);
         }
@@ -83,7 +83,7 @@ public class Tutorial : MonoBehaviour
             .OnComplete(() =>
             {
                 handRectTransform.gameObject.SetActive(true);
-                if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+                if (FBPlayerData.instance.CURRENT_LEVEL == 2)
                 {
                     handRectTransform.localRotation = Quaternion.Euler(0, 0, 0);
                     handRectTransform.anchoredPosition = new Vector2(203f, -370f);
@@ -95,7 +95,7 @@ public class Tutorial : MonoBehaviour
 
     private void Update()
     {
-        
+
         //Debug.Log(cardG.GetComponent<Button>().enabled+"_____"+ cardO.GetComponent<Button>().enabled);
         if (FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
@@ -153,7 +153,7 @@ public class Tutorial : MonoBehaviour
         cardTransform.DORotate(new Vector3(0, 0, rotationAmount), duration * 0.25f)
             .SetEase(Ease.InOutSine)
             .SetLoops(4, LoopType.Yoyo)
-            .ChangeStartValue(new Vector3(0, 0, 0))
+            .ChangeStartValue(new Vector3(0, 0, -rotationAmount))
             .OnComplete(() =>
             {
                 cardTransform.DORotate(Vector3.zero, 0.2f).SetEase(Ease.OutQuad);
@@ -170,10 +170,10 @@ public class Tutorial : MonoBehaviour
         isAnimating = false;
         handRectTransform?.DOKill();
         //DOTween.KillAll();
-        if(cardTransform)
+        if (cardTransform)
             cardTransform.localRotation = Quaternion.Euler(0, 0, 0);
         Debug.Log("InitManager.instance.tutorialCntr: " + InitManager.instance.tutorialCntr);
-        if(FBPlayerData.instance.CURRENT_LEVEL == 1)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1)
         {
             if (InitManager.instance.tutorialCntr == 1)
             {
@@ -215,10 +215,10 @@ public class Tutorial : MonoBehaviour
                 cardR.GetComponent<Button>().enabled = false;
                 cardTransform = null;
                 infoPanelText.text = "You've got it!\nNow submit <b><size=110%>'FAR'.</size></b>";
-                
+
             }
         }
-        else if(FBPlayerData.instance.CURRENT_LEVEL == 2)
+        else if (FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             if (InitManager.instance.tutorialCntr == 1)
             {
@@ -261,7 +261,7 @@ public class Tutorial : MonoBehaviour
         }
 
     }
-    
+
 
     void SetHandPosition(float xPos, float yPos)
     {
@@ -287,7 +287,7 @@ public class Tutorial : MonoBehaviour
     }
     public void TapGotIt()
     {
-        
+
         DOTween.KillAll();
 
         SpriteRenderer sr = alphaPatch.GetComponent<SpriteRenderer>();
@@ -312,6 +312,6 @@ public class Tutorial : MonoBehaviour
     {
         handRectTransform?.DOKill();
         cardTransform?.DOKill();
-        
+
     }
 }

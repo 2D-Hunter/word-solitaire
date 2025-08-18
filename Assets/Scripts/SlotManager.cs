@@ -394,6 +394,7 @@ public class SlotManager : MonoBehaviour
         motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.OutQuad));
         // Join scaling and rotation
         motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
+        Debug.Log("Error");
         motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear));
 
         // Optional bounce-in scale
@@ -804,11 +805,18 @@ public class SlotManager : MonoBehaviour
         }
         else
         {
-            AdTimerHandler.Instance.TryShowAd("Levelup");
+            if (!InitManager.instance.isReplay)
+                FBPlayerData.instance.CURRENT_LEVEL++;
+            FBPlayerData.instance.SavePlayerData();
+#if UNITY_EDITOR
+            ContinueGameAfterTournament();
+#endif
+            Debug.Log("FBPlayerData.instance.BRILLIANCE: " + FBPlayerData.instance.BRILLIANCE.ToString());
 
-//#if UNITY_EDITOR
-//            FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
-//#endif
+            Application.ExternalCall("processTourement", FBPlayerData.instance.BRILLIANCE.ToString());
+            //AdTimerHandler.Instance.TryShowAd("Levelup");
+
+
         }
 
 
@@ -821,6 +829,16 @@ public class SlotManager : MonoBehaviour
             FBPlayerData.instance.CURRENT_LEVEL++;
         FBPlayerData.instance.SavePlayerData();
         
+        PopupManager.instance.TogglePopup(PopupManager.instance.levelupPopup);
+        Debug.Log("_____ContinueGameAfterInterstitial: Levelup");
+        //StartCoroutine(LoadMenu());
+    }
+    public void ContinueGameAfterTournament()
+    {
+        Debug.Log("_____ContinueGameAfterTournament");
+        InitManager.instance.CurrentScene = "Levelup";
+        
+
         PopupManager.instance.TogglePopup(PopupManager.instance.levelupPopup);
         Debug.Log("_____ContinueGameAfterInterstitial: Levelup");
         //StartCoroutine(LoadMenu());
