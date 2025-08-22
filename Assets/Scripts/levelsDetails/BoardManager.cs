@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Tilemaps;
+using Word;
 using static LevelData;
 
 
@@ -109,6 +111,7 @@ public class BoardManager : MonoBehaviour
 
     public static BoardManager instance;
     public static BoardManager Instance { get { return instance; } }
+    public Dictionary<int, GameLevelData> gameLevels = new Dictionary<int, GameLevelData>();
 
     private void Awake()
     {
@@ -116,67 +119,8 @@ public class BoardManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
-    {
 
-        if (loadedLevelRampData == null)
-        {
-            LoadLevelDataFromJson(levelRampFileName);
-        }
-
-
-
-
-    }
-
-    void LoadLevelDataFromJson(string fileRampName)
-    {
-        // Adjust path if your JSONs are in a different Resources subfolder (e.g., "Levels/")
-
-        string fullPathRamp = "Config/" + fileRampName;
-
-        TextAsset jsonTextAsset = Resources.Load<TextAsset>(fullPathRamp);
-
-        if (jsonTextAsset == null)
-        {
-            Debug.LogError($"JSON level file not found at: Resources/{fullPathRamp}");
-            return;
-        }
-
-        Debug.Log($"Loading level from JSON: {fullPathRamp}");
-        loadedLevelRampData = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelRamp>(jsonTextAsset.text);
-
-        Debug.Log($"Loading level from JSON: {loadedLevelRampData.Id}");
-        Debug.Log($"Loading level from JSON: {loadedLevelRampData.Levels.Count}");
-        if (loadedLevelRampData == null)
-        {
-            Debug.LogError("Failed to deserialize JSON level data. >>>>>>>");
-            return;
-        }
-
-        string letterBucketPath = "Config/letterbucket";
-
-
-        TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
-
-        if (jsonLetterBucketTextAsset == null)
-        {
-            Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
-            return;
-        }
-        letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
-        if (letterBucket == null)
-        {
-            Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
-            return;
-        }
-
-        //GenerateLevelByNumber(currentLevel);
-        //prepareGoalData();
-
-
-    }
-
+  
     private void prepareGoalData()
     {
         for (int i = 0; i < loadedLevelRampData.Levels.Count; i++)
@@ -239,38 +183,81 @@ public class BoardManager : MonoBehaviour
         GenerateLevelByNumber(currentLevel);
     }
 
-    public void GenerateLevelByNumber(int LevelNumber)
+    public void GenerateLevelByNumber(int LevelNumber, Action<bool, GameLevelData> levelLoaded = null)
     {
         if (FBPlayerData.instance.CURRENT_LEVEL <= 2) return;
-        if (loadedLevelRampData == null)
+        if (LoadConfig.instance.loadedLevelRampData == null)
         {
             Debug.LogError("Failed to deserialize JSON level data.");
             return;
         }
-        string LevelfullPath = "Levels/" + loadedLevelRampData.Levels[LevelNumber];
-
-        TextAsset jsonTextAssetLevel = Resources.Load<TextAsset>(LevelfullPath);
-
-        if (jsonTextAssetLevel == null)
+        letterBucket = LoadConfig.instance.letterBucket;
+        loadedLevelRampData = LoadConfig.instance.loadedLevelRampData;
+        string LevelfullPath = "https://2dhunter.s3.us-west-2.amazonaws.com/word-solitaire-go/fb/levels/" + LoadConfig.instance.loadedLevelRampData.Levels[LevelNumber]+".json";
+        if(gameLevels.TryGetValue(LevelNumber,out var gamelevelData))
         {
-            Debug.LogError($"JSON level file not found at: Resources/{LevelfullPath}");
-            return;
+            levelLoaded.Invoke(true, gamelevelData);
         }
-
-        Debug.Log($"Loading level from JSON: {LevelfullPath}");
-        GameLevelData loadedLevelData = JsonUtility.FromJson<GameLevelData>(jsonTextAssetLevel.text);
-
-        if (loadedLevelData == null)
+        else
         {
-            Debug.LogError("Failed to deserialize JSON level data.");
-            return;
+            StartCoroutine(LoadLevelJson(LevelfullPath, LevelNumber, levelLoaded));
         }
-
-
-
-        GenerateBoardFromLevelData(loadedLevelData);
+         
+       
     }
-    private void GenerateBoardFromLevelData(GameLevelData levelData)
+
+    private IEnumerator LoadLevelJson(string url, int LevelNumber, Action<bool, GameLevelData> levelLoaded)
+    {
+        bool RequestCompteted = false;
+        bool isError = false;
+        GameLevelData loadedLevelData = null;
+        Debug.LogError(url);
+        WordServiceContainer.NetworkService.GetGameData(url, (issucess, data) =>
+        {
+            if (issucess)
+            {
+              
+                isError = false;
+                Debug.LogError(data);
+                loadedLevelData  = JsonUtility.FromJson<GameLevelData>(data);
+                if (loadedLevelData == null)
+                {
+                    Debug.LogError("Failed to deserialize JSON loadedLevelData data. >>>>>>>");
+                    isError = true;
+                }
+                else
+                {
+                    RequestCompteted = true;
+                    isError = false;
+                    gameLevels.Add(LevelNumber, loadedLevelData);
+                }
+            }
+            else
+            {
+                RequestCompteted = true;
+                isError = true;
+            }
+        });
+
+        while (!RequestCompteted)
+        {
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        yield return new WaitForSeconds(1.0f);
+        if (!isError && RequestCompteted)
+        {
+            levelLoaded.Invoke(true, loadedLevelData);
+        }
+        if (isError)
+        {
+            Debug.LogError($"JSON level loadedLevelData file not found at");
+            //levelLoaded.Invoke(false, loadedLevelData);
+            yield return null;
+
+        }
+    }
+    public void GenerateBoardFromLevelData(GameLevelData levelData)
     {
         for (int i = 0; i < activeCards.Count; i++)
         {

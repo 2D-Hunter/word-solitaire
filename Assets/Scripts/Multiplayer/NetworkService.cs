@@ -5,6 +5,8 @@ using WebSocketSharp;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.Networking;
 
 public class NetworkService : INetworkService
 {
@@ -130,5 +132,34 @@ public class NetworkService : INetworkService
         _isManuallyClosed = true;
         _pingTimer?.Dispose();
         _webSocket?.Close();
+    }
+
+    public void GetGameData(string url, Action<bool, string> callBack)
+    {
+        CoroutineRunner.Instance.StartCoroutine(GetGameDataCoroutine(url, callBack));
+    }
+
+    private IEnumerator GetGameDataCoroutine(string url, Action<bool, string> callBack)
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            yield return request.SendWebRequest();
+
+#if UNITY_2020_2_OR_NEWER
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.ProtocolError)
+#else
+            if (request.isNetworkError || request.isHttpError)
+#endif
+            {
+                Debug.LogError("Error fetching data: " + request.error);
+                callBack.Invoke(false, request.error);
+            }
+            else
+            {
+                Debug.Log("Received Data: " + request.downloadHandler.text);
+                callBack.Invoke(true, request.downloadHandler.text);
+            }
+        }
     }
 }

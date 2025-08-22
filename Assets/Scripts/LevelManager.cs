@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Mathematics;
 
 public class LevelManager : MonoBehaviour
 {
@@ -76,13 +77,19 @@ public class LevelManager : MonoBehaviour
             int prefabIndex = levelIndex;
 
             // After level 50, randomly select from levels 25–50 using the shuffled pool
-           /* if (levelIndex > 50)
-            {
-                prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
-                Debug.Log("____prefabIndex: " + prefabIndex);
-            }*/
+            /* if (levelIndex > 50)
+             {
+                 prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
+                 Debug.Log("____prefabIndex: " + prefabIndex);
+             }*/
 
-            BoardManager.instance.GenerateLevelByNumber(prefabIndex-1);
+            BoardManager.instance.GenerateLevelByNumber(prefabIndex - 1, (isSucsess, gamelevelData) =>
+            {
+
+                BoardManager.instance.GenerateBoardFromLevelData(gamelevelData);
+
+
+            });
             /*string prefabName = levelNamePrefix + prefabIndex;
             Debug.Log("prefabName: " + prefabName);
             GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
