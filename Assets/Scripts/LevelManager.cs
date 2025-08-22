@@ -82,11 +82,14 @@ public class LevelManager : MonoBehaviour
                  prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
                  Debug.Log("____prefabIndex: " + prefabIndex);
              }*/
-
+            // Show loading
             BoardManager.instance.GenerateLevelByNumber(prefabIndex - 1, (isSucsess, gamelevelData) =>
             {
-
-                BoardManager.instance.GenerateBoardFromLevelData(gamelevelData);
+                if (isSucsess)
+                    RenderLevelWithGameData(gamelevelData, levelIndex);
+                else
+                    Debug.LogError("Level not loaded properly");
+                //hide loading
 
 
             });
@@ -105,6 +108,11 @@ public class LevelManager : MonoBehaviour
             }*/
         }
 
+        
+    }
+    void RenderLevelWithGameData(GameLevelData gameData, int levelIndex)
+    {
+        BoardManager.instance.GenerateBoardFromLevelData(gameData);
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             levelIndex++;
@@ -114,7 +122,7 @@ public class LevelManager : MonoBehaviour
         {
             // Since you're not using the 'levels' array anymore for instantiated levels after level 2,
             // You can remove this part or manage instantiated levels separately.
-            if(FBPlayerData.instance.CURRENT_LEVEL <= 2)
+            if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
                 levels[levelIndex - 1].SetActive(true);
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
