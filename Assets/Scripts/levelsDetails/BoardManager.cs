@@ -259,6 +259,7 @@ public class BoardManager : MonoBehaviour
     }
     public void GenerateBoardFromLevelData(GameLevelData levelData)
     {
+
         for (int i = 0; i < activeCards.Count; i++)
         {
             var activeCard = activeCards[i];
@@ -272,7 +273,7 @@ public class BoardManager : MonoBehaviour
         int difficulty = loadedLevelRampData.Difficulties[currentLevel];
         string letters = letterBucket.DefficultiMapLetterBucket[difficulty];
         var generateLetter = GenerateAtLeastFiveVowels(levelData.Layout.Count, letters, difficulty);
-
+        boardParent.gameObject.SetActive(true);
         for (var rowPairIndex = 0; rowPairIndex < levelData.Layout.Count; rowPairIndex++)
         {
             var rowPair = levelData.Layout[rowPairIndex];
@@ -320,6 +321,7 @@ public class BoardManager : MonoBehaviour
                 if (card != null)
                 {
                     card.Level = rowPair.Level;
+                    card.originalPosition = adjustedPosition;
                     activeCards.Add(card);
                 }
 
@@ -374,7 +376,7 @@ public class BoardManager : MonoBehaviour
             Rect otherWorldRect = GetWorldRect(otherRect);
             if (isFaceup == false)
             {
-                if (targetWorldRect.Overlaps(otherWorldRect) && (targetCard.Level - card.Level) == 1)
+                if (targetWorldRect.Overlaps(otherWorldRect) && (targetCard.Level > card.Level))
                 {
 
 
