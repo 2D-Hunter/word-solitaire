@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     public Transform parentPanel;
 
     private float[] targetPositionsOfMoreCards = { -180f, -165f, -150f, -135f, -120f };
-    public BackgroundManager backgroundManager;
+    //public BackgroundManager backgroundManager;
     private NumberOfWildCard numberOfWildCard;
     public RectTransform wildCardTab;
     public GameObject settingBtn_secondRow;
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
     {
         connectionPopup.SetActive(false);
         numberOfWildCard = FindObjectOfType<NumberOfWildCard>();
-        backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
+        //backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
         InitManager.instance.CurrentScene = "Game";
         //if (instance == null)
         //{
@@ -193,6 +193,8 @@ public class GameManager : MonoBehaviour
         //Invoke("ToggleLevelup", 1f);
         if (PopupManager.instance)
             PopupManager.instance.AssignUIContainer();
+
+        
     }
 
 

@@ -75,8 +75,10 @@ public class Levelup : MonoBehaviour
             finalPos = 70f;
         }
         SetInit();
-        
+
         //popupRectTransform.anchoredPosition = new Vector2(0, -350f);
+        // Instead of calling PreloadBackgroundForUpcomingLevel directly:
+        BackgroundManager.instance.MaybePreloadNextBackground();
     }
     public void ShowPunchline()
     {
