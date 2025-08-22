@@ -156,7 +156,8 @@ public class FBPlayerData : MonoBehaviour
 
         if (splash == null)
             splash = FindObjectOfType<Splash>();
-        splash.LoadScene();
+        StartCoroutine(splash.LoadSceneRoutine());
+        //splash.LoadScene();
 
     }
 
