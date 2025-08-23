@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Mathematics;
 
 public class LevelManager : MonoBehaviour
 {
@@ -76,13 +77,22 @@ public class LevelManager : MonoBehaviour
             int prefabIndex = levelIndex;
 
             // After level 50, randomly select from levels 25–50 using the shuffled pool
-           /* if (levelIndex > 50)
+            /* if (levelIndex > 50)
+             {
+                 prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
+                 Debug.Log("____prefabIndex: " + prefabIndex);
+             }*/
+            // Show loading
+            BoardManager.instance.GenerateLevelByNumber(prefabIndex - 1, (isSucsess, gamelevelData) =>
             {
-                prefabIndex = InitManager.instance.nextRandomLevel + 1; // +1 because pool is 0-based
-                Debug.Log("____prefabIndex: " + prefabIndex);
-            }*/
+                if (isSucsess)
+                    RenderLevelWithGameData(gamelevelData, levelIndex);
+                else
+                    Debug.LogError("Level not loaded properly");
+                //hide loading
 
-            BoardManager.instance.GenerateLevelByNumber(prefabIndex);
+
+            });
             /*string prefabName = levelNamePrefix + prefabIndex;
             Debug.Log("prefabName: " + prefabName);
             GameObject levelPrefab = Resources.Load<GameObject>("Levels/" + prefabName);
@@ -98,6 +108,11 @@ public class LevelManager : MonoBehaviour
             }*/
         }
 
+        
+    }
+    void RenderLevelWithGameData(GameLevelData gameData, int levelIndex)
+    {
+        BoardManager.instance.GenerateBoardFromLevelData(gameData);
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
             levelIndex++;
@@ -107,7 +122,8 @@ public class LevelManager : MonoBehaviour
         {
             // Since you're not using the 'levels' array anymore for instantiated levels after level 2,
             // You can remove this part or manage instantiated levels separately.
-            levels[levelIndex - 1].SetActive(true);
+            if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
+                levels[levelIndex - 1].SetActive(true);
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
 
@@ -212,7 +228,7 @@ public class LevelManager : MonoBehaviour
 
     public LevelData.LevelInfo GetLevelInfo(int levelNumber)
     {
-        int maxDefinedLevel = levelData.levels.Length;
+        int maxDefinedLevel = levelData.levels.Count;
 
         if (levelNumber <= maxDefinedLevel)
         {

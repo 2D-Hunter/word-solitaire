@@ -79,11 +79,11 @@ public class FBPlayerData : MonoBehaviour
     //worddict
     private void Awake()
     {
-#if UNITY_EDITOR
-        Debug.unityLogger.logEnabled = true;
-#else
- Debug.unityLogger.logEnabled = false;
-#endif
+//#if UNITY_EDITOR
+//        Debug.unityLogger.logEnabled = true;
+//#else
+// Debug.unityLogger.logEnabled = false;
+//#endif
         //BUILD_TYPE = "Facebook";
         //TOTAL_COINS = 1000;
         //GAME_SOUND = false;
@@ -156,7 +156,8 @@ public class FBPlayerData : MonoBehaviour
 
         if (splash == null)
             splash = FindObjectOfType<Splash>();
-        splash.LoadScene();
+        StartCoroutine(splash.LoadSceneRoutine());
+        //splash.LoadScene();
 
     }
 
@@ -355,12 +356,19 @@ public class FBPlayerData : MonoBehaviour
     public void ContinueGameAfterInterstitial(string screen)
     {
         Debug.Log("___Screen: " + screen);
+        AdTimerHandler.Instance.shouldShowAd = false;
         switch (screen)
         {
-            case "Levelup":
-            case "Tutorial":
-                AdTimerHandler.Instance.shouldShowAd = false;
-                SlotManager.instance.ContinueGameAfterInterstitial();
+            //case "Levelup":
+            //case "Tutorial":
+            //    AdTimerHandler.Instance.shouldShowAd = false;
+            //    SlotManager.instance.ContinueGameAfterInterstitial();
+            //    break;
+            case "Levelup_continue":
+                FindAnyObjectByType<Levelup>().ContinueGameAfterInterstitial();
+                break;
+            case "Levelup_replay":
+                FindAnyObjectByType<Levelup>().ReplayGameAfterInterstitial();
                 break;
         }
     }
@@ -576,6 +584,10 @@ public class FBPlayerData : MonoBehaviour
     public void ShowCoinAnimation()
     {
         InitManager.instance.ShowCoinAnim();
+    }
+    public void ContinueGameAfterTournament()
+    {
+        SlotManager.instance.ContinueGameAfterTournament();
     }
 
 }

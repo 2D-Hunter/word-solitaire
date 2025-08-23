@@ -38,6 +38,11 @@ public class CardData : MonoBehaviour
     private void Start()
     {
         Debug.Log("____Card Data111");
+        if(FBPlayerData.instance.CURRENT_LEVEL <= 2)
+        {
+            valueText.text = GetCardValue(letter).ToString();
+            cardValue = GetCardValue(letter);
+        }
         if (gameObject.tag == "ExtraCard")
         {
             Debug.Log("____Card Data222");
@@ -117,6 +122,7 @@ public class CardData : MonoBehaviour
         char uppercaseLetter = char.ToUpper(letter);
         if (letterValues.TryGetValue(uppercaseLetter, out int value))
         {
+            Debug.Log("________GetCardValue: uppercaseLetter" + uppercaseLetter);
             Debug.Log("________GetCardValue: "+value);
             return value;
         }

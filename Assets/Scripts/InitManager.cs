@@ -7,7 +7,7 @@ public class InitManager:MonoBehaviour
     public static InitManager instance;
 
     public string version = "1.0.0";
-    public int currentLevel = 3;
+    public int currentLevel = 150;
     public int nextRandomLevel;
     public bool isLevelRandomized = false;
 

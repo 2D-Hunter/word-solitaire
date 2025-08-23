@@ -21,6 +21,7 @@ public class HintService : IHintService
             List<Card> cards = new List<Card>();
             Debug.Log($"hello valid word found please high light card {foundValidWord}");
             GameManager.instance.hintText = "Try " + "'" + foundValidWord + "'";
+            GameManager.instance.actualHintWord = foundValidWord;
             GameManager.instance.foundValidWord = true;
             GameManager.instance.hintWord = foundValidWord;
             for (int i = 0; i < foundValidWord.Length; i++)

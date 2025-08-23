@@ -32,6 +32,11 @@ public class CardManager : MonoBehaviour
         Debug.Log("____Card Data CardManager");
         MakeRandomCardWild();
         //AnimateCardsFromDeck(); // 🔥 Fan out effect
+        for (int i = 0; i < extraCards.Count; i++)
+        {
+            var card = extraCards[i];
+            card.GetComponent<Canvas>().sortingOrder = i + 1;
+        }
     }
 
     public void AnimateCardsFromDeck()
@@ -147,4 +152,37 @@ public class CardManager : MonoBehaviour
         }
     }
 
+}
+
+public static class CardListExtensions
+{
+    // Safely adds a card if not already present
+    public static void AddCard(this List<Card> cardList, Card card)
+    {
+        if (card != null && !cardList.Contains(card))
+        {
+            cardList.Add(card);
+#if UNITY_EDITOR
+            Debug.Log($"Card added to list: {card.name}");
+#endif
+        }
+    }
+
+    // Safely removes a card if present
+    public static void RemoveCard(this List<Card> cardList, Card card)
+    {
+        if (card != null && cardList.Contains(card))
+        {
+            cardList.Remove(card);
+#if UNITY_EDITOR
+            Debug.Log($"Card removed from list: {card.name}");
+#endif
+        }
+    }
+
+    // Optional: Check if card is in the list
+    public static bool HasCard(this List<Card> cardList, Card card)
+    {
+        return card != null && cardList.Contains(card);
+    }
 }

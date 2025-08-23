@@ -75,8 +75,10 @@ public class Levelup : MonoBehaviour
             finalPos = 70f;
         }
         SetInit();
-        
+
         //popupRectTransform.anchoredPosition = new Vector2(0, -350f);
+        // Instead of calling PreloadBackgroundForUpcomingLevel directly:
+        BackgroundManager.instance.MaybePreloadNextBackground();
     }
     public void ShowPunchline()
     {
@@ -232,11 +234,22 @@ public class Levelup : MonoBehaviour
     {
         GameManager.instance.levelupStars.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f) ;
     }
-    public void TapOnContinue()
+    public void ShowAd(string adPlace)
+    {
+        FBPlayerData.instance.VibrationEffect();
+        AdTimerHandler.Instance.TryShowAd(adPlace);
+    }
+    public void ContinueGameAfterInterstitial()
     {
         InitManager.instance.isReplay = false;
         StartCoroutine(LoadMenu());
     }
+    //public void TapOnContinue()
+    //{
+        
+    //    InitManager.instance.isReplay = false;
+    //    StartCoroutine(LoadMenu());
+    //}
     IEnumerator LoadMenu()
     {
         continueBtn.GetComponent<Button>().enabled = false;
@@ -256,12 +269,16 @@ public class Levelup : MonoBehaviour
         Initiate.Fade("Menu", Color.black, 1f);
 
     }
-    public void TapOnReplay()
+    public void ReplayGameAfterInterstitial()
     {
-        FBPlayerData.instance.VibrationEffect();
         Invoke("RemoveStars", 0.05f);
         PopupManager.instance.ShowGoalPopup(PopupManager.instance.goalPopup);
     }
+    //public void TapOnReplay()
+    //{
+    //    FBPlayerData.instance.VibrationEffect();
+        
+    //}
     public void AnimateTotalScore(int targetScore)
     {
         int current = 0;

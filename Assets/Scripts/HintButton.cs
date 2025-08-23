@@ -8,54 +8,68 @@ using TMPro;
 public class HintButton : MonoBehaviour
 {
     public RectTransform hintBubblePrefab;
-    public GameObject parentObj;
+    public RectTransform parentRect;      // assign the parent container RectTransform
     private RectTransform currentBubble;
-    
-    
+    public Camera uiCamera;               // leave null if Canvas is Screen Space - Overlay
+
+    bool isDestroyed;
+
+    void OnDestroy()
+    {
+        isDestroyed = true;
+        KillAndDestroyCurrent();
+    }
+
+    void KillAndDestroyCurrent()
+    {
+        if (currentBubble)
+        {
+            // Kill any tweens targeting this bubble BEFORE destroying it
+            currentBubble.DOKill();              // extension kill
+            DOTween.Kill(currentBubble);         // extra safety
+            Destroy(currentBubble.gameObject);
+            currentBubble = null;
+        }
+    }
 
     public void OnclickHint()
     {
+        if (isDestroyed) return;
+
         FBPlayerData.instance.VibrationEffect();
         SoundManager.instance.PlaySFX("HintSound", 0.3f);
-        WordServiceContainer.HintService.HintClick((isfound , cards) =>
+
+        WordServiceContainer.HintService.HintClick((isFound, cards) =>
         {
-            if (currentBubble != null)
+            if (isDestroyed || !gameObject) return; // this button might have been destroyed while waiting
+
+            // Remove previous bubble safely
+            KillAndDestroyCurrent();
+
+            // Create new bubble
+            currentBubble = Instantiate(hintBubblePrefab, parentRect);
+
+            // Position it above this button
+            var btnRT = (RectTransform)transform;
+            Vector2 screenPt = RectTransformUtility.WorldToScreenPoint(uiCamera, btnRT.position);
+            Vector2 localPt;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPt, uiCamera, out localPt);
+            localPt.y += 95f;
+            currentBubble.anchoredPosition = localPt;
+
+            // Animate THIS instance (avoid using a stale singleton)
+            currentBubble.localScale = Vector3.zero;
+
+            var bubble = currentBubble.GetComponent<HintBubble>();
+            if (bubble != null)
             {
-                Destroy(currentBubble.gameObject);
+                bubble.AnimateBubble();  // make sure HintBubble kills its own tweens in OnDisable/OnDestroy
             }
-            //if (isfound) {
-            //    Debug.Log("high light " + cards.Count + "____");
-                currentBubble = Instantiate(hintBubblePrefab, parentObj.transform);
-
-                // Get RectTransform components
-                RectTransform rt = gameObject.GetComponent<RectTransform>();
-                RectTransform prefabRect = currentBubble.GetComponent<RectTransform>();
-                RectTransform parentRect = parentObj.GetComponent<RectTransform>();
-                Debug.Log(rt);
-                Debug.Log(prefabRect);
-                Debug.Log(parentRect);
-                Canvas.ForceUpdateCanvases();
-                // Convert button world position to UI local position
-                Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, rt.position);
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, null, out Vector2 localPoint);
-
-                localPoint.y += 95;
-                // Assign new position
-                prefabRect.anchoredPosition = localPoint;
-
-                //currentBubble.anchoredPosition = new Vector2(385f, 100f);
-                //currentBubble.anchoredPosition = gameObject.GetComponent<RectTransform>().anchoredPosition;
-                currentBubble.localScale = Vector3.zero;
-                HintBubble.instance.AnimateBubble();
-            //}
-            //else
-            //{
-            //    Debug.Log("Open Extra Hint ");
-            //}
+            else
+            {
+                // simple fallback animation if no component
+                currentBubble.DOScale(1f, 0.25f).SetEase(Ease.OutBack);
+            }
         });
-    }
-    void InstantiateBubble()
-    {
-
     }
 }

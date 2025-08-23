@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Tilemaps;
+using Word;
+using static LevelData;
 
 
 public class ObjectPoolCard<T>
@@ -52,7 +55,7 @@ public class BoardManager : MonoBehaviour
     [Tooltip("Additional offset to position the entire board on the canvas.")]
     public Vector2 boardOriginOffset = Vector2.zero; // Tweak this for overall centering
 
-    
+
     [SerializeField]
     private List<Card> activeCards = new List<Card>();
     public bool collectionChecks = true;
@@ -64,6 +67,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField]
     private int currentLevel = 0;
     LetterBucket letterBucket = null;
+
+    public LevelData levelData;
     public ObjectPoolCard<GameObject> Pool
     {
         get
@@ -90,7 +95,8 @@ public class BoardManager : MonoBehaviour
                     var card = go.GetComponent<Card>();
                     card.isFaceUp = false;
                     card.cardFace.SetActive(true);
-                    if (card != null) {
+                    if (card != null)
+                    {
                         card.belowCards.Clear();
 
 
@@ -104,7 +110,8 @@ public class BoardManager : MonoBehaviour
     }
 
     public static BoardManager instance;
-    public static BoardManager Instance { get { return instance; }  }
+    public static BoardManager Instance { get { return instance; } }
+    public Dictionary<int, GameLevelData> gameLevels = new Dictionary<int, GameLevelData>();
 
     private void Awake()
     {
@@ -112,63 +119,56 @@ public class BoardManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
+
+  
+    private void prepareGoalData()
     {
-      
-        if (loadedLevelRampData == null)
+        for (int i = 0; i < loadedLevelRampData.Levels.Count; i++)
         {
-            LoadLevelDataFromJson(levelRampFileName);
+            string LevelfullPath = "Levels/" + loadedLevelRampData.Levels[i];
+
+            TextAsset jsonTextAssetLevel = Resources.Load<TextAsset>(LevelfullPath);
+            if (jsonTextAssetLevel == null)
+            {
+                Debug.LogError($"JSON level file not found at: Resources/{LevelfullPath}");
+                return;
+            }
+
+            Debug.Log($"Loading level from JSON: {LevelfullPath}");
+            GameLevelData loadedLevelData = JsonUtility.FromJson<GameLevelData>(jsonTextAssetLevel.text);
+            if (i < 50)
+            {
+                /*    var level = levelData.levels[i];
+                    level.levelNumber = currentLevel;
+                    level.starThresholds.Clear();
+                    level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);*/
+            }
+            else
+            {
+                var level = levelData.levels[i];
+                level.levelNumber = i;
+                level.starThresholds.Clear();
+                level.starThresholds.AddRange(loadedLevelData.LevelInfo.PointsForEachStar);
+                level.bonusGoalType = (BonusGoalType)UnityEngine.Random.Range(1, 3);
+                if (level.bonusGoalType == BonusGoalType.Points)
+                {
+                    level.targetPointsForBonus = UnityEngine.Random.Range(130, 275);
+                    level.numberOfWords = 0;
+                    level.numberOfLetters = 0;
+                }
+                else if (level.bonusGoalType == BonusGoalType.NumberOfCards)
+                {
+
+                    level.targetPointsForBonus = 0;
+                    level.numberOfWords = UnityEngine.Random.Range(2, 5);
+                    level.numberOfLetters = UnityEngine.Random.Range(3, 6);
+
+
+
+                }
+
+            }
         }
-
-     
-
-
-    }
-
-    void LoadLevelDataFromJson(string fileRampName)
-    {
-        // Adjust path if your JSONs are in a different Resources subfolder (e.g., "Levels/")
-
-        string fullPathRamp = "Config/" + fileRampName;
-
-        TextAsset jsonTextAsset = Resources.Load<TextAsset>(fullPathRamp);
-
-        if (jsonTextAsset == null)
-        {
-            Debug.LogError($"JSON level file not found at: Resources/{fullPathRamp}");
-            return;
-        }
-
-        Debug.Log($"Loading level from JSON: {fullPathRamp}");
-        loadedLevelRampData = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelRamp>(jsonTextAsset.text);
-       
-        Debug.Log($"Loading level from JSON: {loadedLevelRampData.Id}");
-        Debug.Log($"Loading level from JSON: {loadedLevelRampData.Levels.Count}");
-        if (loadedLevelRampData == null)
-        {
-            Debug.LogError("Failed to deserialize JSON level data. >>>>>>>");
-            return;
-        }
-
-        string letterBucketPath = "Config/letterbucket";
-
-
-        TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
-
-        if (jsonLetterBucketTextAsset == null)
-        {
-            Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
-            return;
-        }
-        letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
-        if (letterBucket == null)
-        {
-            Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
-            return;
-        }
-
-        GenerateLevelByNumber(currentLevel);
-
     }
 
     public void NextLevel()
@@ -183,36 +183,83 @@ public class BoardManager : MonoBehaviour
         GenerateLevelByNumber(currentLevel);
     }
 
-    public void GenerateLevelByNumber(int LevelNumber)
+    public void GenerateLevelByNumber(int LevelNumber, Action<bool, GameLevelData> levelLoaded = null)
     {
-      
-        if (loadedLevelRampData == null)
+        if (FBPlayerData.instance.CURRENT_LEVEL <= 2) return;
+        if (LoadConfig.instance.loadedLevelRampData == null)
         {
             Debug.LogError("Failed to deserialize JSON level data.");
             return;
         }
-        string LevelfullPath = "Levels/" + loadedLevelRampData.Levels[LevelNumber];
-
-        TextAsset jsonTextAssetLevel = Resources.Load<TextAsset>(LevelfullPath);
-
-        if (jsonTextAssetLevel == null)
+        letterBucket = LoadConfig.instance.letterBucket;
+        loadedLevelRampData = LoadConfig.instance.loadedLevelRampData;
+        string LevelfullPath = "https://2dhunter.s3.us-west-2.amazonaws.com/word-solitaire-go/fb/levels/" + LoadConfig.instance.loadedLevelRampData.Levels[LevelNumber]+".json";
+        if(gameLevels.TryGetValue(LevelNumber,out var gamelevelData))
         {
-            Debug.LogError($"JSON level file not found at: Resources/{LevelfullPath}");
-            return;
+            levelLoaded.Invoke(true, gamelevelData);
         }
-
-        Debug.Log($"Loading level from JSON: {LevelfullPath}");
-        GameLevelData loadedLevelData = JsonUtility.FromJson<GameLevelData>(jsonTextAssetLevel.text);
-
-        if (loadedLevelData == null)
+        else
         {
-            Debug.LogError("Failed to deserialize JSON level data.");
-            return;
+            StartCoroutine(LoadLevelJson(LevelfullPath, LevelNumber, levelLoaded));
         }
-        GenerateBoardFromLevelData(loadedLevelData);
+         
+       
     }
-    private void GenerateBoardFromLevelData(GameLevelData levelData)
+
+    private IEnumerator LoadLevelJson(string url, int LevelNumber, Action<bool, GameLevelData> levelLoaded)
     {
+        bool RequestCompteted = false;
+        bool isError = false;
+        GameLevelData loadedLevelData = null;
+        //Debug.LogError(url);
+        WordServiceContainer.NetworkService.GetGameData(url, (issucess, data) =>
+        {
+            if (issucess)
+            {
+              
+                isError = false;
+                Debug.LogError(data);
+                loadedLevelData  = JsonUtility.FromJson<GameLevelData>(data);
+                if (loadedLevelData == null)
+                {
+                    Debug.LogError("Failed to deserialize JSON loadedLevelData data. >>>>>>>");
+                    isError = true;
+                }
+                else
+                {
+                    RequestCompteted = true;
+                    isError = false;
+                    gameLevels.Add(LevelNumber, loadedLevelData);
+                }
+            }
+            else
+            {
+                RequestCompteted = true;
+                isError = true;
+            }
+        });
+
+        while (!RequestCompteted)
+        {
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        yield return new WaitForSeconds(1.0f);
+        if (!isError && RequestCompteted)
+        {
+            levelLoaded.Invoke(true, loadedLevelData);
+        }
+        if (isError)
+        {
+            Debug.LogError($"JSON level loadedLevelData file not found at");
+            //levelLoaded.Invoke(false, loadedLevelData);
+            yield return null;
+
+        }
+    }
+    public void GenerateBoardFromLevelData(GameLevelData levelData)
+    {
+
         for (int i = 0; i < activeCards.Count; i++)
         {
             var activeCard = activeCards[i];
@@ -226,7 +273,7 @@ public class BoardManager : MonoBehaviour
         int difficulty = loadedLevelRampData.Difficulties[currentLevel];
         string letters = letterBucket.DefficultiMapLetterBucket[difficulty];
         var generateLetter = GenerateAtLeastFiveVowels(levelData.Layout.Count, letters, difficulty);
-
+        boardParent.gameObject.SetActive(true);
         for (var rowPairIndex = 0; rowPairIndex < levelData.Layout.Count; rowPairIndex++)
         {
             var rowPair = levelData.Layout[rowPairIndex];
@@ -237,7 +284,7 @@ public class BoardManager : MonoBehaviour
             rowPair.visual = tileGO;
             tileGO.transform.SetParent(boardParent, false);
             var canvas = tileGO.GetComponent<Canvas>();
-            canvas.sortingOrder = rowPair.Level;
+            canvas.sortingOrder = (rowPair.Level + 1);
 
             RectTransform rectTransform = tileGO.GetComponent<RectTransform>();
             Vector2 adjustedPosition;
@@ -254,19 +301,27 @@ public class BoardManager : MonoBehaviour
                 rectTransform.anchoredPosition = adjustedPosition;
                 rectTransform.localScale = Vector3.one;
                 var card = tileGO.GetComponent<Card>();
+
                 tileGO.name = "card" + "_" + rowPair.Level + "_" + rowPairIndex;
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
                     Debug.Log(generateLetter[rowPairIndex].ToString());
+                    int cardValue = card.cardData.GetCardValue(generateLetter[rowPairIndex]);
+                    card.cardData.valueText.text = cardValue.ToString();
+                    card.cardData.cardValue = cardValue;
                     card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
                 }
                 else
                 {
+                    int cardValue = card.cardData.GetCardValue(rowPair.Tile[0]);
                     card.cardData.letterText.text = rowPair.Tile.ToString();
+                    card.cardData.valueText.text = cardValue.ToString();
+                    card.cardData.cardValue = cardValue;
                 }
                 if (card != null)
                 {
                     card.Level = rowPair.Level;
+                    card.originalPosition = adjustedPosition;
                     activeCards.Add(card);
                 }
 
@@ -319,17 +374,17 @@ public class BoardManager : MonoBehaviour
             if (otherRect == null) continue;
 
             Rect otherWorldRect = GetWorldRect(otherRect);
-            if (isFaceup==false)
+            if (isFaceup == false)
             {
-                if (targetWorldRect.Overlaps(otherWorldRect) && (targetCard.Level - card.Level) == 1)
+                if (targetWorldRect.Overlaps(otherWorldRect) && (targetCard.Level > card.Level))
                 {
-                   
+
 
                     intersectingCards.Add(card);
                 }
             }
-           
-            
+
+
         }
 
         return intersectingCards.Count > 0;
@@ -338,7 +393,7 @@ public class BoardManager : MonoBehaviour
 
     public bool TrySetFaceUpCard(Card targetCard)
     {
-      
+
 
         RectTransform targetRect = targetCard.GetComponent<RectTransform>();
         if (targetRect == null)
@@ -372,9 +427,9 @@ public class BoardManager : MonoBehaviour
         foreach (var card in belowlst)
         {
             var alluplevelCard = activeCards.FindAll(cardObj => cardObj.Level > card.Level);
-         
+
             RectTransform targetCardRect = card.GetComponent<RectTransform>();
-           
+
             if (targetCardRect == null) continue;
 
             Rect targetWorldRect = GetWorldRect(targetCardRect);
@@ -404,7 +459,7 @@ public class BoardManager : MonoBehaviour
     }
 
 
-    List<char> GenerateAtLeastFiveVowels(int totalCards, string consonants = "BCDFGHJKLMNPQRSTVWXYZ",float difficulty = 0f,string vowels = "AEIOU")
+    List<char> GenerateAtLeastFiveVowels(int totalCards, string consonants = "BCDFGHJKLMNPQRSTVWXYZ", float difficulty = 0f, string vowels = "AEIOU")
     {
         List<char> result = new List<char>();
 

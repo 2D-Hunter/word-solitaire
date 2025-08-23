@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "LevelData", menuName = "Game/LevelData", order = 1)]
@@ -15,8 +16,8 @@ public class LevelData : ScriptableObject
         public int numberOfWords;
         public bool isLevelHard;
         public float estimatedMultiplier = 3f;
-        public float[] starThresholds = new float[] { 0.4f, 0.3f, 0.3f };
+        public List<float> starThresholds = new List<float> { 0.4f, 0.3f, 0.3f };
     }
 
-    public LevelInfo[] levels;
+    public List<LevelInfo>   levels;
 }

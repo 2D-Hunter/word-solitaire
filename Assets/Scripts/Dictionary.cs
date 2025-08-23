@@ -4,7 +4,6 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
-
 public class Dictionary : MonoBehaviour
 {
     public static Dictionary instance;
@@ -22,7 +21,7 @@ public class Dictionary : MonoBehaviour
     public RectTransform popupObj = null;
     public TextMeshProUGUI indexText;
 
-    private List<string> displayWords => GameManager.instance.ReversedFoundWords; // or GetReversedWords()
+    private List<string> displayWords => GameManager.instance.ReversedFoundWords;
     public GameObject prevButton;
     public GameObject nextButton;
     private List<string> currentDisplayWords = new List<string>();
@@ -30,8 +29,7 @@ public class Dictionary : MonoBehaviour
     private Vector2 touchStartPos;
     private bool isSwiping = false;
 
-
-
+    private bool isClosing = false;
 
     private void Awake()
     {
@@ -46,24 +44,24 @@ public class Dictionary : MonoBehaviour
 
     private void Start()
     {
-        //loading.SetActive(false);
         popupObj.anchoredPosition = new Vector2(0, -350f);
-
 
         Debug.Log("Start::::: " + SlotManager.instance.GetSlotString());
         Debug.Log("Start::::: " + GameManager.instance.isValidWord);
-        //wordnikDefinition.SearchWord(SlotManager.instance.GetSlotString().ToLower());
         ShowPopup();
-
     }
+
     public void ShowPopup()
     {
+        isClosing = false; // reset flag when reopening
+
         if (InitManager.instance.CurrentScene == "Levelup")
         {
             bg.DOFade(0.8f, 0.6f).SetEase(Ease.OutBack);
         }
         else
             bg.DOFade(0.4f, 0.6f).SetEase(Ease.OutBack);
+
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupObj.DOAnchorPosY(-70, 0.4f).SetEase(Ease.OutBack);
 
@@ -73,13 +71,11 @@ public class Dictionary : MonoBehaviour
         bool alreadySubmitted = GameManager.instance.foundWords
             .Exists(w => w.Equals(slotWord, System.StringComparison.OrdinalIgnoreCase));
 
-        // 1. Add slotWord first if valid and not submitted
         if (GameManager.instance.isValidWord && !alreadySubmitted)
         {
-            words.Add(slotWord); // ? ERA goes first
+            words.Add(slotWord);
         }
 
-        // 2. Then add submitted words in reverse order
         List<string> reversedFound = new List<string>(GameManager.instance.foundWords);
         reversedFound.Reverse();
         words.AddRange(reversedFound);
@@ -92,7 +88,6 @@ public class Dictionary : MonoBehaviour
             makeWords.SetActive(false);
             wordnikIcon.SetActive(true);
             UpdatePopup();
-            
         }
         else
         {
@@ -105,19 +100,23 @@ public class Dictionary : MonoBehaviour
             indexText.gameObject.SetActive(false);
         }
     }
+
     public void ClosePopup()
     {
-        if(InitManager.instance.CurrentScene == "Levelup")
+        isClosing = true; // mark for cancellation
+
+        if (InitManager.instance.CurrentScene == "Levelup")
             Invoke("BringStars", 0.3f);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupObj.DOAnchorPosY(-283, 0.4f).SetEase(Ease.InBack);
     }
+
     void BringStars()
     {
-
         GameManager.instance.levelupStars.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
     }
+
     void RemoveThis()
     {
         if (InitManager.instance.CurrentScene == "Levelup")
@@ -127,46 +126,60 @@ public class Dictionary : MonoBehaviour
         else
             PopupManager.instance.TogglePopup(PopupManager.instance.dictionaryPopup);
     }
+
     private void UpdatePopup()
     {
-        
-        var words = currentDisplayWords;
+        if (isClosing) return; // early exit if closing
 
-        foreach (string wrd in words)
-        {
-            Debug.Log("Wordsss:  " + wrd);
-        }
+        var words = currentDisplayWords;
         if (words == null || words.Count == 0) return;
 
         string word = words[GameManager.instance.currentIndex];
-        Debug.Log("UpdatePopup Dictionary: "+word);
+        Debug.Log("UpdatePopup Dictionary: " + word);
         AnalyticsManager.Instance.TrackDictionaryOpened(word);
-        //Debug.Log(currentDisplayWords. + "  Wordsss");
-        //Debug.Log(word + "  Wordsss");
         title.text = titleShadow.text = title2.text = title2Shadow.text = word;
 
-        // Fetching logic
         if (GameManager.instance.wordDefinitions.TryGetValue(word, out string def))
         {
             definition.text = def;
-            loading.SetActive(false);
+            if (loading != null)
+                loading.SetActive(false);
         }
         else if (GameManager.instance.definitionsBeingFetched.Contains(word))
         {
             definition.text = "";
-            loading.SetActive(true);
+            if (loading != null)
+                loading.SetActive(true);
         }
         else
         {
             definition.text = "";
-            loading.SetActive(true);
+            if (loading != null)
+                loading.SetActive(true);
 
             GameManager.instance.definitionsBeingFetched.Add(word);
+            string fetchingWord = word; // capture for closure
 
-            WordnikDefinition.instance.FetchDefinition(word.ToLower(), (definitionResult) =>
+            WordnikDefinition.instance.FetchDefinition(fetchingWord.ToLower(), (definitionResult) =>
             {
-                GameManager.instance.definitionsBeingFetched.Remove(word);
-                UpdatePopup(); // ?? refresh popup with new definition
+                // if popup is closing, bail
+                if (isClosing) return;
+
+                // Always store the definition (normalize casing if needed)
+                GameManager.instance.wordDefinitions[fetchingWord] = definitionResult;
+                GameManager.instance.definitionsBeingFetched.Remove(fetchingWord);
+
+                // If user has moved to a different word, avoid forcing unexpected UI change
+                string currentWord = currentDisplayWords.Count > 0
+                    ? currentDisplayWords[GameManager.instance.currentIndex]
+                    : "";
+                if (!string.Equals(currentWord, fetchingWord, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                // Refresh UI for the same word
+                UpdatePopup();
             });
         }
 
@@ -174,11 +187,12 @@ public class Dictionary : MonoBehaviour
 
         nextButton.SetActive(GameManager.instance.currentIndex < currentDisplayWords.Count - 1);
         prevButton.SetActive(GameManager.instance.currentIndex > 0);
-        if(words.Count <= 1)
+        if (words.Count <= 1)
             indexText.gameObject.SetActive(false);
         else
             indexText.gameObject.SetActive(true);
     }
+
     public void OnNextPressed()
     {
         if (GameManager.instance.currentIndex < currentDisplayWords.Count - 1)
@@ -196,7 +210,7 @@ public class Dictionary : MonoBehaviour
             UpdatePopup();
         }
     }
-    
+
     private void Update()
     {
         if (Input.touchCount == 1)
@@ -211,7 +225,6 @@ public class Dictionary : MonoBehaviour
                     break;
 
                 case TouchPhase.Moved:
-                    // Optional: You can track swipe length here if needed
                     break;
 
                 case TouchPhase.Ended:
@@ -219,12 +232,12 @@ public class Dictionary : MonoBehaviour
 
                     float deltaX = touch.position.x - touchStartPos.x;
 
-                    if (Mathf.Abs(deltaX) > 100f) // ?? Threshold to avoid accidental swipes
+                    if (Mathf.Abs(deltaX) > 100f)
                     {
                         if (deltaX < 0)
-                            OnNextPressed(); // swipe left ?? go to next
+                            OnNextPressed();
                         else
-                            OnPrevPressed(); // swipe right ?? go to previous
+                            OnPrevPressed();
                     }
 
                     isSwiping = false;
@@ -253,5 +266,4 @@ public class Dictionary : MonoBehaviour
         }
 #endif
     }
-
 }

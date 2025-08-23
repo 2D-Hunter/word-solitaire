@@ -11,5 +11,7 @@ public interface INetworkService
     void Subscribe<T>(BaseMessage.MsgType type, Action<T> callback);
     event Action OnDisconnected;
     event Action<Exception> OnError;
+    void GetGameData(string url, Action<bool, string> callBack);
+
 
 }

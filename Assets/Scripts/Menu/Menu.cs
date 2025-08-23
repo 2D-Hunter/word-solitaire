@@ -28,7 +28,7 @@ public class Menu : MonoBehaviour
     public RectTransform buttonRect;
 
     public TextMeshProUGUI msgTxt;
-    public BackgroundManager backgroundManager;
+    //public BackgroundManager backgroundManager;
 
     public GameObject[] allUI;
     public GameObject connectingToServer = null;
@@ -43,27 +43,40 @@ public class Menu : MonoBehaviour
     private void Awake()
     {
         Debug.Log("___Menu FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
-      /*  if (FBPlayerData.instance.CURRENT_LEVEL > 50)
-        {
-            InitManager.instance.isLevelRandomized = true;
+        /*  if (FBPlayerData.instance.CURRENT_LEVEL > 50)
+          {
+              InitManager.instance.isLevelRandomized = true;
 
-            prefabIndex = GetNextShuffledIndex() + 1; // +1 because pool is 0-based
-            Debug.Log("____prefabIndex: " + prefabIndex);
-            InitManager.instance.nextRandomLevel = prefabIndex;
-        }*/
+              prefabIndex = GetNextShuffledIndex() + 1; // +1 because pool is 0-based
+              Debug.Log("____prefabIndex: " + prefabIndex);
+              InitManager.instance.nextRandomLevel = prefabIndex;
+          }*/
 
-        backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
-        backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
+        //backgroundManager.GetComponent<BackgroundManager>().OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
+        //backgroundManager.GetComponent<BackgroundManager>().UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
+        //BackgroundManager.instance.OnLevelChanged(FBPlayerData.instance.CURRENT_LEVEL);
 
         InitManager.instance.CurrentScene = "Menu";
         instance = this;
         //if(InitManager.instance)
         //    currentLevel.text = currentLevelShadow.text = "Level "+levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].levelNumber.ToString();
-        currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
+        //currentLevel.text = currentLevelShadow.text = "Level " + FBPlayerData.instance.CURRENT_LEVEL.ToString();
+        
         overlayPanel.SetActive(false);
         
 
 
+    }
+    private void OnEnable()
+    {
+        string label = "Level " + FBPlayerData.instance.CURRENT_LEVEL;
+        if (currentLevel) currentLevel.text = label;
+        if (currentLevelShadow) currentLevelShadow.text = label;
+
+        // Optional: also nudge the next-location text (safe even if BM hasn’t bound yet;
+        // OnSceneLoaded in BackgroundManager will update it again)
+        if (BackgroundManager.instance)
+            BackgroundManager.instance.UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
     }
     private void Start()
     {
@@ -174,7 +187,7 @@ public class Menu : MonoBehaviour
 
     public LevelData.LevelInfo GetLevelInfo(int levelNumber)
     {
-        int maxDefinedLevel = levelData.levels.Length;
+        int maxDefinedLevel = levelData.levels.Count;
 
         if (levelNumber <= maxDefinedLevel)
         {
