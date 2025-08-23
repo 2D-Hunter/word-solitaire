@@ -87,10 +87,22 @@ public class Menu : MonoBehaviour
     }
     public void ShowGoalPopup()
     {
+        BoardManager.instance.GenerateLevelByNumber(FBPlayerData.instance.CURRENT_LEVEL - 1, (isSucsess, gamelevelData) =>
+        {
+            if (isSucsess)
+            {
+                FBPlayerData.instance.VibrationEffect();
+                PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
+                heartHud.SetAsLastSibling();
+            }
+            else
+                Debug.LogError("Level not loaded properly");
+            //hide loading
+
+
+        });
+
         
-        FBPlayerData.instance.VibrationEffect();
-        PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
-        heartHud.SetAsLastSibling();
 
     }
     public void ShowFortuneWheel()

@@ -302,6 +302,7 @@ public class GoalPopup : MonoBehaviour
     }
     public void StartGame()
     {
+        
         if (InitManager.instance.CurrentScene == "Levelup")
         {
             InitManager.instance.isReplay = true;

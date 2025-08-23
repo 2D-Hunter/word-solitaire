@@ -112,6 +112,7 @@ public class LevelManager : MonoBehaviour
     }
     void RenderLevelWithGameData(GameLevelData gameData, int levelIndex)
     {
+        
         BoardManager.instance.GenerateBoardFromLevelData(gameData);
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
         {
