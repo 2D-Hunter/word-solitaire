@@ -186,7 +186,12 @@ public class BoardManager : MonoBehaviour
 
     public void GenerateLevelByNumber(int LevelNumber, Action<bool, GameLevelData> levelLoaded = null)
     {
-        if (FBPlayerData.instance.CURRENT_LEVEL <= 2) return;
+        if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
+        {
+            levelLoaded.Invoke(true, null);
+            return;
+        }
+          
         if (LoadConfig.instance.loadedLevelRampData == null)
         {
             Debug.LogError("Failed to deserialize JSON level data.");
