@@ -652,7 +652,8 @@ public class Card : MonoBehaviour
         
        // cardToFlip.rectTransform.SetAsLastSibling();
         int leveIIndex = CardManager.instance.extraCards.Count;
-        cardToFlip.GetComponent<Canvas>().sortingOrder = leveIIndex;
+
+        cardToFlip.GetComponent<Canvas>().sortingOrder = leveIIndex == 0 ? 1:leveIIndex+1;
         cardToFlip.rectTransform.DOAnchorPosX(originalPosOfExtraCards[CardManager.instance.extraCards.Count], 0.3f);
         Debug.Log("cardToFlip.GetComponent<RectTransform>().localEulerAngles.y: "+ cardToFlip.GetComponent<RectTransform>().localEulerAngles.y);
             cardToFlip.rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)

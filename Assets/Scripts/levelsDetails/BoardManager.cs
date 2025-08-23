@@ -211,7 +211,7 @@ public class BoardManager : MonoBehaviour
         bool RequestCompteted = false;
         bool isError = false;
         GameLevelData loadedLevelData = null;
-        Debug.LogError(url);
+        //Debug.LogError(url);
         WordServiceContainer.NetworkService.GetGameData(url, (issucess, data) =>
         {
             if (issucess)
