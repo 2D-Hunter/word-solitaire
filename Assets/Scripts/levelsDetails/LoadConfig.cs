@@ -10,6 +10,7 @@ public class LoadConfig : MonoBehaviour
     public static LoadConfig Instance { get { return instance; } }
     public LevelRamp loadedLevelRampData = null;
     public LetterBucket letterBucket = null;
+    public bool isAllLoadingCompleted = false;
     private void Awake()
     {
         instance = this;
@@ -27,7 +28,7 @@ public class LoadConfig : MonoBehaviour
     IEnumerator LoadLevelDataFromJson()
     {
         // Adjust path if your JSONs are in a different Resources subfolder (e.g., "Levels/")
-
+        isAllLoadingCompleted= false;
         string fullPathRamp = "https://2dhunter.s3.us-west-2.amazonaws.com/word-solitaire-go/fb/config/level_ramp.json";
         bool RequestCompteted = false;
         bool isError = false;
@@ -95,6 +96,7 @@ public class LoadConfig : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
         }
+        isAllLoadingCompleted = true;
         if (isError)
         {
             Debug.LogError($"JSON level letterBucket file not found at: /{fullPathRamp}");
