@@ -69,6 +69,7 @@ public class BoardManager : MonoBehaviour
     LetterBucket letterBucket = null;
 
     public LevelData levelData;
+   
     public ObjectPoolCard<GameObject> Pool
     {
         get
@@ -229,6 +230,7 @@ public class BoardManager : MonoBehaviour
                 {
                     RequestCompteted = true;
                     isError = false;
+                    levelData.levels[LevelNumber].levelTarget = loadedLevelData.Layout.Count;
                     gameLevels.Add(LevelNumber, loadedLevelData);
                 }
             }
