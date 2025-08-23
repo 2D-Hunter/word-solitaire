@@ -261,7 +261,7 @@ public class BoardManager : MonoBehaviour
     }
     public void GenerateBoardFromLevelData(GameLevelData levelData)
     {
-
+        boardParent = GameManager.instance.rt_AllLevels;
         for (int i = 0; i < activeCards.Count; i++)
         {
             var activeCard = activeCards[i];
