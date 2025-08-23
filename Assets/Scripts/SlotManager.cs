@@ -160,10 +160,12 @@ public class SlotManager : MonoBehaviour
         //
     }
 
+    private int sortingLayer = 0;
     public IEnumerator OnCardClicked_Coroutine(Card card)
     {
-       
-        
+
+        sortingLayer = card.GetComponent<Canvas>().sortingOrder;
+        card.GetComponent<Canvas>().sortingOrder = 15;
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
         Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
@@ -431,6 +433,7 @@ public class SlotManager : MonoBehaviour
                 StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
                 trail = null;
             }
+            card.GetComponent<Canvas>().sortingOrder = sortingLayer;
         });
 
         motionSequence.Play();
