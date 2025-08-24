@@ -78,7 +78,28 @@ public class LoadConfig : MonoBehaviour
                 RequestCompteted = true;
                 isError = false;
                 Debug.Log($"Loading level letterBucket json from JSON");
-                letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(data);
+
+
+                string letterBucketPath = "Config/letterbucket";
+
+
+                TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
+
+                if (jsonLetterBucketTextAsset == null)
+                {
+                    Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
+                    //return;
+                }
+                letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
+                if (letterBucket == null)
+                {
+                    Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
+                   // return;
+                }
+
+
+
+               // letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(data);
                 if (letterBucket == null)
                 {
                     Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");

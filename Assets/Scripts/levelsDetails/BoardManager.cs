@@ -100,6 +100,9 @@ public class BoardManager : MonoBehaviour
                         card.isFaceUp = false;
                         card.cardFace?.SetActive(true);
                         card.belowCards.Clear();
+                        card.isWildCard = false;
+                        card.transform.GetChild(2).gameObject.SetActive(true);
+                        card.transform.GetChild(3).gameObject.SetActive(false);
                     }
                 }
             );
@@ -188,7 +191,7 @@ public class BoardManager : MonoBehaviour
         if (FBPlayerData.instance.CURRENT_LEVEL <= 3)
         {
             levelLoaded.Invoke(true, null);
-            return;
+            return; 
         }
           
         if (LoadConfig.instance.loadedLevelRampData == null)
@@ -317,10 +320,22 @@ public class BoardManager : MonoBehaviour
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
                     Debug.Log(generateLetter[rowPairIndex].ToString());
-                    int cardValue = card.cardData.GetCardValue(generateLetter[rowPairIndex]);
-                    card.cardData.valueText.text = cardValue.ToString();
-                    card.cardData.cardValue = cardValue;
-                    card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
+                    if(generateLetter[rowPairIndex].ToString() == "*") {
+
+                        card.cardData.valueText.text = "4";
+                        card.cardData.cardValue = 4;
+                        card.isWildCard = true;
+                        card.isFaceUp = false;
+                       
+                    }
+                    else
+                    {
+                        int cardValue = card.cardData.GetCardValue(generateLetter[rowPairIndex]);
+                        card.cardData.valueText.text = cardValue.ToString();
+                        card.cardData.cardValue = cardValue;
+                        card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
+                    }
+                   
                 }
                 else
                 {
@@ -359,6 +374,11 @@ public class BoardManager : MonoBehaviour
 
                 activeCards[i].isFaceUp = true;
                 activeCards[i].cardFace.SetActive(false);
+                if (activeCards[i].isWildCard)
+                {
+                    activeCards[i].transform.GetChild(2).gameObject.SetActive(false);
+                    activeCards[i].transform.GetChild(3).gameObject.SetActive(true);
+                }
 
 
             }
