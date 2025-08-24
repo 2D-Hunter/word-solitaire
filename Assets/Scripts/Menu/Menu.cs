@@ -39,6 +39,7 @@ public class Menu : MonoBehaviour
     private const int startShuffleIndex = 25; // Level 41 (0-based)
     private const int endShuffleIndex = 50;   // Up to level 50 (exclusive index)
     int prefabIndex;
+    private bool firstTime = true; // Track if it's the first time
 
     private void Awake()
     {
@@ -87,23 +88,42 @@ public class Menu : MonoBehaviour
     }
     public void ShowGoalPopup()
     {
-        BoardManager.instance.GenerateLevelByNumber(FBPlayerData.instance.CURRENT_LEVEL - 1, (isSucsess, gamelevelData) =>
+        FBPlayerData.instance.VibrationEffect();
+        if (FBPlayerData.instance.CURRENT_LEVEL <= 3)
         {
-            if (isSucsess)
+            PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
+            heartHud.SetAsLastSibling();
+            return;
+        }
+
+        if (firstTime)
+            PopupManager.instance.TogglePopup(PopupManager.instance.loading);
+        
+        BoardManager.instance.GenerateLevelByNumber(FBPlayerData.instance.CURRENT_LEVEL - 1, (isSuccess, gamelevelData) =>
+        {
+            if (isSuccess)
             {
-                FBPlayerData.instance.VibrationEffect();
-                PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup);
-                heartHud.SetAsLastSibling();
+                if (firstTime)
+                {
+                    firstTime = false;
+                    StartCoroutine(ShowGoalPopupWithDelay(1f));
+                }
+                else
+                {
+                    StartCoroutine(ShowGoalPopupWithDelay(0f));
+                }
             }
             else
                 Debug.LogError("Level not loaded properly");
-            //hide loading
-
-
         });
-
-        
-
+    }
+    private IEnumerator ShowGoalPopupWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if(delay == 1)
+            PopupManager.instance.TogglePopup(PopupManager.instance.loading);   // Hide loading
+        PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup); // Show goal popup
+        heartHud.SetAsLastSibling();
     }
     public void ShowFortuneWheel()
     {

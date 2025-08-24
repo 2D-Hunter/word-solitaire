@@ -6,12 +6,13 @@ using DG.Tweening;
 
 public class Splash : MonoBehaviour
 {
+    public GameObject loadingAnim = null;
     private void Start()
     {
         Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 
 #if UNITY_EDITOR
-        FBPlayerData.instance.CURRENT_LEVEL = 150;
+        FBPlayerData.instance.CURRENT_LEVEL = 26;
         StartCoroutine(LoadSceneRoutine());   // 🔑 Run coroutine
 #else
         StartCoroutine(LoadSceneRoutine());   // 🔑 Run coroutine
@@ -20,16 +21,22 @@ public class Splash : MonoBehaviour
 
     public IEnumerator LoadSceneRoutine()
     {
+        // Small wait to show splash logo
+        yield return new WaitForSeconds(3f);
+        loadingAnim.SetActive(true);
+        bool bgLoaded = false;
         // 🔑 Preload the background for the current level
         if (BackgroundManager.instance != null)
         {
             yield return StartCoroutine(
                 BackgroundManager.instance.PreloadCurrentLevelBackground(FBPlayerData.instance.CURRENT_LEVEL)
             );
+            bgLoaded = true;
         }
+        
+        yield return new WaitUntil(() => bgLoaded && LoadConfig.instance.isAllConfigLoaded);
 
-        // Small wait to show splash logo
-        //yield return new WaitForSeconds(3f);
+        Debug.Log("✅ All resources loaded → Proceeding to next scene");
 
         // Decide where to go
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)

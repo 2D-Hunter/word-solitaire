@@ -163,9 +163,12 @@ public class SlotManager : MonoBehaviour
     private int sortingLayer = 0;
     public IEnumerator OnCardClicked_Coroutine(Card card)
     {
-
-        sortingLayer = card.GetComponent<Canvas>().sortingOrder;
-        card.GetComponent<Canvas>().sortingOrder = 15;
+        if(FBPlayerData.instance.CURRENT_LEVEL > 2)
+        {
+            sortingLayer = card.GetComponent<Canvas>().sortingOrder;
+            card.GetComponent<Canvas>().sortingOrder = 15;
+        }
+        
         Debug.Log("___Card Clicked...");
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
         Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
@@ -433,7 +436,10 @@ public class SlotManager : MonoBehaviour
                 StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
                 trail = null;
             }
-            card.GetComponent<Canvas>().sortingOrder = sortingLayer;
+            if (FBPlayerData.instance.CURRENT_LEVEL > 2)
+            {
+                card.GetComponent<Canvas>().sortingOrder = sortingLayer;
+            }
         });
 
         motionSequence.Play();
@@ -669,8 +675,9 @@ public class SlotManager : MonoBehaviour
                     Debug.Log("card.tag: " + card.tag);
                     if(card.tag != "ExtraCard" && card.tag != "WildCard")
                     {
-                        Debug.Log("card.tag inside: ");
+                        
                         InitManager.instance.currentTarget--;
+                        Debug.Log("card.tag inside: " + InitManager.instance.currentTarget);
                         LevelManager.instance.UpdateCurrentTarget(InitManager.instance.currentTarget);
                         Debug.Log("InitManager.instance.currentTarget Hud.instance.DecreaseTarget");
                         Hud.instance.DecreaseTarget();

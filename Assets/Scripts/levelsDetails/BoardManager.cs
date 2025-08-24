@@ -92,15 +92,14 @@ public class BoardManager : MonoBehaviour
                 },
                 actionOnRelease: (go) =>
                 {
+                    if (go == null) return;
                     go.SetActive(false);
                     var card = go.GetComponent<Card>();
-                    card.isFaceUp = false;
-                    card.cardFace.SetActive(true);
                     if (card != null)
                     {
+                        card.isFaceUp = false;
+                        card.cardFace?.SetActive(true);
                         card.belowCards.Clear();
-
-
                     }
                 }
             );
@@ -186,7 +185,7 @@ public class BoardManager : MonoBehaviour
 
     public void GenerateLevelByNumber(int LevelNumber, Action<bool, GameLevelData> levelLoaded = null)
     {
-        if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL <= 3)
         {
             levelLoaded.Invoke(true, null);
             return;
@@ -217,7 +216,7 @@ public class BoardManager : MonoBehaviour
         bool RequestCompteted = false;
         bool isError = false;
         GameLevelData loadedLevelData = null;
-        //Debug.LogError(url);
+        Debug.LogError(url);
         WordServiceContainer.NetworkService.GetGameData(url, (issucess, data) =>
         {
             if (issucess)
@@ -269,7 +268,12 @@ public class BoardManager : MonoBehaviour
         boardParent = GameManager.instance.rt_AllLevels;
         for (int i = 0; i < activeCards.Count; i++)
         {
+            //var activeCard = activeCards[i];
+            //Debug.Log("activeCard: " + activeCard);
             var activeCard = activeCards[i];
+
+            if (activeCard == null) continue; // skip destroyed cards
+            if (activeCard.gameObject == null) continue;
 
             Pool.Release(activeCard.gameObject);
         }

@@ -42,7 +42,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+            if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2 || FBPlayerData.instance.CURRENT_LEVEL == 3)
             {
                 Debug.Log("Level Manager FBPlayerData.instance.CURRENT_LEVEL: " + FBPlayerData.instance.CURRENT_LEVEL);
                 LoadLevel(FBPlayerData.instance.CURRENT_LEVEL - 1);
@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour
 
     public void LoadLevel(int levelIndex)
     {
-        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2 || FBPlayerData.instance.CURRENT_LEVEL == 3)
         {
             foreach (GameObject level in levels)
             {
@@ -72,6 +72,8 @@ public class LevelManager : MonoBehaviour
             levels[0] = null;
             Destroy(levels[1]);
             levels[1] = null;
+            Destroy(levels[2]);
+            levels[2] = null;
 
             // Determine which prefab to load
             int prefabIndex = levelIndex;
@@ -85,8 +87,17 @@ public class LevelManager : MonoBehaviour
             // Show loading
             BoardManager.instance.GenerateLevelByNumber(prefabIndex - 1, (isSucsess, gamelevelData) =>
             {
+                Debug.Log("GenerateLevelByNumber:: " + prefabIndex);
                 if (isSucsess)
+                {
+                    if (InitManager.instance != null)
+                    {
+                        LevelData.LevelInfo levelInfo = GetLevelInfo(levelIndex);
+                        InitManager.instance.levelCompleted = false;
+                        InitManager.instance.currentTarget = levelInfo.levelTarget;
+                    }
                     RenderLevelWithGameData(gamelevelData, levelIndex);
+                }
                 else
                     Debug.LogError("Level not loaded properly");
                 //hide loading
@@ -107,28 +118,22 @@ public class LevelManager : MonoBehaviour
                 Debug.LogError("Level prefab not found: " + prefabName);
             }*/
         }
-
-        
-    }
-    void RenderLevelWithGameData(GameLevelData gameData, int levelIndex)
-    {
-        
-        if(gameData != null)
+        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2 || FBPlayerData.instance.CURRENT_LEVEL == 3)
         {
-            BoardManager.instance.GenerateBoardFromLevelData(gameData);
-        }
-      
-        if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
-        {
+            Debug.Log("levelIndex:: " + levelIndex);
             levelIndex++;
         }
 
-        if (levelIndex >= 0)
+        if (levelIndex >= 0 )
         {
             // Since you're not using the 'levels' array anymore for instantiated levels after level 2,
             // You can remove this part or manage instantiated levels separately.
-            if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
+            if (FBPlayerData.instance.CURRENT_LEVEL <= 3)
+            {
+                Debug.Log("Since you're: "+ levels[levelIndex - 1]);
                 levels[levelIndex - 1].SetActive(true);
+            }
+                
             CardManager.instance.AddAllCardsToList();
             CardManager.instance.AddTotalCardsToClearInList();
 
@@ -139,7 +144,10 @@ public class LevelManager : MonoBehaviour
                 if (FBPlayerData.instance.CURRENT_LEVEL >= 26)
                     UpdateLevelUI(levelIndex, levelInfo.levelTarget);
                 else
+                {
+                    Debug.Log(levelIndex + "__" + levelInfo.levelTarget + "mlmlml");
                     UpdateLevelUI(levelIndex, levelInfo.levelTarget, levelInfo.targetPointsForBonus);
+                }
 
                 if (InitManager.instance != null)
                 {
@@ -157,10 +165,19 @@ public class LevelManager : MonoBehaviour
                 Debug.LogWarning("Level data is missing for this level!");
             }
         }
-        else
+        
+
+
+    }
+    void RenderLevelWithGameData(GameLevelData gameData, int levelIndex)
+    {
+        
+        if(gameData != null)
         {
-            Debug.LogError("Invalid level index!");
+            BoardManager.instance.GenerateBoardFromLevelData(gameData);
         }
+      
+        
     }
     public void UpdateLevelUI(int levelNumber, int levelTarget, int bt = -1)
     {
