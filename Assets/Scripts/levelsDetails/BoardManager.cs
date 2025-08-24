@@ -320,7 +320,7 @@ public class BoardManager : MonoBehaviour
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
                     Debug.Log(generateLetter[rowPairIndex].ToString());
-                    if(generateLetter[rowPairIndex].ToString() == "*") {
+                    if (rowPair.Tile == "*") {
 
                         card.cardData.valueText.text = "4";
                         card.cardData.cardValue = 4;

@@ -80,7 +80,7 @@ public class LoadConfig : MonoBehaviour
                 Debug.Log($"Loading level letterBucket json from JSON");
 
 
-                string letterBucketPath = "Config/letterbucket";
+               /* string letterBucketPath = "Config/letterbucket";
 
 
                 TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
@@ -96,10 +96,10 @@ public class LoadConfig : MonoBehaviour
                     Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
                    // return;
                 }
+*/
 
 
-
-               // letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(data);
+                letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(data);
                 if (letterBucket == null)
                 {
                     Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
