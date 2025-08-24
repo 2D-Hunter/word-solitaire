@@ -104,8 +104,8 @@ public class AnalyticsManager : MonoBehaviour, IGameAnalyticsATTListener
     public void TrackWordCreated(string word, int level, int score)
     {
         if (!IsAnalyticsEnabled) return;
-
-        GameAnalytics.NewDesignEvent($"word:created:{word}", score);
+        GameAnalytics.NewDesignEvent($"word:created:{word}:level_{level}:Score:{score}");
+        //GameAnalytics.NewDesignEvent($"word:created:{word}", score);
         Debug.Log($"Tracked: word_created {word}");
     }
 

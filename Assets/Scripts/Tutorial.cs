@@ -227,18 +227,18 @@ public class Tutorial : MonoBehaviour
                 cardU.GetComponent<Button>().enabled = true;
                 cardG1.GetComponent<Button>().enabled = false;
                 handRectTransform.gameObject.SetActive(false);
-                foreach (var sm in CardManager.instance.extraCards)
-                {
-                    Transform target = sm.transform.Find("Sprite Mask"); // Find the child GameObject
-                    if (target != null)
-                    {
-                        target.gameObject.SetActive(false); // Disable it
-                    }
-                    else
-                    {
-                        //Debug.LogWarning("Child object '" + objectName + "' not found in " + card.name);
-                    }
-                }
+                //foreach (var sm in CardManager.instance.extraCards)
+                //{
+                //    Transform target = sm.transform.Find("Sprite Mask"); // Find the child GameObject
+                //    if (target != null)
+                //    {
+                //        //target.gameObject.SetActive(false); // Disable it
+                //    }
+                //    else
+                //    {
+                //        //Debug.LogWarning("Child object '" + objectName + "' not found in " + card.name);
+                //    }
+                //}
             }
             else if (InitManager.instance.tutorialCntr == 2)
             {

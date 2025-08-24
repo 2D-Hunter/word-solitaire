@@ -205,7 +205,7 @@ public class SlotManager : MonoBehaviour
         {
             if (SlotManager.instance.allSlotsOccupied) yield  break;
             FBPlayerData.instance.VibrationEffect();
-            Invoke("PlayCardPlacedSound", 0);
+            //Invoke("PlayCardPlacedSound", 0);
             
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
             {
@@ -421,7 +421,8 @@ public class SlotManager : MonoBehaviour
         motionSequence.OnComplete(() =>
         {
             Debug.Log("Card reached the slot with projectile motion!");
-
+            PlayCardPlacedSound();
+            //Invoke("PlayCardPlacedSound", 0);
             if (cardRect.tag == "WildCard")
             {
                 FBPlayerData.instance.TOTAL_WILD_CARD--;

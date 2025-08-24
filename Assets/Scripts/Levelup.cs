@@ -217,6 +217,7 @@ public class Levelup : MonoBehaviour
     }
     public void OpenDictionary()
     {
+        FBPlayerData.instance.VibrationEffect();
         //titleCG.DOFade(0f, 0.3f).SetEase(Ease.OutExpo);
         //brillanceCG.DOFade(0f, 0.3f).SetEase(Ease.OutExpo);
         //GameManager.instance.levelupStarsCG.DOFade(0f, 0.3f).SetEase(Ease.OutExpo);
@@ -271,6 +272,7 @@ public class Levelup : MonoBehaviour
     }
     public void ReplayGameAfterInterstitial()
     {
+        FBPlayerData.instance.VibrationEffect();
         Invoke("RemoveStars", 0.05f);
         PopupManager.instance.ShowGoalPopup(PopupManager.instance.goalPopup);
     }
