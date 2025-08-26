@@ -319,7 +319,6 @@ public class BoardManager : MonoBehaviour
                 tileGO.name = "card" + "_" + rowPair.Level + "_" + rowPairIndex;
                 if (rowPair.Tile == "?" || rowPair.Tile == "*")
                 {
-                    Debug.Log(generateLetter[rowPairIndex].ToString());
                     if (rowPair.Tile == "*") {
 
                         card.cardData.valueText.text = "4";
@@ -330,10 +329,23 @@ public class BoardManager : MonoBehaviour
                     }
                     else
                     {
-                        int cardValue = card.cardData.GetCardValue(generateLetter[rowPairIndex]);
-                        card.cardData.valueText.text = cardValue.ToString();
-                        card.cardData.cardValue = cardValue;
-                        card.cardData.letterText.text = generateLetter[rowPairIndex].ToString();
+                        var letter = WordLetterGenerationSystem.Instance.GenerateLetter(difficulty, BagType.StandardLetterBag);
+                        Debug.Log("letter "+ letter);
+                        if (letter == "*")
+                        {
+                            card.cardData.valueText.text = "4";
+                            card.cardData.cardValue = 4;
+                            card.isWildCard = true;
+                            card.isFaceUp = false;
+                        }
+                        else
+                        {
+                            int cardValue = card.cardData.GetCardValue(letter[0]);
+                            card.cardData.valueText.text = cardValue.ToString();
+                            card.cardData.cardValue = cardValue;
+                            card.cardData.letterText.text = letter;
+                        }
+                        
                     }
                    
                 }
