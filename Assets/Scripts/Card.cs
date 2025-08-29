@@ -13,6 +13,7 @@ public class Card : MonoBehaviour
     public RectTransform thisCard;
     public List<Card> belowCards;
     public int Level;
+    public bool isMoving = false;
     
     public RectTransform rectTransform;
     //public static Card instance;
@@ -237,7 +238,7 @@ public class Card : MonoBehaviour
         if (InitManager.instance != null)
             if (InitManager.instance.levelCompleted) return;
 
-        
+        isMoving = true;
 
         if (this.tag == "ExtraCard")
         {
@@ -489,49 +490,7 @@ public class Card : MonoBehaviour
             });
         //}
     }
-    //public void FlipCard(Card card)
-    //{
-    //    if (card.isFlipping) return;
-    //    card.isFlipping = true;
-    //    Debug.Log("card.belowCards.Count: " +card.name + "______"+ belowCards.Count);
-    //    Debug.Log("isFlipping: " + isFlipping);
-        
-    //    //if (isFaceUp) return; 
-    //    //isFlipping = true;
-    //    float flipDuration = 0.2f;
-    //    //for (int i = 0; i < belowCards.Count; i++)
-    //    //{
-    //        RectTransform rectTransform = card.GetComponent<RectTransform>();
-    //    //rectTransform.DOKill(true);
-    //    //isFaceUp = true;
-    //    card.isFaceUp = true;
-    //    rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.Fast)
-    //        .SetEase(Ease.Linear)
-    //        .OnComplete(() =>
-    //        {
-                
-    //            //isFaceUp = true;
-    //            UpdateCardFlipping(card);
-    //            rectTransform.DORotate(new Vector3(0, -90, 0), flipDuration / 2, RotateMode.Fast)
-    //            .SetEase(Ease.Linear)
-    //                .OnComplete(() =>
-    //                {
-    //                    //rectTransform.localRotation = Quaternion.Euler(0, 180, 0); // ensure precision
-    //                    card.isFlipping = false;
-
-    //                    if (!CardManager.instance.allFaceUpCards.Contains(card) && !slotManager.goingBack && !card.is
-    //                    Card)
-    //                        CardManager.instance.allFaceUpCards.Add(card);
-    //                    if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
-    //                        CardManager.instance.allFaceUpCards.Remove(card);
-
-
-    //                    Debug.Log("___Card flipped: "+slotManager.goingBack);
-    //                        //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
-    //                    });
-    //        });
-    //    //}
-    //}
+    
     
     private void UpdateCardFlipping(Card card)
     {
@@ -727,35 +686,7 @@ public class Card : MonoBehaviour
         return overlapPercent >= thresholdPercent;
     }
 
-    //private bool IsBlockedByOtherCards(Card targetCard, Card excludeCard)
-    //{
-    //    int targetIndex = targetCard.Level;//targetCard.transform.GetSiblingIndex();
-    //    Rect targetRect = GetWorldRect(targetCard.rectTransform);
-
-    //    foreach (Card otherCard in CardManager.instance.totalCardsToClear)
-    //    {
-    //        if (otherCard == null || otherCard == targetCard || otherCard == excludeCard)
-    //            continue;
-
-    //        if (!otherCard.gameObject.activeInHierarchy)
-    //            continue;
-
-    //        int otherIndex = otherCard.Level;
-    //        Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
-    //        if (otherIndex > targetIndex)
-    //        {
-    //            Rect otherRect = GetWorldRect(otherCard.rectTransform);
-
-    //            if (IsSignificantOverlap(targetRect, otherRect, 5f))
-    //            {
-    //                Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
-    //                return true;
-    //            }
-    //        }
-    //    }
-
-    //    return false;
-    //}
+   
 
     private bool IsBlockedByOtherCards(Card targetCard)
     {
@@ -772,7 +703,7 @@ public class Card : MonoBehaviour
 
             int otherIndex = otherCard.Level;
             Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
-            if (otherIndex > targetIndex)
+            if (otherIndex > targetIndex && !otherCard.isMoving)
             {
                 Rect otherRect = GetWorldRect(otherCard.rectTransform);
 

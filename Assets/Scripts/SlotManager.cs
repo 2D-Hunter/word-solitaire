@@ -329,12 +329,11 @@ public class SlotManager : MonoBehaviour
         // Cleanup and reset transforms after animation completes
         motionSequence.OnComplete(() =>
         {
-            // Reset rotation to zero (important!)
-            //cardRect.localRotation = Quaternion.identity;
-            Debug.Log("Card reached the slot with smooth tween animation!");
+          
+           
             PlayCardPlacedSound();
-
-            if (cardRect.tag == "WildCard")
+            var targetCard = (GameObject)motionSequence.target;
+            if (targetCard.tag == "WildCard")
             {
                 FBPlayerData.instance.TOTAL_WILD_CARD--;
                 FBPlayerData.instance.SavePlayerData();
@@ -354,7 +353,9 @@ public class SlotManager : MonoBehaviour
             //}
             if (FBPlayerData.instance.CURRENT_LEVEL > 3)
             {
-                card.GetComponent<CardSorting>().ResetOrder();
+                targetCard.GetComponent<CardSorting>().ResetOrder();
+                targetCard.GetComponent <Card>().isMoving = false;
+
             }
         });
 
