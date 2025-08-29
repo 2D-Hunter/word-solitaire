@@ -16,11 +16,14 @@ public class CardSorting : MonoBehaviour
 
     public void BringToFront(int newOrder = 15)
     {
-        canvas.sortingOrder = newOrder;
+        if(card.tag != "ExtraCard")
+            canvas.sortingOrder = newOrder;
     }
 
     public void ResetOrder()
     {
-        canvas.sortingOrder = card.Level+1;
+        Debug.Log("ResetOrder");
+        if (card.tag != "ExtraCard")
+            canvas.sortingOrder = card.Level+1;
     }
 }

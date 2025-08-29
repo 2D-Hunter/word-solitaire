@@ -174,7 +174,7 @@ public class SlotManager : MonoBehaviour
             if (card.GetComponent<Card>() != null)
             {
                 goingBack = true;
-                card.MoveBackToOriginalPosition(card, sortingLayer);
+                card.MoveBackToOriginalPosition(null, -1);
             }
             if (slotsCard.Count > 0)
                 slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
@@ -325,14 +325,14 @@ public class SlotManager : MonoBehaviour
                 activeTrail_WildCard.transform.position = cardRect.position;
             }
         });
-
+        Debug.Log("AnimateCardToSlot: ");
         // Cleanup and reset transforms after animation completes
         motionSequence.OnComplete(() =>
         {
-          
-           
+
+            Debug.Log("AnimateCardToSlot on complete: ");
             PlayCardPlacedSound();
-            var targetCard = (GameObject)motionSequence.target;
+            var targetCard = cardRect;
             if (targetCard.tag == "WildCard")
             {
                 FBPlayerData.instance.TOTAL_WILD_CARD--;
@@ -351,6 +351,7 @@ public class SlotManager : MonoBehaviour
             //{
             //    card.GetComponent<Canvas>().sortingOrder = sortingLayer;
             //}
+            Debug.Log("AnimateCardToSlot on complete: "+ FBPlayerData.instance.CURRENT_LEVEL);
             if (FBPlayerData.instance.CURRENT_LEVEL > 3)
             {
                 targetCard.GetComponent<CardSorting>().ResetOrder();
@@ -363,96 +364,7 @@ public class SlotManager : MonoBehaviour
     }
 
 
-    public void AnimateCardToSlot2(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
-    {
-        Vector2 startPos = cardRect.anchoredPosition;
-        float apexHeight;
-        Transform trail = null;
-
-        // Decide arc height and manage card category
-        switch (cardRect.tag)
-        {
-            case "ExtraCard":
-                apexHeight = 800f;
-                CardManager.instance.rightSideCards.RemoveCard(card);
-                break;
-            case "WildCard":
-                apexHeight = 200f;
-                break;
-            default:
-                apexHeight = 400f;
-                break;
-        }
-
-        // Handle wild card trail effect using pool
-        if (card.isWildCard)
-        {
-            activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position); //Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
-        }
-
-        float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
-        Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
-        Vector2[] pathPoints = new Vector2[]
-        {
-            cardRect.parent.TransformPoint(startPos),     // start
-            cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)), // mid arc point
-            targetPosition       // end (must be world space!)
-        };
-        // Create full tween sequence
-        Sequence motionSequence = DOTween.Sequence();
-
-        // Vertical arc animation
-        Debug.Log("pathPoints[1] >>>"+pathPoints[1]);
-        motionSequence.Append(cardRect.DOMove(pathPoints[1], animDuration).SetEase(Ease.OutQuad));
-        motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.OutQuad));
-        // Join scaling and rotation
-        motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
-        Debug.Log("Error");
-        motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear));
-
-        // Optional bounce-in scale
-        cardRect.DOScale(startScale, animDuration / 4).SetEase(Ease.OutQuad);
-
-        // On every frame of animation
-        motionSequence.OnUpdate(() =>
-        {
-            if (card.isWildCard)
-            {
-                if (activeTrail_WildCard != null)
-                {
-                    activeTrail_WildCard.transform.position = cardRect.position;
-                }
-            }
-        });
-
-        // Final callback
-        motionSequence.OnComplete(() =>
-        {
-            Debug.Log("Card reached the slot with projectile motion!");
-            PlayCardPlacedSound();
-            //Invoke("PlayCardPlacedSound", 0);
-            if (cardRect.tag == "WildCard")
-            {
-                FBPlayerData.instance.TOTAL_WILD_CARD--;
-                FBPlayerData.instance.SavePlayerData();
-                FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
-            }
-
-            slotsCard[^1].GetComponent<Button>().enabled = true;
-
-            if (trail != null)
-            {
-                StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
-                trail = null;
-            }
-            if (FBPlayerData.instance.CURRENT_LEVEL > 2)
-            {
-                card.GetComponent<Canvas>().sortingOrder = sortingLayer;
-            }
-        });
-
-        motionSequence.Play();
-    }
+   
 
     
 

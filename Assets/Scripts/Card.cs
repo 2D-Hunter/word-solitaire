@@ -113,7 +113,7 @@ public class Card : MonoBehaviour
     //public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true)
     public void MoveBackToOriginalPosition(Card tempCard, int sortingLayer, bool shouldcallbelow = true, Action onComplete = null)
     {
-
+        
         
         if (this.tag == "ExtraCard")
         {
@@ -130,6 +130,9 @@ public class Card : MonoBehaviour
             cardSequence1.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad));
             cardSequence1.OnComplete(() =>
             {
+                var targetCard = this;
+                isMoving = false;
+                targetCard.GetComponent<CardSorting>().ResetOrder();
                 Debug.Log("Card has reached back into the original position.");
                 GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
                 GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
@@ -138,7 +141,7 @@ public class Card : MonoBehaviour
 
             });
         }
-        else if (this.tag == "WildCard")
+        else if (this.isWildCard)
         {
             Debug.Log("MoveBackToOriginalPosition Wild Card");
 
@@ -148,18 +151,14 @@ public class Card : MonoBehaviour
             }
 
             var cardSequence2 = DOTween.Sequence();
-            cardSequence2.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.4f).SetEase(Ease.OutQuad));
-            cardSequence2.Join(GetComponent<RectTransform>().DOScale(0.7f, 0.3f).SetEase(Ease.OutBack));
-            //cardSequence.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 10), 0.3f, RotateMode.Fast).SetEase(Ease.OutQuad));
-            cardSequence2.Join(
-    GetComponent<RectTransform>()
-        .DORotate(new Vector3(0, 0, -350), 0.3f, RotateMode.FastBeyond360)
-        .SetEase(Ease.OutQuad)
-)
-
-            .OnComplete(() =>
-            {
-                
+            cardSequence2.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.2f).SetEase(Ease.OutQuad));
+            cardSequence2.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
+            cardSequence2.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
+                .OnComplete(() =>
+                {
+                    var targetCard = this;
+                isMoving = false;
+                targetCard.GetComponent<CardSorting>().ResetOrder();
                 FBPlayerData.instance.TOTAL_WILD_CARD++;
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
@@ -184,14 +183,11 @@ public class Card : MonoBehaviour
             cardSequence3.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
                 .OnComplete(() =>
                 {
+                    var targetCard = this;
                     Debug.Log("sendBackAll000");
-                    if (sortingLayer != -1)
-                    {
-                        //tempCard.GetComponent<Canvas>().sortingOrder = sortingLayer;
-                        tempCard.GetComponent<CardSorting>().ResetOrder();
-                    }
+                    targetCard.GetComponent<CardSorting>().ResetOrder();
                     RemoveCardsButton.instance.sendBackAll = false;
-
+                    isMoving = false;
                     if (shouldcallbelow)
                         SetFaceOfCard();
 

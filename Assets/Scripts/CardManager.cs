@@ -35,6 +35,7 @@ public class CardManager : MonoBehaviour
         for (int i = 0; i < extraCards.Count; i++)
         {
             var card = extraCards[i];
+            card.Level = i;
             card.GetComponent<Canvas>().sortingOrder = i + 1;
         }
     }
