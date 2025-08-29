@@ -102,6 +102,7 @@ public class GameManager : MonoBehaviour
         instance = this;
         InitManager.instance.buyMoreCardsCntr = 1;
         InitManager.instance.moreCardsPrice = 150;
+        DOTween.SetTweensCapacity(500, 200);
     }
     private void Start()
     {

@@ -34,8 +34,9 @@ public class LoadingPopup : MonoBehaviour
 
     private void Start()
     {
-        if(InitManager.instance.CurrentScene == "Menu")
+        if(InitManager.instance.CurrentScene == "Menu" && InitManager.instance.ShowLoadingTxtForJSON)
         {
+            InitManager.instance.ShowLoadingTxtForJSON = false;
             loadingTxtObj.SetActive(true);
             bgCanvasGroup.alpha = 0.8f;
             loadingTxt.text = loadingMessages[Random.Range(0, loadingMessages.Length)];

@@ -129,14 +129,14 @@ public class Dictionary : MonoBehaviour
 
     private void UpdatePopup()
     {
-        if (isClosing) return; // early exit if closing
+        if (isClosing) return; 
 
         var words = currentDisplayWords;
         if (words == null || words.Count == 0) return;
 
         string word = words[GameManager.instance.currentIndex];
         Debug.Log("UpdatePopup Dictionary: " + word);
-        AnalyticsManager.Instance.TrackDictionaryOpened(word);
+        AnalyticsManager.Instance.TrackDictionaryOpened(word, FBPlayerData.instance.CURRENT_LEVEL);
         title.text = titleShadow.text = title2.text = title2Shadow.text = word;
 
         if (GameManager.instance.wordDefinitions.TryGetValue(word, out string def))

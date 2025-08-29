@@ -7,7 +7,8 @@ public class InitManager:MonoBehaviour
     public static InitManager instance;
 
     public string version = "1.0.0";
-    public int currentLevel = 17;
+    [HideInInspector]
+    public int currentLevel = 94;
     public int nextRandomLevel;
     public bool isLevelRandomized = false;
 
@@ -33,6 +34,7 @@ public class InitManager:MonoBehaviour
     public bool receivedBonusCoins = false;
     public GameObject coinAnimPrefab;
     private GameObject coinAnimInstance;
+    public bool ShowLoadingTxtForJSON = false;
 
     private void Awake()
     {

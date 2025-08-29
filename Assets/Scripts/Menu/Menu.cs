@@ -40,6 +40,7 @@ public class Menu : MonoBehaviour
     private const int endShuffleIndex = 50;   // Up to level 50 (exclusive index)
     int prefabIndex;
     private bool firstTime = true; // Track if it's the first time
+    
 
     private void Awake()
     {
@@ -81,6 +82,7 @@ public class Menu : MonoBehaviour
     }
     private void Start()
     {
+        InitManager.instance.ShowLoadingTxtForJSON = false;
         MultiplayerEventHandler.Instance.isMultiplayer = false;
         PopupManager.instance.AssignUIContainer();
         //AnimateButton();
@@ -97,7 +99,10 @@ public class Menu : MonoBehaviour
         }
 
         if (firstTime)
+        {
+            InitManager.instance.ShowLoadingTxtForJSON = true;
             PopupManager.instance.TogglePopup(PopupManager.instance.loading);
+        }
         
         BoardManager.instance.GenerateLevelByNumber(FBPlayerData.instance.CURRENT_LEVEL - 1, (isSuccess, gamelevelData) =>
         {
@@ -120,8 +125,10 @@ public class Menu : MonoBehaviour
     private IEnumerator ShowGoalPopupWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if(delay == 1)
+        if (delay == 1)
+        {
             PopupManager.instance.TogglePopup(PopupManager.instance.loading);   // Hide loading
+        }
         PopupManager.instance.TogglePopup(PopupManager.instance.goalPopup); // Show goal popup
         heartHud.SetAsLastSibling();
     }

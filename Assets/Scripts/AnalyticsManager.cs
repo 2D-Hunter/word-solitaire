@@ -104,7 +104,7 @@ public class AnalyticsManager : MonoBehaviour, IGameAnalyticsATTListener
     public void TrackWordCreated(string word, int level, int score)
     {
         if (!IsAnalyticsEnabled) return;
-        GameAnalytics.NewDesignEvent($"word:created:{word}:level_{level}:Score:{score}");
+        GameAnalytics.NewDesignEvent($"word:created:{word}:level_{level}", score);
         //GameAnalytics.NewDesignEvent($"word:created:{word}", score);
         Debug.Log($"Tracked: word_created {word}");
     }
@@ -128,12 +128,14 @@ public class AnalyticsManager : MonoBehaviour, IGameAnalyticsATTListener
         Debug.Log("Tracked: hint_used");
     }
 
-    public void TrackDictionaryOpened(string word)
+    public void TrackDictionaryOpened(string word, int level)
     {
         if (!IsAnalyticsEnabled) return;
 
-        GameAnalytics.NewDesignEvent($"dictionary:opened:{word}");
-        Debug.Log("Tracked: dictionary_opened");
+        // eventId: dictionary:opened:<word>:level_<level>
+        GameAnalytics.NewDesignEvent($"dictionary:opened:{word}:level_{level}");
+
+        Debug.Log($"Tracked: dictionary_opened | word={word} | level={level}");
     }
 
     public void TrackCoinsSpent(string reason, int amount)

@@ -60,6 +60,7 @@ public class SlotManager : MonoBehaviour
     public Tutorial tutorial;
     public string bestWord = "";
     public int bestScore = 0;
+    public int tournamentCntr = 0;
 
     public BonusHud bonusHud;
 
@@ -101,6 +102,7 @@ public class SlotManager : MonoBehaviour
     }
     public void OnCardClicked(Card card)
     {
+        Debug.Log("OnCardClicked");
         StartCoroutine(OnCardClicked_Coroutine(card));
     }
 
@@ -124,30 +126,16 @@ public class SlotManager : MonoBehaviour
         GreenTabHandler.instance.HandleGreenTab(GetSlotString());
         SubmitButton.instance.SwapImage();
         DictionaryButton.instance.SwapImage();
-        // ? Slight delay before flipping below cards
-        StartCoroutine(DelayedFlip(card, 0.3f)); // Delay based on how fast top card moves
-        //yield return DelayedFlip(card, 0.3f);
-        //card.FlipImmediateBelowCards();
+        StartCoroutine(DelayedFlip(card, 0.3f));
         ResetAfterCardBack(card);
         slotsCard.Remove(card);
         card.GetComponent<Button>().enabled = true;
         CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
-        card.MoveBackToOriginalPosition(null, false, () => {
+        card.MoveBackToOriginalPosition(null, -1, false, () => {
             
             finished = true;
         });
         yield return new WaitUntil(() => finished);
-        
-        //yield return new WaitForSeconds(0.4f);
-        //card.FlipImmediateBelowCards();
-        //ResetAfterCardBack(card);
-        //slotsCard.Remove(card);
-        //if (slotsCard.Count > 0)
-        //    slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
-
-        //CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
-        //AAA();
-        //yield return new WaitForSeconds(0.2f);
         
         yield return new WaitForEndOfFrame();
 
@@ -163,56 +151,44 @@ public class SlotManager : MonoBehaviour
     private int sortingLayer = 0;
     public IEnumerator OnCardClicked_Coroutine(Card card)
     {
-        if(FBPlayerData.instance.CURRENT_LEVEL > 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL > 3)
         {
-            sortingLayer = card.GetComponent<Canvas>().sortingOrder;
-            card.GetComponent<Canvas>().sortingOrder = 15;
+            card.GetComponent<CardSorting>().BringToFront();
         }
-        
-        Debug.Log("___Card Clicked...");
+
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
-        Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
-        //Debug.Log("___currentSlotIndex: "+ currentSlotIndex);
-        if (currentSlotIndex != -1)
+        Debug.Log("OnCardClicked_Coroutine: " + currentSlotIndex + " FBPlayerData.instance.CURRENT_LEVEL" + FBPlayerData.instance.CURRENT_LEVEL);
+        if (currentSlotIndex != -1 && FBPlayerData.instance.CURRENT_LEVEL > 2)
         {
-            if (FBPlayerData.instance.CURRENT_LEVEL == 1) yield break;
-            //card going back to place
-            Debug.Log("___currentSlotIndex: " + currentSlotIndex + "____"+ (GetSlotString().Length-1));
-            //if (currentSlotIndex == GetSlotString().Length-1)
-            //{
-                if (card.transform.tag == "ExtraCard")
+            Debug.Log("OnCardClicked inside if: ");
+            if (card.transform.tag == "ExtraCard")
                 {
                     GameObject slotsContainer = GameObject.Find("UI-Panel/Extra Cards");
-                   // slotsContainer.transform.SetAsLastSibling();
                 }
 
             FBPlayerData.instance.VibrationEffect();
             ResetAfterCardBack(card);
             slotsCard.Remove(card);
             
-           // card.GetComponent<RectTransform>().SetAsLastSibling();
             card.FlipImmediateBelowCards();
             if (card.GetComponent<Card>() != null)
             {
                 goingBack = true;
-                //Sequence cardSequence = DOTween.Sequence();
-                card.MoveBackToOriginalPosition(card);
+                card.MoveBackToOriginalPosition(card, sortingLayer);
             }
             if (slotsCard.Count > 0)
                 slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
         }
-        else
+        else if (!SlotManager.instance.allSlotsOccupied)
         {
-            if (SlotManager.instance.allSlotsOccupied) yield  break;
+            Debug.Log("OnCardClicked inside else if: ");
             FBPlayerData.instance.VibrationEffect();
-            //Invoke("PlayCardPlacedSound", 0);
             
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
             {
                 InitManager.instance.tutorialCntr++;
                 tutorial.ShowNext();
             }
-            //card is going to bottom slot
             if(card.tag == "WildCard")
             {
                  animDuration = 0.4f;
@@ -238,8 +214,6 @@ public class SlotManager : MonoBehaviour
                     RectTransform cardRect = card.GetComponent<RectTransform>();
                 if (cardRect != null && (card.tag == "ExtraCard" || card.tag == "WildCard"))
                 {
-                    //originalPositions1[cardRect] = cardRect.anchoredPosition;
-                    //Debug.Log("+++++++::: " + originalPositions1[cardRect]);
                         card.originalPosition = cardRect.anchoredPosition;
                 }
 
@@ -274,88 +248,121 @@ public class SlotManager : MonoBehaviour
                 {
                     card.GetComponent<RectTransform>().GetChild(i).localRotation = Quaternion.Euler(0, 0, 0);
                 }
+
                 AnimateCardToSlot(card, cardRect, targetPosition, 
                     animDuration, startScale, endScale, endScale_ExtraCard);
-                /*Vector2 startPos = cardRect.anchoredPosition;
-
-                cardRect.DOMove(targetPosition, animDuration).SetEase(Ease.Linear);
-
-                Sequence verticalMotion = DOTween.Sequence();
-                if (card.GetComponent<RectTransform>().tag == "ExtraCard")
-                {
-                    height = 800f;
-                    CardManager.instance.rightSideCards.Remove(card);
-                }
-                else if(card.GetComponent<RectTransform>().tag == "WildCard")
-                {
-                    height = 200f;
-                }
-                else
-                {
-                    height = 400f;
-                }
-                if (card.isWildCard)
-                {
-                    activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position); //Instantiate(trailEffectPrefab, cardRect.position, Quaternion.identity);
-                }
-
-                float apexY = Mathf.Max(startPos.y, targetPosition.y) + height;
-                verticalMotion.Append(cardRect.DOAnchorPosY(apexY, animDuration/2).SetEase(Ease.OutQuad));
-
-                verticalMotion.Append(cardRect.DOMove(targetPosition, animDuration ).SetEase(Ease.OutQuad));
-
-                cardRect.DOScale(startScale, animDuration / 4).SetEase(Ease.OutQuad);
-                if (card.GetComponent<RectTransform>().tag == "ExtraCard")
-                    cardRect.DOScale(endScale_ExtraCard, animDuration).SetEase(Ease.InOutQuad);
-                else
-                    cardRect.DOScale(endScale, animDuration).SetEase(Ease.InOutQuad);
-
-                verticalMotion.Play();
-                verticalMotion.OnUpdate(() =>
-                {
-                    if(card.isWildCard)
-                    {
-                        if (activeTrail_WildCard != null)
-                        {
-                            activeTrail_WildCard.transform.position = cardRect.position;
-                        }
-                    }
-                    
-                });
-
-                cardRect.DORotate(new Vector3(0, 0, 360), animDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear);
-
-                verticalMotion.OnComplete(() =>
-                {
-                    Debug.Log("Card reached the slot with projectile motion!");
-                    if(card.tag == "WildCard")
-                    {
-                        FBPlayerData.instance.TOTAL_WILD_CARD--;
-                        FBPlayerData.instance.SavePlayerData();
-                        FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
-                    }
-                    slotsCard[slotsCard.Count - 1].GetComponent<Button>().enabled = true;
-                    if (activeTrail_WildCard != null)
-                    {
-                        if (card.isWildCard)
-                        {
-                            *//*  Destroy(activeTrail_WildCard, 0.3f); // Add a delay if needed for particles to finish
-                              activeTrail_WildCard = null;*//*
-                            StartCoroutine(ReturnTrailToPoolDelayed(activeTrail_WildCard, 0.3f));
-                        }
-                    }
-                });*/
-
 
             }
         }
         CardManager.instance.UpdateFaceUpCards(card, card.isFaceUp);
         AAA();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(animDuration);
+    }
+
+    public void AnimateCardToSlot(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
+    {
+        Vector2 startPos = cardRect.anchoredPosition;
+        float apexHeight;
+        Transform trail = null;
+
+        // Determine the apex height based on card type for a nice arc
+        switch (cardRect.tag)
+        {
+            case "ExtraCard":
+                apexHeight = 800f;
+                CardManager.instance.rightSideCards.Remove(card);
+                break;
+            case "WildCard":
+                apexHeight = 200f;
+                break;
+            default:
+                apexHeight = 400f;
+                break;
+        }
+
+        // Manage trail effect if the card is a wild card
+        if (card.isWildCard)
+        {
+            activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position);
+        }
+
+        float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
+
+        Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
+
+        // Calculate curved path points in world coordinates for smooth arc
+        Vector3[] pathPoints = new Vector3[]
+        {
+        cardRect.parent.TransformPoint(startPos),                 // Start point
+        cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)),  // Apex point
+        targetPosition                                             // End point (slot position, world space)
+        };
+        cardRect.localRotation = Quaternion.identity;
+        // Create tween sequence
+        Sequence motionSequence = DOTween.Sequence();
+
+        // Animate the card along the curved path with easing
+        motionSequence.Append(cardRect.DOMove(pathPoints[1], animDuration / 2).SetEase(Ease.OutQuad));
+        motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.InQuad));
+
+        // Add continuous rotation during motion for playful effect
+        motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration/2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+
+        // Join scaling with ease for smooth transition to target scale
+        motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
+
+        
+
+        // Add a subtle bounce/pop scale effect after landing to enhance tactile feel
+        motionSequence.Append(cardRect.DOScale(targetScale * 1.12f, 0.12f).SetEase(Ease.OutBack));
+        motionSequence.Append(cardRect.DOScale(targetScale, 0.13f).SetEase(Ease.InOutQuad));
+
+        // Update trail effect position on every frame if wild card
+        motionSequence.OnUpdate(() =>
+        {
+            if (card.isWildCard && activeTrail_WildCard != null)
+            {
+                activeTrail_WildCard.transform.position = cardRect.position;
+            }
+        });
+
+        // Cleanup and reset transforms after animation completes
+        motionSequence.OnComplete(() =>
+        {
+            // Reset rotation to zero (important!)
+            //cardRect.localRotation = Quaternion.identity;
+            Debug.Log("Card reached the slot with smooth tween animation!");
+            PlayCardPlacedSound();
+
+            if (cardRect.tag == "WildCard")
+            {
+                FBPlayerData.instance.TOTAL_WILD_CARD--;
+                FBPlayerData.instance.SavePlayerData();
+                FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
+            }
+
+            slotsCard[^1].GetComponent<Button>().enabled = true;
+
+            if (trail != null)
+            {
+                StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
+                trail = null;
+            }
+            //if (FBPlayerData.instance.CURRENT_LEVEL > 2)
+            //{
+            //    card.GetComponent<Canvas>().sortingOrder = sortingLayer;
+            //}
+            if (FBPlayerData.instance.CURRENT_LEVEL > 3)
+            {
+                card.GetComponent<CardSorting>().ResetOrder();
+            }
+        });
+
+        motionSequence.Play();
     }
 
 
-    public void AnimateCardToSlot(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
+    public void AnimateCardToSlot2(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
     {
         Vector2 startPos = cardRect.anchoredPosition;
         float apexHeight;
@@ -722,9 +729,10 @@ public class SlotManager : MonoBehaviour
                 FBPlayerData.instance.VibrationEffect();
                 yield return new WaitForSeconds(0.2f); // 0.3 sec delay between each
             }
-            Invoke("ShowAd", 1f);
-
-
+            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
+            FBPlayerData.instance.CURRENT_LEVEL++;
+            FBPlayerData.instance.SavePlayerData();
+            Initiate.Fade("Game", Color.black, 1f);
             yield break;
         }
         GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
@@ -734,7 +742,8 @@ public class SlotManager : MonoBehaviour
         int completedTweens = 0;
         if (cardCount <= 0)
         {
-            Invoke("ShowAd", 1.5f);
+            //Invoke("ShowAd", 1.5f);
+            StartCoroutine(HandleTournamentLogic());
         }
         else
         {
@@ -782,7 +791,11 @@ public class SlotManager : MonoBehaviour
 
                     if (completedTweens == cardCount)
                     {
-                        Invoke("ShowAd", 1f);
+                        //Invoke("ShowAd", 1f);
+
+                        StartCoroutine(HandleTournamentLogic());
+                        
+
                     }
                 });
 
@@ -803,35 +816,47 @@ public class SlotManager : MonoBehaviour
         FBPlayerData.instance.ContinueGameAfterInterstitial("Levelup");
 #endif
     }
-    void ShowAd()
+    private IEnumerator HandleTournamentLogic()
     {
-        Debug.Log("___Show Interstitial");
-        // All tweens complete, now show interstitial and continue
-        if (FBPlayerData.instance.CURRENT_LEVEL == 2)
+        
+
+        FBPlayerData.instance.SavePlayerData();
+
+        int level = FBPlayerData.instance.CURRENT_LEVEL;
+        Debug.Log($"[HandleTournamentLogic] Level: {level}");
+
+#if UNITY_EDITOR
+        ContinueGameAfterTournament();
+        yield break;
+#endif
+
+        if (level % 5 == 0)
         {
-            FBPlayerData.instance.TUTORIAL_2_COMPLETED = true;
-            FBPlayerData.instance.CURRENT_LEVEL++;
-            FBPlayerData.instance.SavePlayerData();
-            Initiate.Fade("Game", Color.black, 1f);
+            // 🎯 Every 5th level → Tournament
+            Debug.Log("Showing Tournament Popup...");
+            yield return StartCoroutine(ShowTournament(0));
         }
         else
         {
-            if (!InitManager.instance.isReplay)
-                FBPlayerData.instance.CURRENT_LEVEL++;
-            FBPlayerData.instance.SavePlayerData();
-#if UNITY_EDITOR
-            ContinueGameAfterTournament();
-#endif
-            Debug.Log("FBPlayerData.instance.BRILLIANCE: " + FBPlayerData.instance.BRILLIANCE.ToString());
-
-            Application.ExternalCall("processTourement", FBPlayerData.instance.BRILLIANCE.ToString());
-            //AdTimerHandler.Instance.TryShowAd("Levelup");
-
-
+            // 🎯 Otherwise → Normal level-up popup
+            Debug.Log("Showing Level-Up Popup...");
+            StartCoroutine(ShowLevelup(1.5f));
         }
-
-
     }
+    private IEnumerator ShowTournament(float delay)
+    {
+        if (delay > 0)
+            yield return new WaitForSeconds(delay);
+
+        Debug.Log("Showing Tournament...");
+
+        Debug.Log("FBPlayerData.instance.BRILLIANCE: " + GetSlotPoints());
+
+        // ✅ Tournament should ONLY handle tournament logic
+        Debug.Log("processTournament FBPlayerData.instance.BRILLIANCE: " + FBPlayerData.instance.BRILLIANCE);
+        Application.ExternalCall("processTournament", FBPlayerData.instance.BRILLIANCE.ToString());
+    }
+
     public void ContinueGameAfterInterstitial()
     {
         Debug.Log("_____ContinueGameAfterInterstitial");
@@ -847,12 +872,16 @@ public class SlotManager : MonoBehaviour
     public void ContinueGameAfterTournament()
     {
         Debug.Log("_____ContinueGameAfterTournament");
+        StartCoroutine(ShowLevelup(0f));
+    }
+    private IEnumerator ShowLevelup(float delay)
+    {
+        if (!InitManager.instance.isReplay)
+            FBPlayerData.instance.CURRENT_LEVEL++;
+        Debug.Log("ShowLevelup");
+        yield return new WaitForSeconds(delay);
         InitManager.instance.CurrentScene = "Levelup";
-        
-
         PopupManager.instance.TogglePopup(PopupManager.instance.levelupPopup);
-        Debug.Log("_____ContinueGameAfterInterstitial: Levelup");
-        //StartCoroutine(LoadMenu());
     }
     IEnumerator LoadMenu()
     {

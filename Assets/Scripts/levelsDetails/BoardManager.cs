@@ -57,7 +57,7 @@ public class BoardManager : MonoBehaviour
 
 
     [SerializeField]
-    private List<Card> activeCards = new List<Card>();
+    public List<Card> activeCards = new List<Card>();
     public bool collectionChecks = true;
     public int maxPoolSize = 10;
 
@@ -69,7 +69,8 @@ public class BoardManager : MonoBehaviour
     LetterBucket letterBucket = null;
 
     public LevelData levelData;
-   
+    public int levelDifficulty { get; private set; }
+
     public ObjectPoolCard<GameObject> Pool
     {
         get
@@ -115,6 +116,7 @@ public class BoardManager : MonoBehaviour
     public static BoardManager instance;
     public static BoardManager Instance { get { return instance; } }
     public Dictionary<int, GameLevelData> gameLevels = new Dictionary<int, GameLevelData>();
+    
 
     private void Awake()
     {
@@ -239,6 +241,7 @@ public class BoardManager : MonoBehaviour
                     isError = false;
                     levelData.levels[LevelNumber].levelTarget = loadedLevelData.Layout.Count;
                     gameLevels.Add(LevelNumber, loadedLevelData);
+                    levelDifficulty = loadedLevelData.LevelInfo.Difficulty;
                 }
             }
             else
@@ -268,6 +271,7 @@ public class BoardManager : MonoBehaviour
     }
     public void GenerateBoardFromLevelData(GameLevelData levelData)
     {
+        Debug.Log(levelData.Id);
         boardParent = GameManager.instance.rt_AllLevels;
         for (int i = 0; i < activeCards.Count; i++)
         {
@@ -284,9 +288,12 @@ public class BoardManager : MonoBehaviour
 
 
         var cardcount = levelData.Layout.FindAll(tile => tile.Tile == "?").Count;
-        int difficulty = loadedLevelRampData.Difficulties[currentLevel];
-        string letters = letterBucket.DefficultiMapLetterBucket[difficulty];
-        var generateLetter = GenerateAtLeastFiveVowels(levelData.Layout.Count, letters, difficulty);
+        //int difficulty = loadedLevelRampData.Difficulties[currentLevel];
+        int difficulty = levelData.LevelInfo.Difficulty;
+        Debug.Log("difficulty: " + difficulty);
+        
+        //string letters = letterBucket.DefficultiMapLetterBucket[difficulty];
+        //var generateLetter = GenerateAtLeastFiveVowels(levelData.Layout.Count, letters, difficulty);
         boardParent.gameObject.SetActive(true);
         for (var rowPairIndex = 0; rowPairIndex < levelData.Layout.Count; rowPairIndex++)
         {

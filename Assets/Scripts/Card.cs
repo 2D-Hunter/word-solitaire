@@ -110,7 +110,7 @@ public class Card : MonoBehaviour
     }
 
     //public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true)
-    public void MoveBackToOriginalPosition(Card tempCard, bool shouldcallbelow = true, Action onComplete = null)
+    public void MoveBackToOriginalPosition(Card tempCard, int sortingLayer, bool shouldcallbelow = true, Action onComplete = null)
     {
 
         
@@ -159,7 +159,7 @@ public class Card : MonoBehaviour
             .OnComplete(() =>
             {
                 
-                    FBPlayerData.instance.TOTAL_WILD_CARD++;
+                FBPlayerData.instance.TOTAL_WILD_CARD++;
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
                 RemoveCardsButton.instance.sendBackAll = false;
@@ -184,6 +184,11 @@ public class Card : MonoBehaviour
                 .OnComplete(() =>
                 {
                     Debug.Log("sendBackAll000");
+                    if (sortingLayer != -1)
+                    {
+                        //tempCard.GetComponent<Canvas>().sortingOrder = sortingLayer;
+                        tempCard.GetComponent<CardSorting>().ResetOrder();
+                    }
                     RemoveCardsButton.instance.sendBackAll = false;
 
                     if (shouldcallbelow)
@@ -227,7 +232,6 @@ public class Card : MonoBehaviour
 
     public void OnCardClick(Card card)
     {
-        Debug.Log("____111");
         RemoveCardsButton.instance.sendBackAll = false;
         SlotManager.instance.goingBack = false;
         if (InitManager.instance != null)
@@ -237,7 +241,6 @@ public class Card : MonoBehaviour
 
         if (this.tag == "ExtraCard")
         {
-            Debug.Log("____111");
             GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
             extraCardContainer.transform.SetAsLastSibling();
             if (isFaceUp && !SlotManager.instance.allSlotsOccupied)
@@ -246,7 +249,6 @@ public class Card : MonoBehaviour
             }
             else
             {
-                Debug.Log("____111");
                 OnExtraCardClick();
             }
             
@@ -254,8 +256,6 @@ public class Card : MonoBehaviour
         else
         {
             if (!isFaceUp) return;
-            Debug.Log("InitManager.instance.tutorialCntr:  " + cardData.letter+"_____"+ FBPlayerData.instance.CURRENT_LEVEL+"_____"+ InitManager.instance.tutorialCntr);
-            
             if (!FBPlayerData.instance.TUTORIAL_1_COMPLETED || !FBPlayerData.instance.TUTORIAL_2_COMPLETED)
             {
                 if (cardData.letter == 'O' && FBPlayerData.instance.CURRENT_LEVEL == 1 && InitManager.instance.tutorialCntr == 0)
@@ -287,7 +287,6 @@ public class Card : MonoBehaviour
             
             
             //isFlipping = false;
-            Debug.Log("isFlipping000: " + isFlipping);
             slotManager.OnCardClicked(this);
             Debug.Log($"Card {name} was clicked!");
             Debug.Log("SlotManager.instance.goingBack: "+ SlotManager.instance.goingBack);
@@ -390,11 +389,9 @@ public class Card : MonoBehaviour
         
         foreach (Card belowCard in belowCards)
         {
-            if (belowCard == null) continue;
-
             Debug.Log($"🔎 Checking card: {belowCard.name}");
             bool overlapsWithTappedCard = IsOverlapping(this, belowCard, 2f);
-            bool isBlocked = IsBlockedByOtherCards(belowCard, this);
+            bool isBlocked = IsBlockedByOtherCards(belowCard);
 
             Debug.Log($"➡ {belowCard.name} isBlocked: {isBlocked}, siblingIndex: {belowCard.transform.GetSiblingIndex()}");
 
@@ -730,14 +727,44 @@ public class Card : MonoBehaviour
         return overlapPercent >= thresholdPercent;
     }
 
-    private bool IsBlockedByOtherCards(Card targetCard, Card excludeCard)
+    //private bool IsBlockedByOtherCards(Card targetCard, Card excludeCard)
+    //{
+    //    int targetIndex = targetCard.Level;//targetCard.transform.GetSiblingIndex();
+    //    Rect targetRect = GetWorldRect(targetCard.rectTransform);
+
+    //    foreach (Card otherCard in CardManager.instance.totalCardsToClear)
+    //    {
+    //        if (otherCard == null || otherCard == targetCard || otherCard == excludeCard)
+    //            continue;
+
+    //        if (!otherCard.gameObject.activeInHierarchy)
+    //            continue;
+
+    //        int otherIndex = otherCard.Level;
+    //        Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+    //        if (otherIndex > targetIndex)
+    //        {
+    //            Rect otherRect = GetWorldRect(otherCard.rectTransform);
+
+    //            if (IsSignificantOverlap(targetRect, otherRect, 5f))
+    //            {
+    //                Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+    //                return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
+    //}
+
+    private bool IsBlockedByOtherCards(Card targetCard)
     {
         int targetIndex = targetCard.Level;//targetCard.transform.GetSiblingIndex();
         Rect targetRect = GetWorldRect(targetCard.rectTransform);
 
-        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
+        foreach (Card otherCard in BoardManager.instance.activeCards)
         {
-            if (otherCard == null || otherCard == targetCard || otherCard == excludeCard)
+            if (otherCard == null || otherCard == targetCard)
                 continue;
 
             if (!otherCard.gameObject.activeInHierarchy)
@@ -759,6 +786,6 @@ public class Card : MonoBehaviour
 
         return false;
     }
-    
+
 
 }

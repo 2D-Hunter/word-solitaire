@@ -48,26 +48,39 @@ public class GoalPopup : MonoBehaviour
     public TextMeshProUGUI totalWordToGetTxtShadow;
     public BonusGoalType currentBonusGoalType;
     public GameObject hardLabel = null;
+    public GameObject veryHardLabel = null;
 
     private void Awake()
     {
         instance = this;
-        if(InitManager.instance.CurrentScene == "Levelup")
+        int level = FBPlayerData.instance.CURRENT_LEVEL;
+        if (InitManager.instance.CurrentScene == "Levelup")
         {
-            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-2].bonusGoalType;
-            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].isLevelHard)
-                hardLabel.SetActive(true);
-            else
-                hardLabel.SetActive(false);
+            level = FBPlayerData.instance.CURRENT_LEVEL - 2;
         }
         else
         {
-            
-            currentBonusGoalType = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].bonusGoalType;
-            if (levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 1].isLevelHard)
-                hardLabel.SetActive(true);
-            else
+            level = FBPlayerData.instance.CURRENT_LEVEL - 1;
+        }
+        currentBonusGoalType = levelData.levels[level].bonusGoalType;
+        switch (BoardManager.instance.levelDifficulty)
+        {
+            case 0:
                 hardLabel.SetActive(false);
+                veryHardLabel.SetActive(false);
+                break;
+            case 1:
+                hardLabel.SetActive(true);
+                veryHardLabel.SetActive(false);
+                break;
+            case 2:
+                hardLabel.SetActive(false);
+                veryHardLabel.SetActive(true);
+                break;
+        }
+        if(currentBonusGoalType != BonusGoalType.None)
+        {
+            levelData.levels[level].reward = 40;
         }
         
         SetInit();

@@ -16,6 +16,7 @@ public class Hud : MonoBehaviour
     
     public Image hudImage1;
     public Image hudImage2;
+    public Image hudImage3;
 
     private void Start()
     {
@@ -29,21 +30,36 @@ public class Hud : MonoBehaviour
     }
     void LoadHUDImages()
     {
-        bool isHardLevel;
-        if (InitManager.instance.isReplay)
-             isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].isLevelHard;
-        else
-             isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].isLevelHard;
+        //bool isHardLevel;
+        //if (InitManager.instance.isReplay)
+        //     isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL - 2].isLevelHard;
+        //else
+        //     isHardLevel = levelData.levels[FBPlayerData.instance.CURRENT_LEVEL-1].isLevelHard;
 
-        if (isHardLevel)
+        //if (isHardLevel)
+        //{
+        //    hudImage1.sprite = Resources.Load<Sprite>("Hud-11");
+        //    hudImage2.sprite = Resources.Load<Sprite>("Hud-22");
+        //}
+        //else
+        //{
+        //    hudImage1.sprite = Resources.Load<Sprite>("Hud-1");
+        //    hudImage2.sprite = Resources.Load<Sprite>("Hud-2");
+        //}
+
+        switch (BoardManager.instance.levelDifficulty)
         {
-            hudImage1.sprite = Resources.Load<Sprite>("Hud-11");
-            hudImage2.sprite = Resources.Load<Sprite>("Hud-22");
-        }
-        else
-        {
-            hudImage1.sprite = Resources.Load<Sprite>("Hud-1");
-            hudImage2.sprite = Resources.Load<Sprite>("Hud-2");
+            case 0:
+                
+                break;
+            case 1:
+                hudImage1.sprite = Resources.Load<Sprite>("Hud-11");
+                hudImage2.sprite = Resources.Load<Sprite>("Hud-22");
+                break;
+            case 2:
+                hudImage1.sprite = Resources.Load<Sprite>("Hud-111");
+                hudImage2.sprite = Resources.Load<Sprite>("Hud-222");
+                break;
         }
     }
 

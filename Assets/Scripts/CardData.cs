@@ -22,6 +22,7 @@ public class CardData : MonoBehaviour
             letterText.text = value.ToString();
         }
     }
+
     public int cardValue = 0;
     public int value;
 
@@ -38,7 +39,7 @@ public class CardData : MonoBehaviour
     private void Start()
     {
         Debug.Log("____Card Data111");
-        if(FBPlayerData.instance.CURRENT_LEVEL <= 2)
+        if (FBPlayerData.instance.CURRENT_LEVEL <= 2)
         {
             valueText.text = GetCardValue(letter).ToString();
             cardValue = GetCardValue(letter);
@@ -48,9 +49,9 @@ public class CardData : MonoBehaviour
             Debug.Log("____Card Data222");
             if (FBPlayerData.instance.CURRENT_LEVEL == 2)
             {
-                Debug.Log("gameobject.name: "+gameObject.name);
+                Debug.Log("gameobject.name: " + gameObject.name);
                 //Debug.Log("Before removal: " + string.Join(", ", InitManager.instance.letters));
-                if(gameObject.name == "Card")
+                if (gameObject.name == "Card")
                     letterText.text = letters[0].ToString();
                 else if (gameObject.name == "Card (1)")
                     letterText.text = letters[1].ToString();
@@ -73,57 +74,59 @@ public class CardData : MonoBehaviour
             }
             else
             {
-                int index = cardIndex >= 0 ? cardIndex : GetCardIndexFromName(gameObject.name);
-                if (index < 0)
-                {
-                    Debug.LogWarning("Invalid card index from name: " + gameObject.name);
-                    return;
-                }
+                //int index = cardIndex >= 0 ? cardIndex : GetCardIndexFromName(gameObject.name);
+                //if (index < 0)
+                //{
+                //    Debug.LogWarning("Invalid card index from name: " + gameObject.name);
+                //    return;
+                //}
 
-                int batchSize = (letterBatches.Count == 0) ? 10 : 5; // 10 for first batch, 5 for the rest
-                int batchIndex = index / batchSize;
-                int localIndex = index % batchSize;
+                //int batchSize = (letterBatches.Count == 0) ? 10 : 5; // 10 for first batch, 5 for the rest
+                //int batchIndex = index / batchSize;
+                //int localIndex = index % batchSize;
 
                 // Ensure enough batches exist
-                while (letterBatches.Count <= batchIndex)
-                {
-                    List<char> newBatch = GenerateHelpfulLetters(batchSize);
-                    letterBatches.Add(newBatch);
-                    Debug.Log($"Generated batch {letterBatches.Count - 1}: " + string.Join(", ", newBatch));
-                }
+                //while (letterBatches.Count <= batchIndex)
+                //{
+                //    List<char> newBatch = GenerateHelpfulLetters(batchSize);
+                //    letterBatches.Add(newBatch);
+                //    Debug.Log($"Generated batch {letterBatches.Count - 1}: " + string.Join(", ", newBatch));
+                //}
 
-                List<char> targetBatch = letterBatches[batchIndex];
+                //List<char> targetBatch = letterBatches[batchIndex];
 
-                if (localIndex >= 0 && localIndex < targetBatch.Count)
-                {
-                    char letter = targetBatch[localIndex];
+                //if (localIndex >= 0 && localIndex < targetBatch.Count)
+                //{
+                Debug.Log("BoardManager.instance.levelDifficulty::: " + BoardManager.instance.levelDifficulty);
+                    string letter = WordLetterGenerationSystem.Instance.GenerateLetter(BoardManager.instance.levelDifficulty, BagType.DrawPileLetterBag);//targetBatch[localIndex];
+
                     letterText.text = letter.ToString();
-                    valueText.text = GetCardValue(letter).ToString();
-                    cardValue = GetCardValue(letter);
-                }
-                else
-                {
-                    Debug.LogWarning($"Invalid local index {localIndex} for batch {batchIndex}");
-                }
+                    valueText.text = GetCardValue(letter[0]).ToString();
+                    cardValue = GetCardValue(letter[0]);
+                //}
+                //else
+                //{
+                //    Debug.LogWarning($"Invalid local index {localIndex} for batch {batchIndex}");
+                //}
             }
 
         }
         else
         {
-            cardValue = GetCardValue(letter);
+            //cardValue = GetCardValue(letter);
         }
         var card = GetComponent<Card>();
         card.cardData = this;
 
     }
-    
+
     public int GetCardValue(char letter)
     {
         char uppercaseLetter = char.ToUpper(letter);
         if (letterValues.TryGetValue(uppercaseLetter, out int value))
         {
             Debug.Log("________GetCardValue: uppercaseLetter" + uppercaseLetter);
-            Debug.Log("________GetCardValue: "+value);
+            Debug.Log("________GetCardValue: " + value);
             return value;
         }
         return 0;
@@ -176,9 +179,9 @@ public class CardData : MonoBehaviour
         return -1;
     }
 
- //   •	Level 1 → difficulty = 0.01 (easy)
-	//•	Level 50 → difficulty = 0.5 (medium)
-	//•	Level 100+ → difficulty = 1.0 (hard)
+    //   •	Level 1 → difficulty = 0.01 (easy)
+    //•	Level 50 → difficulty = 0.5 (medium)
+    //•	Level 100+ → difficulty = 1.0 (hard)
 
     //public List<char> GenerateHelpfulLetters(int count, float difficulty = 0f)
     //{

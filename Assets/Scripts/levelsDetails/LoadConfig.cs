@@ -97,7 +97,8 @@ public class LoadConfig : MonoBehaviour
                     // return;
                  }
  */
-                WordLetterGenerationSystem.Instance.LoadWordLetterGenerationSystem();
+                StartCoroutine(WordLetterGenerationSystem.Instance.LoadWordLetterGenerationSystem());
+                //WordLetterGenerationSystem.Instance.LoadWordLetterGenerationSystem();
 
                  letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(data);
                 if (letterBucket == null)

@@ -76,6 +76,7 @@ public class Levelup : MonoBehaviour
         }
         SetInit();
 
+
         //popupRectTransform.anchoredPosition = new Vector2(0, -350f);
         // Instead of calling PreloadBackgroundForUpcomingLevel directly:
         BackgroundManager.instance.MaybePreloadNextBackground();

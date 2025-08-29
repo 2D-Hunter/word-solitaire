@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public enum BagType
 {
@@ -17,7 +18,8 @@ public class WordLetterGenerationSystem
 {
     private static WordLetterGenerationSystem wordLetterGenerationSystem = null;
     private static readonly System.Random random = new();
-    
+    private readonly string awsUrl = "https://2dhunter.s3.us-west-2.amazonaws.com/word-solitaire-go/fb/config/letterbucket.json";
+
     public static WordLetterGenerationSystem Instance
     {
 
@@ -32,27 +34,48 @@ public class WordLetterGenerationSystem
         }
     }
     private Dictionary<string, Dictionary<string, Dictionary<string, int>>> LetterBags;
-    public void  LoadWordLetterGenerationSystem()
+
+    public IEnumerator LoadWordLetterGenerationSystem()
     {
-          string letterBucketPath = "Config/letterbucket";
+        using UnityWebRequest request = UnityWebRequest.Get(awsUrl);
+        yield return request.SendWebRequest();
 
-
-        TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
-
-        if (jsonLetterBucketTextAsset == null)
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
-            //return;
+            Debug.Log("Failed to load letter bucket from AWS: "+request.error);
         }
-        /* letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
-         if (letterBucket == null)
-         {
-             Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
-             // return;
-         }*/
-        string json = jsonLetterBucketTextAsset.text; //File.ReadAllText("letterbags.json");
-        LetterBags = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, int>>>>(json);
+        else
+        {
+            string json = request.downloadHandler.text;
+            LetterBags = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, int>>>>(json);
+
+            if (LetterBags == null)
+                Debug.Log("Failed to deserialize AWS letterBucket data.");
+            else
+                Debug.Log("letterBucket loaded from AWS successfully!");
+        }
     }
+    //public void  LoadWordLetterGenerationSystem()
+    //{
+    //      string letterBucketPath = "Config/letterbucket";
+
+
+    //    TextAsset jsonLetterBucketTextAsset = Resources.Load<TextAsset>(letterBucketPath);
+
+    //    if (jsonLetterBucketTextAsset == null)
+    //    {
+    //        Debug.LogError($"JSON letter Bucket file not found at: Resources/{letterBucketPath}");
+    //        //return;
+    //    }
+    //    /* letterBucket = Newtonsoft.Json.JsonConvert.DeserializeObject<LetterBucket>(jsonLetterBucketTextAsset.text);
+    //     if (letterBucket == null)
+    //     {
+    //         Debug.LogError("Failed to deserialize JSON letterBucket data. >>>>>>>");
+    //         // return;
+    //     }*/
+    //    string json = jsonLetterBucketTextAsset.text; //File.ReadAllText("letterbags.json");
+    //    LetterBags = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, int>>>>(json);
+    //}
 
     private string DrawLetter(string difficulty, string bagType)
     {
