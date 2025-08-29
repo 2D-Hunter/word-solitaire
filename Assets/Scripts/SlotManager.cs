@@ -17,6 +17,7 @@ public class SlotManager : MonoBehaviour
     //private Dictionary<RectTransform, Vector2> originalPositions = new Dictionary<RectTransform, Vector2>();
     //private Dictionary<RectTransform, Vector2> originalPositions1 = new Dictionary<RectTransform, Vector2>();
     public List<Card> slotsCard;
+    public List<Card> ExtraInSlotcards = new List<Card>();
     public Vector2 finalPos;
     private int targetAchieve;
 
@@ -116,7 +117,7 @@ public class SlotManager : MonoBehaviour
     private IEnumerator ReturnBackToDeckRoutine(Card card) 
     { 
         yield return new WaitForEndOfFrame();
-        //card.MoveBackToOriginalPosition(null,false);
+     
         bool finished = false;
         GetSlotString();
         GameManager.instance.isValidWord = false;
@@ -276,6 +277,8 @@ public class SlotManager : MonoBehaviour
             case "ExtraCard":
                 apexHeight = 800f;
                 CardManager.instance.rightSideCards.Remove(card);
+                ExtraInSlotcards.Add(card);
+                //Debug.Log("MoveBackToOriginalPosition Extra Card :: Adding card");
                 break;
             case "WildCard":
                 apexHeight = 200f;

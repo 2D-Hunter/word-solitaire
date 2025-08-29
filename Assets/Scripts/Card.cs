@@ -117,8 +117,23 @@ public class Card : MonoBehaviour
         
         if (this.tag == "ExtraCard")
         {
-            Debug.Log("MoveBackToOriginalPosition Extra Card");
-            CardManager.instance.rightSideCards.AddCard(this);
+            Debug.Log("MoveBackToOriginalPosition Extra Card slotManager.ExtraInSlotcards "+ slotManager.ExtraInSlotcards.Count);
+           // CardManager.instance.rightSideCards.AddCard(this);
+           if(slotManager.ExtraInSlotcards.Count>0)
+           {
+                slotManager.ExtraInSlotcards.Reverse();
+                CardManager.instance.rightSideCards.AddRange(slotManager.ExtraInSlotcards);
+                slotManager.ExtraInSlotcards.Clear();
+                for (int index = 0; index < CardManager.instance.rightSideCards.Count; index++)
+                {
+                    Card card = CardManager.instance.rightSideCards[index];
+                    card.GetComponent<Canvas>().sortingOrder = index+1;
+                    Debug.Log("MoveBackToOriginalPosition Extra Card :: "+ index + 1);
+                }
+           }
+            
+
+            
             if (cardSequence != null && cardSequence.IsActive())
             {
                 //cardSequence.Kill(); // Clean up old sequence explicitly
@@ -242,7 +257,7 @@ public class Card : MonoBehaviour
         if (this.tag == "ExtraCard")
         {
             GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
-            extraCardContainer.transform.SetAsLastSibling();
+          
             if (isFaceUp && !SlotManager.instance.allSlotsOccupied)
             {
                 slotManager.OnCardClicked(this);
@@ -314,11 +329,7 @@ public class Card : MonoBehaviour
             lastCardPos = rectTransform.anchoredPosition.x;
             eCard.isFlipped = true;
             eCard.isFaceUp = true;
-            //originalSiblingIndex = rectTransform.GetSiblingIndex();
-          
-           
             
-            //rectTransform.SetAsLastSibling();
             if (CardManager.instance.rightSideCards.Count == 0)
                 moveDistance = 200;
             else if (CardManager.instance.rightSideCards.Count == 1)
