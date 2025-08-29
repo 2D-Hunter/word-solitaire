@@ -63,6 +63,7 @@ public class SlotManager : MonoBehaviour
     public int tournamentCntr = 0;
 
     public BonusHud bonusHud;
+    private CardSorting sorting;
 
     private void Awake()
     {
@@ -153,7 +154,11 @@ public class SlotManager : MonoBehaviour
     {
         if (FBPlayerData.instance.CURRENT_LEVEL > 3)
         {
-            card.GetComponent<CardSorting>().BringToFront();
+            var sorting = card.GetComponent<CardSorting>();
+            if (sorting != null)
+            {
+                sorting.BringToFront(9999);
+            }
         }
 
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
@@ -356,6 +361,7 @@ public class SlotManager : MonoBehaviour
             {
                 targetCard.GetComponent<CardSorting>().ResetOrder();
                 targetCard.GetComponent <Card>().isMoving = false;
+                
 
             }
         });

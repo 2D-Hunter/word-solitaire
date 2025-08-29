@@ -44,7 +44,7 @@ public class Card : MonoBehaviour
 
     private float[] originalPosOfExtraCards = { -180f, -165f, -150f, -135f, -120f, -105, -90, -75, -60, -45, -30, -15, 0, 15, 30 };
 
-    
+    private CardSorting sorting;
 
     private void Awake()
     {
@@ -65,7 +65,7 @@ public class Card : MonoBehaviour
                 gameObject.GetComponent<Button>().enabled = false;
             }
         }
-        
+        sorting = GetComponent<CardSorting>();
     }
     //private void OnValidate()
     //{
@@ -133,6 +133,7 @@ public class Card : MonoBehaviour
                 var targetCard = this;
                 isMoving = false;
                 targetCard.GetComponent<CardSorting>().ResetOrder();
+                
                 Debug.Log("Card has reached back into the original position.");
                 GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
                 GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
@@ -159,7 +160,8 @@ public class Card : MonoBehaviour
                     var targetCard = this;
                 isMoving = false;
                 targetCard.GetComponent<CardSorting>().ResetOrder();
-                FBPlayerData.instance.TOTAL_WILD_CARD++;
+                    
+                    FBPlayerData.instance.TOTAL_WILD_CARD++;
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
                 RemoveCardsButton.instance.sendBackAll = false;
@@ -186,6 +188,7 @@ public class Card : MonoBehaviour
                     var targetCard = this;
                     Debug.Log("sendBackAll000");
                     targetCard.GetComponent<CardSorting>().ResetOrder();
+                    
                     RemoveCardsButton.instance.sendBackAll = false;
                     isMoving = false;
                     if (shouldcallbelow)

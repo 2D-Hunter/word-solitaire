@@ -14,7 +14,7 @@ public class CardSorting : MonoBehaviour
         Debug.Log("___originalOrder: " + originalOrder);
     }
 
-    public void BringToFront(int newOrder = 15)
+    public void BringToFront(int newOrder = 9999)
     {
         if(card.tag != "ExtraCard")
             canvas.sortingOrder = newOrder;
