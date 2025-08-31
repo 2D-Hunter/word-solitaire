@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System;
 using System.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -288,6 +289,31 @@ public class GameManager : MonoBehaviour
         {
             Card newCard = Instantiate(moreCardPrefab, parentPanel);
             newCard.tag = "ExtraCard";
+            string letter = WordLetterGenerationSystem.Instance.GenerateLetter(BoardManager.instance.levelDifficulty, BagType.DrawPilePurchasedLetterBag);//targetBatch[localIndex];
+            CardData cardData = newCard.GetComponent<CardData>();
+            if (letter == "*")
+            {
+                newCard.cardData.valueText.text = "4";
+                newCard.cardData.cardValue = 4;
+                newCard.isWildCard = true;
+                newCard.isFaceUp = false;
+                newCard.transform.GetChild(2).gameObject.SetActive(false);
+                newCard.transform.GetChild(3).gameObject.SetActive(true);
+            }
+            else
+            {
+                int cardValue = newCard.cardData.GetCardValue(letter[0]);
+                newCard.cardData.valueText.text = cardValue.ToString();
+                newCard.cardData.cardValue = cardValue;
+                newCard.cardData.letterText.text = letter;
+                //newCard.transform.GetChild(2).gameObject.SetActive(true);
+                //newCard.transform.GetChild(3).gameObject.SetActive(false);
+            }
+            //newCard.transform.GetChild(0).GetComponent<TMP_Text>().text = letter;
+            //newCard.transform.GetChild(1).GetComponent<TMP_Text>().text = newCard.GetComponent<CardData>().GetCardValue(letter[0]).ToString();
+            //newCard.GetComponent<CardData>().cardValue = newCard.GetComponent<CardData>().GetCardValue(letter[0]);
+
+
             CardManager.instance.extraCards.Add(newCard);
 
             // ✅ Assign unique cardIndex here
@@ -408,7 +434,7 @@ public class GameManager : MonoBehaviour
         cardTransform.anchoredPosition = localPoint;
         cardTransform.localRotation = wildCardTab.localRotation;
         cardTransform.localScale = Vector3.one * 0.71f;
-
+        Debug.Log("newCard: " + newCard);
         SlotManager.instance.OnCardClicked(newCard);
         newCard.GetComponent<RectTransform>().SetAsLastSibling();
     }

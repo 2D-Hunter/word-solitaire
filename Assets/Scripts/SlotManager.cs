@@ -153,20 +153,23 @@ public class SlotManager : MonoBehaviour
     private int sortingLayer = 0;
     public IEnumerator OnCardClicked_Coroutine(Card card)
     {
-        if (FBPlayerData.instance.CURRENT_LEVEL > 3)
-        {
-            var sorting = card.GetComponent<CardSorting>();
-            if (sorting != null)
-            {
-                sorting.BringToFront(9999);
-            }
-        }
+        
 
         int currentSlotIndex = cardSlots.FindIndex(slot => slotToCardMap.ContainsKey(slot) && slotToCardMap[slot] == card.GetComponent<RectTransform>());
         Debug.Log("OnCardClicked_Coroutine: " + currentSlotIndex + " FBPlayerData.instance.CURRENT_LEVEL" + FBPlayerData.instance.CURRENT_LEVEL);
-        if (currentSlotIndex != -1 && FBPlayerData.instance.CURRENT_LEVEL > 2)
+        if (currentSlotIndex != -1 && FBPlayerData.instance.CURRENT_LEVEL > 1)
         {
+            
+            
             Debug.Log("OnCardClicked inside if: ");
+            //if (FBPlayerData.instance.CURRENT_LEVEL > 3)
+            //{
+                var sorting = card.GetComponent<CardSorting>();
+                if (sorting != null)
+                {
+                    sorting.BringToFront(9999);
+                }
+            //}
             if (card.transform.tag == "ExtraCard")
                 {
                     GameObject slotsContainer = GameObject.Find("UI-Panel/Extra Cards");
@@ -187,9 +190,18 @@ public class SlotManager : MonoBehaviour
         }
         else if (!SlotManager.instance.allSlotsOccupied)
         {
+            if (card.tag == "ExtraCard")
+            {
+                card.sortingOrder_RightSideExtraCard = card.GetComponent<Canvas>().sortingOrder;
+            }
             Debug.Log("OnCardClicked inside else if: ");
             FBPlayerData.instance.VibrationEffect();
-            
+            var sorting = card.GetComponent<CardSorting>();
+            if (sorting != null)
+            {
+                sorting.BringToFront(9999);
+            }
+
             if (FBPlayerData.instance.CURRENT_LEVEL == 2 && InitManager.instance.tutorialCntr == 0)
             {
                 InitManager.instance.tutorialCntr++;
@@ -265,20 +277,27 @@ public class SlotManager : MonoBehaviour
         yield return new WaitForSeconds(animDuration);
     }
 
-    public void AnimateCardToSlot(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
+    public void AnimateCardToSlot(
+    Card card,
+    RectTransform cardRect,
+    Vector2 targetPosition,
+    float animDuration,
+    Vector3 startScale,
+    Vector3 endScale,
+    Vector3 endScale_ExtraCard)
     {
         Vector2 startPos = cardRect.anchoredPosition;
         float apexHeight;
         Transform trail = null;
 
-        // Determine the apex height based on card type for a nice arc
+        // Determine apex height
         switch (cardRect.tag)
         {
             case "ExtraCard":
                 apexHeight = 800f;
                 CardManager.instance.rightSideCards.Remove(card);
+                BackButton.instance.HideThis();
                 ExtraInSlotcards.Add(card);
-                //Debug.Log("MoveBackToOriginalPosition Extra Card :: Adding card");
                 break;
             case "WildCard":
                 apexHeight = 200f;
@@ -288,59 +307,58 @@ public class SlotManager : MonoBehaviour
                 break;
         }
 
-        // Manage trail effect if the card is a wild card
+        // Wild card trail
         if (card.isWildCard)
         {
-            activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position);
+            //activeTrail_WildCard = TrailEffectPool.Instance.GetTrailEffect(cardRect.position);
         }
-
+        
         float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
-
         Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
 
-        // Calculate curved path points in world coordinates for smooth arc
         Vector3[] pathPoints = new Vector3[]
         {
-        cardRect.parent.TransformPoint(startPos),                 // Start point
-        cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)),  // Apex point
-        targetPosition                                             // End point (slot position, world space)
+        cardRect.parent.TransformPoint(startPos),                  // Start
+        cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)), // Apex
+        targetPosition                                             // End (slot)
         };
+
         cardRect.localRotation = Quaternion.identity;
-        // Create tween sequence
+
+        // Tween sequence
         Sequence motionSequence = DOTween.Sequence();
 
-        // Animate the card along the curved path with easing
+        // Arc motion
         motionSequence.Append(cardRect.DOMove(pathPoints[1], animDuration / 2).SetEase(Ease.OutQuad));
-        motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.InQuad));
+        motionSequence.Append(
+            cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.InQuad)
+                .OnComplete(() => PlayCardPlacedSound()) // 🎯 Play SFX right when card lands
+        );
 
-        // Add continuous rotation during motion for playful effect
-        motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration/2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+        // Rotation while moving
+        motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
 
-        // Join scaling with ease for smooth transition to target scale
+        // Smooth scale to target
         motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
 
-        
-
-        // Add a subtle bounce/pop scale effect after landing to enhance tactile feel
+        // Bounce after landing
         motionSequence.Append(cardRect.DOScale(targetScale * 1.12f, 0.12f).SetEase(Ease.OutBack));
         motionSequence.Append(cardRect.DOScale(targetScale, 0.13f).SetEase(Ease.InOutQuad));
 
-        // Update trail effect position on every frame if wild card
+        // Trail update
         motionSequence.OnUpdate(() =>
         {
-            if (card.isWildCard && activeTrail_WildCard != null)
-            {
-                activeTrail_WildCard.transform.position = cardRect.position;
-            }
+            //if (card.isWildCard && activeTrail_WildCard != null)
+            //{
+            //    activeTrail_WildCard.transform.position = cardRect.position;
+            //}
         });
-        Debug.Log("AnimateCardToSlot: ");
-        // Cleanup and reset transforms after animation completes
+
+        // Cleanup
         motionSequence.OnComplete(() =>
         {
-
-            Debug.Log("AnimateCardToSlot on complete: ");
-            PlayCardPlacedSound();
             var targetCard = cardRect;
+
             if (targetCard.tag == "WildCard")
             {
                 FBPlayerData.instance.TOTAL_WILD_CARD--;
@@ -350,22 +368,25 @@ public class SlotManager : MonoBehaviour
 
             slotsCard[^1].GetComponent<Button>().enabled = true;
 
-            if (trail != null)
-            {
-                StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
-                trail = null;
-            }
-            //if (FBPlayerData.instance.CURRENT_LEVEL > 2)
+            //if (trail != null)
             //{
-            //    card.GetComponent<Canvas>().sortingOrder = sortingLayer;
+            //    StartCoroutine(ReturnTrailToPoolDelayed(trail.gameObject, 0.3f));
+            //    trail = null;
             //}
-            Debug.Log("AnimateCardToSlot on complete: "+ FBPlayerData.instance.CURRENT_LEVEL);
-            if (FBPlayerData.instance.CURRENT_LEVEL > 3)
-            {
-                targetCard.GetComponent<CardSorting>().ResetOrder();
-                targetCard.GetComponent <Card>().isMoving = false;
-                
 
+            if (FBPlayerData.instance.CURRENT_LEVEL > 1)
+            {
+                if (card.TryGetComponent<CardSorting>(out var sorting))
+                {
+                    sorting.ResetOrder();
+                }
+                
+                card.GetComponent<Card>().isMoving = false;
+            }
+
+            if (card.tag == "ExtraCard")
+            {
+                card.GetComponent<Canvas>().sortingOrder = card.sortingOrder_RightSideExtraCard;
             }
         });
 
@@ -373,9 +394,9 @@ public class SlotManager : MonoBehaviour
     }
 
 
-   
 
-    
+
+
 
     private IEnumerator ReturnTrailToPoolDelayed(GameObject trailObj, float delay)
     {

@@ -1,22 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 
 public class Splash : MonoBehaviour
 {
     public GameObject loadingAnim = null;
+
     private void Start()
     {
         Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 
 #if UNITY_EDITOR
-        FBPlayerData.instance.CURRENT_LEVEL = 94;//very hard-94, hard-35
-        StartCoroutine(LoadSceneRoutine());   // 🔑 Run coroutine
-#else
-        StartCoroutine(LoadSceneRoutine());   // 🔑 Run coroutine
+        FBPlayerData.instance.CURRENT_LEVEL = 11; // very hard-94, hard-35
 #endif
+        StartCoroutine(LoadSceneRoutine());
     }
 
     public IEnumerator LoadSceneRoutine()
@@ -24,19 +21,25 @@ public class Splash : MonoBehaviour
         // Small wait to show splash logo
         yield return new WaitForSeconds(3f);
         loadingAnim.SetActive(true);
-        bool bgLoaded = false;
-        // 🔑 Preload the background for the current level
+
+        // 🔑 Background preload with timeout
         if (BackgroundManager.instance != null)
         {
-            yield return StartCoroutine(
-                BackgroundManager.instance.PreloadCurrentLevelBackground(FBPlayerData.instance.CURRENT_LEVEL)
+            yield return RunWithTimeout(
+                BackgroundManager.instance.PreloadCurrentLevelBackground(FBPlayerData.instance.CURRENT_LEVEL),
+                8f, // timeout in seconds
+                () => Debug.LogWarning("⏳ Background preload timeout")
             );
-            bgLoaded = true;
         }
-        
-        yield return new WaitUntil(() => bgLoaded && LoadConfig.instance.isAllConfigLoaded);
 
-        Debug.Log("✅ All resources loaded → Proceeding to next scene");
+        // 🔑 Config load with timeout
+        yield return RunWithTimeout(
+            WaitUntilConfigLoaded(),
+            8f,
+            () => Debug.LogWarning("⏳ Config load timeout")
+        );
+
+        Debug.Log("✅ Proceeding to next scene (timeout-safe)");
 
         // Decide where to go
         if (FBPlayerData.instance.CURRENT_LEVEL == 1 || FBPlayerData.instance.CURRENT_LEVEL == 2)
@@ -60,5 +63,38 @@ public class Splash : MonoBehaviour
     public void ResetAllData()
     {
         Application.ExternalCall("ClearFBData");
+    }
+
+    // ---------------------- Timeout Helpers ----------------------
+
+    private IEnumerator RunWithTimeout(IEnumerator routine, float timeout, System.Action onTimeout = null)
+    {
+        bool finished = false;
+
+        Coroutine runner = StartCoroutine(RunRoutine(routine, () => finished = true));
+
+        float elapsed = 0f;
+        while (!finished && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!finished)
+        {
+            onTimeout?.Invoke();
+            StopCoroutine(runner); // cancel routine
+        }
+    }
+
+    private IEnumerator RunRoutine(IEnumerator routine, System.Action onComplete)
+    {
+        yield return routine;
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator WaitUntilConfigLoaded()
+    {
+        yield return new WaitUntil(() => LoadConfig.instance.isAllConfigLoaded);
     }
 }

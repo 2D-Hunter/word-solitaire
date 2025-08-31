@@ -99,10 +99,29 @@ public class CardData : MonoBehaviour
                 //{
                 Debug.Log("BoardManager.instance.levelDifficulty::: " + BoardManager.instance.levelDifficulty);
                     string letter = WordLetterGenerationSystem.Instance.GenerateLetter(BoardManager.instance.levelDifficulty, BagType.DrawPileLetterBag);//targetBatch[localIndex];
+                var card = GetComponent<Card>();
+                if (letter == "*")
+                    {
+                        valueText.text = "4";
+                        cardValue = 4;
+                        card.isWildCard = true;
+                        card.isFaceUp = false;
+                        card.transform.GetChild(2).gameObject.SetActive(false);
+                        card.transform.GetChild(3).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        int tmpCardValue = GetCardValue(letter[0]);
+                        valueText.text = cardValue.ToString();
+                        cardValue = tmpCardValue;
+                        letterText.text = letter;
+                        //card.transform.GetChild(2).gameObject.SetActive(true);
+                        //card.transform.GetChild(3).gameObject.SetActive(false);
+                    }
 
-                    letterText.text = letter.ToString();
-                    valueText.text = GetCardValue(letter[0]).ToString();
-                    cardValue = GetCardValue(letter[0]);
+                //letterText.text = letter.ToString();
+                //    valueText.text = GetCardValue(letter[0]).ToString();
+                //    cardValue = GetCardValue(letter[0]);
                 //}
                 //else
                 //{
@@ -115,8 +134,8 @@ public class CardData : MonoBehaviour
         {
             //cardValue = GetCardValue(letter);
         }
-        var card = GetComponent<Card>();
-        card.cardData = this;
+        //var card = GetComponent<Card>();
+        //card.cardData = this;
 
     }
 

@@ -8,7 +8,7 @@ public class InitManager:MonoBehaviour
 
     public string version = "1.0.0";
     [HideInInspector]
-    public int currentLevel = 94;
+    public int currentLevel = 11;
     public int nextRandomLevel;
     public bool isLevelRandomized = false;
 

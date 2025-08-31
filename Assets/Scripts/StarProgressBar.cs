@@ -46,19 +46,28 @@ public class StarProgressBar : MonoBehaviour
             : FBPlayerData.instance.CURRENT_LEVEL - 1;
         var levelEntry = levelData.levels[levelIndex];
 
-        // 2) Compute maxScore = sum of card values * estimated multiplier
-        maxScore = Mathf.RoundToInt(TotalPoints() * levelEntry.estimatedMultiplier);
+        //// 2) Compute maxScore = sum of card values * estimated multiplier
+        //maxScore = Mathf.RoundToInt(TotalPoints() * levelEntry.estimatedMultiplier);
 
-        // 3) Pull in the raw absolute thresholds from your JSON
-        //    Assume LevelInfo.PointsForEachStar is List<float> or List<int>
-        absoluteThresholds = levelEntry.starThresholds
-            .Select(p => (float)p)
-            .ToList();
+        //// 3) Pull in the raw absolute thresholds from your JSON
+        ////    Assume LevelInfo.PointsForEachStar is List<float> or List<int>
+        //absoluteThresholds = levelEntry.starThresholds
+        //    .Select(p => (float)p)
+        //    .ToList();
 
-        // 4) Normalize those into fractions of maxScore for the fill bar
-        starThresholds = absoluteThresholds
-            .Select(points => points / maxScore)
-            .ToList();
+        //// 4) Normalize those into fractions of maxScore for the fill bar
+        //starThresholds = absoluteThresholds
+        //    .Select(points => points / maxScore)
+        //    .ToList();
+
+        // 1) Read thresholds directly from JSON
+        absoluteThresholds = levelEntry.starThresholds.Select(p => (float)p).ToList();
+
+        // 2) Set maxScore = last threshold (i.e. points for 3rd star)
+        maxScore = absoluteThresholds.Last();
+
+        // 3) Convert thresholds into 0..1 fractions relative to maxScore
+        starThresholds = absoluteThresholds.Select(points => points / maxScore).ToList();
 
         // 5) Kick off the bar at zero fill
         UpdateStarBar(0f);

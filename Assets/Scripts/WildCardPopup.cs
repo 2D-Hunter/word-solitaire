@@ -27,12 +27,14 @@ public class WildCardPopup : MonoBehaviour
 
     int coinsRequired = 400;
     public GameObject videoAdBtn, coinsBtn, useBtn;
+    public CanvasGroup coinHud = null;
     
     Sequence cardSequence;
 
     private void Awake()
     {
-        if(FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
+        coinHud.alpha = 0;
+        if (FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
         {
             videoAdBtn.SetActive(false);
             coinsBtn.SetActive(false);
@@ -80,6 +82,7 @@ public class WildCardPopup : MonoBehaviour
         popup.DOKill();
         popupRectTransform.DOKill();
 
+        coinHud.DOFade(1, 0.4f).SetEase(Ease.OutBack).SetDelay(0.2f);
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupRectTransform.DOAnchorPosY(365, 0.4f).SetEase(Ease.OutBack);
@@ -108,6 +111,7 @@ public class WildCardPopup : MonoBehaviour
     public void ClosePopup()
     {
         FBPlayerData.instance.VibrationEffect();
+        coinHud.DOFade(0, 0.3f).SetEase(Ease.OutBack).SetDelay(0.2f);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(0, 0.4f).SetEase(Ease.InBack);

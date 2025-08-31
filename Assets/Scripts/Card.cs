@@ -45,6 +45,7 @@ public class Card : MonoBehaviour
     private float[] originalPosOfExtraCards = { -180f, -165f, -150f, -135f, -120f, -105, -90, -75, -60, -45, -30, -15, 0, 15, 30 };
 
     private CardSorting sorting;
+    public int sortingOrder_RightSideExtraCard;
 
     private void Awake()
     {
@@ -119,18 +120,26 @@ public class Card : MonoBehaviour
         {
             Debug.Log("MoveBackToOriginalPosition Extra Card slotManager.ExtraInSlotcards "+ slotManager.ExtraInSlotcards.Count);
            // CardManager.instance.rightSideCards.AddCard(this);
-           if(slotManager.ExtraInSlotcards.Count>0)
-           {
-                slotManager.ExtraInSlotcards.Reverse();
-                CardManager.instance.rightSideCards.AddRange(slotManager.ExtraInSlotcards);
-                slotManager.ExtraInSlotcards.Clear();
-                for (int index = 0; index < CardManager.instance.rightSideCards.Count; index++)
+           if(RemoveCardsButton.instance.sendBackAll)
+            {
+                if (slotManager.ExtraInSlotcards.Count > 0)
                 {
-                    Card card = CardManager.instance.rightSideCards[index];
-                    card.GetComponent<Canvas>().sortingOrder = index+1;
-                    Debug.Log("MoveBackToOriginalPosition Extra Card :: "+ index + 1);
+                    slotManager.ExtraInSlotcards.Reverse();
+                    CardManager.instance.rightSideCards.AddRange(slotManager.ExtraInSlotcards);
+                    slotManager.ExtraInSlotcards.Clear();
+                    for (int index = 0; index < CardManager.instance.rightSideCards.Count; index++)
+                    {
+                        Card card = CardManager.instance.rightSideCards[index];
+                        card.GetComponent<Canvas>().sortingOrder = index + 1;
+                        Debug.Log("MoveBackToOriginalPosition Extra Card :: " + index + 1);
+                    }
                 }
-           }
+            }
+           else
+            {
+                CardManager.instance.rightSideCards.AddCard(this);
+            }
+           
             
 
             
@@ -147,8 +156,11 @@ public class Card : MonoBehaviour
             {
                 var targetCard = this;
                 isMoving = false;
-                targetCard.GetComponent<CardSorting>().ResetOrder();
-                
+                if (targetCard.TryGetComponent<CardSorting>(out var sorting))
+                {
+                    sorting.ResetOrder();
+                }
+
                 Debug.Log("Card has reached back into the original position.");
                 GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
                 GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
@@ -157,7 +169,7 @@ public class Card : MonoBehaviour
 
             });
         }
-        else if (this.isWildCard)
+        else if (this.tag == "WildCard")
         {
             Debug.Log("MoveBackToOriginalPosition Wild Card");
 
@@ -167,9 +179,9 @@ public class Card : MonoBehaviour
             }
 
             var cardSequence2 = DOTween.Sequence();
-            cardSequence2.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.2f).SetEase(Ease.OutQuad));
-            cardSequence2.Join(GetComponent<RectTransform>().DOScale(1f, 0.2f).SetEase(Ease.OutBack));
-            cardSequence2.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
+            cardSequence2.Append(GetComponent<RectTransform>().DOAnchorPos(originalPosition, 0.4f).SetEase(Ease.OutQuad));
+            cardSequence2.Join(GetComponent<RectTransform>().DOScale(0.7f, 0.3f).SetEase(Ease.OutBack));
+            cardSequence2.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -350), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
                 .OnComplete(() =>
                 {
                     var targetCard = this;
@@ -180,9 +192,9 @@ public class Card : MonoBehaviour
                     FBPlayerData.instance.SavePlayerData();
                     FindObjectOfType<NumberOfWildCard>().UpdateWildCard();
                 RemoveCardsButton.instance.sendBackAll = false;
-                //Destroy(gameObject);
-                //card = null;
-            });
+                    Destroy(gameObject);
+                    //this = null;
+                });
         }
         else
         {
@@ -200,9 +212,16 @@ public class Card : MonoBehaviour
             cardSequence3.Join(GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 0.2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuad))
                 .OnComplete(() =>
                 {
-                    var targetCard = this;
-                    Debug.Log("sendBackAll000");
-                    targetCard.GetComponent<CardSorting>().ResetOrder();
+                    if(FBPlayerData.instance.CURRENT_LEVEL > 1)
+                    {
+                        var targetCard = this;
+                        Debug.Log("sendBackAll000");
+                        if (targetCard.TryGetComponent<CardSorting>(out var sorting))
+                        {
+                            sorting.ResetOrder();
+                        }
+                    }
+                    
                     
                     RemoveCardsButton.instance.sendBackAll = false;
                     isMoving = false;
@@ -257,12 +276,13 @@ public class Card : MonoBehaviour
         if (this.tag == "ExtraCard")
         {
             GameObject extraCardContainer = GameObject.Find("UI-Panel/Extra Cards");
-          
-            if (isFaceUp && !SlotManager.instance.allSlotsOccupied)
+
+            //if (isFaceUp && !SlotManager.instance.allSlotsOccupied)
+            if (isFaceUp)
             {
                 slotManager.OnCardClicked(this);
             }
-            else
+            else if(!isFaceUp)
             {
                 OnExtraCardClick();
             }
@@ -319,7 +339,7 @@ public class Card : MonoBehaviour
     {
         Debug.Log("OnExtraCardClick: "+ FBPlayerData.instance.CURRENT_LEVEL + "____" + InitManager.instance.tutorialCntr);
 
-       
+        FBPlayerData.instance.VibrationEffect();
         Card eCard = CardManager.instance.extraCards[CardManager.instance.extraCards.Count - 1];
         Debug.Log("OnExtraCardClick: " + eCard.name);
         eCard.GetComponent<Canvas>().sortingOrder = CardManager.instance.rightSideCards.Count+1;
@@ -402,7 +422,11 @@ public class Card : MonoBehaviour
         {
             Debug.Log($"🔎 Checking card: {belowCard.name}");
             bool overlapsWithTappedCard = IsOverlapping(this, belowCard, 2f);
-            bool isBlocked = IsBlockedByOtherCards(belowCard);
+            bool isBlocked = false;
+            if(FBPlayerData.instance.CURRENT_LEVEL > 2)
+                 isBlocked = IsBlockedByOtherCards(belowCard);
+            else
+                isBlocked = IsBlockedByOtherCards(belowCard, this);
 
             Debug.Log($"➡ {belowCard.name} isBlocked: {isBlocked}, siblingIndex: {belowCard.transform.GetSiblingIndex()}");
 
@@ -696,8 +720,37 @@ public class Card : MonoBehaviour
         return overlapPercent >= thresholdPercent;
     }
 
-   
 
+
+    private bool IsBlockedByOtherCards(Card targetCard, Card excludeCard)
+    {
+        int targetIndex = targetCard.Level;//targetCard.transform.GetSiblingIndex();
+        Rect targetRect = GetWorldRect(targetCard.rectTransform);
+
+        foreach (Card otherCard in CardManager.instance.totalCardsToClear)
+        {
+            if (otherCard == null || otherCard == targetCard || otherCard == excludeCard)
+                continue;
+
+            if (!otherCard.gameObject.activeInHierarchy)
+                continue;
+
+            int otherIndex = otherCard.Level;
+            Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+            if (otherIndex > targetIndex)
+            {
+                Rect otherRect = GetWorldRect(otherCard.rectTransform);
+
+                if (IsSignificantOverlap(targetRect, otherRect, 5f))
+                {
+                    Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     private bool IsBlockedByOtherCards(Card targetCard)
     {
         int targetIndex = targetCard.Level;//targetCard.transform.GetSiblingIndex();

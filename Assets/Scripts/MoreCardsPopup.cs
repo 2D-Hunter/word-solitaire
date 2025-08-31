@@ -25,12 +25,14 @@ public class MoreCardsPopup : MonoBehaviour
    
     public TextMeshProUGUI price;
     public TextMeshProUGUI priceShadow;
+    public CanvasGroup coinHud = null;
 
 
 
     private void Awake()
     {
         instance = this;
+        coinHud.alpha = 0;
         SetInit();
     }
     
@@ -74,7 +76,7 @@ public class MoreCardsPopup : MonoBehaviour
         bg.DOKill();
         popup.DOKill();
         popupRectTransform.DOKill();
-
+        coinHud.DOFade(1, 0.4f).SetEase(Ease.OutBack).SetDelay(0.2f);
         bg.DOFade(0.6f, 0.6f).SetEase(Ease.OutBack);
         popup.DOFade(1f, 0.4f).SetEase(Ease.OutBack);
         popupRectTransform.DOAnchorPosY(-70f, 0.4f).SetEase(Ease.OutBack);
@@ -103,6 +105,7 @@ public class MoreCardsPopup : MonoBehaviour
     public void ClosePopup()
     {
         FBPlayerData.instance.VibrationEffect();
+        coinHud.DOFade(0, 0.3f).SetEase(Ease.OutBack).SetDelay(0.2f);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(-350f, 0.4f).SetEase(Ease.InBack);

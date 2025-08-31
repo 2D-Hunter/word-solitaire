@@ -79,11 +79,11 @@ public class FBPlayerData : MonoBehaviour
     //worddict
     private void Awake()
     {
-//#if UNITY_EDITOR
-//        Debug.unityLogger.logEnabled = true;
-//#else
-// Debug.unityLogger.logEnabled = false;
-//#endif
+#if UNITY_EDITOR
+        Debug.unityLogger.logEnabled = true;
+#else
+ Debug.unityLogger.logEnabled = false;
+#endif
         //BUILD_TYPE = "Facebook";
         //TOTAL_COINS = 1000;
         //GAME_SOUND = false;

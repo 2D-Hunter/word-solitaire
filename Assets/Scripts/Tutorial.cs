@@ -287,7 +287,7 @@ public class Tutorial : MonoBehaviour
     }
     public void TapGotIt()
     {
-
+        FBPlayerData.instance.VibrationEffect();
         DOTween.KillAll();
 
         SpriteRenderer sr = alphaPatch.GetComponent<SpriteRenderer>();
