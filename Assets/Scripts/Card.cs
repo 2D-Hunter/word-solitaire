@@ -68,18 +68,7 @@ public class Card : MonoBehaviour
         }
         sorting = GetComponent<CardSorting>();
     }
-    //private void OnValidate()
-    //{
-    //    //if (Card.instance.gameObject.tag != "ExtraCard")
-    //    //{
-    //    //Debug.Log("________isWildCard: " + isWildCard);
-    //    cardFace.SetActive(!isFaceUp);
-    //    if (isWildCard && isFaceUp)
-    //    {
-    //        gameObject.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(true);
-    //        gameObject.GetComponent<RectTransform>().GetChild(2).gameObject.SetActive(false);
-    //    }
-    //}
+  
     private void Start()
     {
 
@@ -103,7 +92,7 @@ public class Card : MonoBehaviour
             if (tutorial == null)
                 tutorial = FindObjectOfType<Tutorial>();
         }
-        Debug.Log("_______isWildCarddd: " + gameObject.name+"_____" + isWildCard);
+        //Debug.Log("_______isWildCarddd: " + gameObject.name+"_____" + isWildCard);
         if (isWildCard && isFaceUp)
         {
             gameObject.GetComponent<RectTransform>().GetChild(3).gameObject.SetActive(true);
@@ -118,7 +107,7 @@ public class Card : MonoBehaviour
         
         if (this.tag == "ExtraCard")
         {
-            Debug.Log("MoveBackToOriginalPosition Extra Card slotManager.ExtraInSlotcards "+ slotManager.ExtraInSlotcards.Count);
+           // Debug.Log("MoveBackToOriginalPosition Extra Card slotManager.ExtraInSlotcards "+ slotManager.ExtraInSlotcards.Count);
            // CardManager.instance.rightSideCards.AddCard(this);
            if(RemoveCardsButton.instance.sendBackAll)
             {
@@ -131,13 +120,19 @@ public class Card : MonoBehaviour
                     {
                         Card card = CardManager.instance.rightSideCards[index];
                         card.GetComponent<Canvas>().sortingOrder = index + 1;
-                        Debug.Log("MoveBackToOriginalPosition Extra Card :: " + index + 1);
+                       // Debug.Log("MoveBackToOriginalPosition Extra Card :: " + index + 1);
                     }
                 }
             }
            else
-            {
+           {
                 CardManager.instance.rightSideCards.AddCard(this);
+                for (int index = 0; index < CardManager.instance.rightSideCards.Count; index++)
+                {
+                    Card card = CardManager.instance.rightSideCards[index];
+                    card.GetComponent<Canvas>().sortingOrder = index + 1;
+                    // Debug.Log("MoveBackToOriginalPosition Extra Card :: " + index + 1);
+                }
             }
            
             
@@ -161,7 +156,7 @@ public class Card : MonoBehaviour
                     sorting.ResetOrder();
                 }
 
-                Debug.Log("Card has reached back into the original position.");
+              //  Debug.Log("Card has reached back into the original position.");
                 GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 180, 0);
                 GetComponent<RectTransform>().GetChild(0).localRotation = Quaternion.Euler(0, -180, 0);
                 GetComponent<RectTransform>().GetChild(1).localRotation = Quaternion.Euler(0, -180, 0);
@@ -420,7 +415,7 @@ public class Card : MonoBehaviour
         
         foreach (Card belowCard in belowCards)
         {
-            Debug.Log($"🔎 Checking card: {belowCard.name}");
+           // Debug.Log($"🔎 Checking card: {belowCard.name}");
             bool overlapsWithTappedCard = IsOverlapping(this, belowCard, 2f);
             bool isBlocked = false;
             if(FBPlayerData.instance.CURRENT_LEVEL > 2)
@@ -428,16 +423,16 @@ public class Card : MonoBehaviour
             else
                 isBlocked = IsBlockedByOtherCards(belowCard, this);
 
-            Debug.Log($"➡ {belowCard.name} isBlocked: {isBlocked}, siblingIndex: {belowCard.transform.GetSiblingIndex()}");
+           // Debug.Log($"➡ {belowCard.name} isBlocked: {isBlocked}, siblingIndex: {belowCard.transform.GetSiblingIndex()}");
 
             if (overlapsWithTappedCard && !isBlocked && isFaceUp)
             {
-                Debug.Log($"✅ Flipping {belowCard.name}");
+               // Debug.Log($"✅ Flipping {belowCard.name}");
                 FlipCard(belowCard);
             }
             else
             {
-                Debug.Log($"⛔ BLOCKED: {belowCard.name} will NOT flip");
+               // Debug.Log($"⛔ BLOCKED: {belowCard.name} will NOT flip");
                 if (SlotManager.instance.goingBack && belowCard.isFaceUp)
                     belowCard.FlipCard(belowCard);
             }
@@ -474,7 +469,7 @@ public class Card : MonoBehaviour
 
         float overlapPercent = (overlapArea / areaA) * 100f;
 
-        Debug.Log($"Overlap percent between {cardA.name} and {cardB.name}: {overlapPercent}%");
+        //Debug.Log($"Overlap percent between {cardA.name} and {cardB.name}: {overlapPercent}%");
 
         return overlapPercent >= thresholdPercent;
     }
@@ -490,7 +485,7 @@ public class Card : MonoBehaviour
     {
         if (card.isFlipping) return;
             card.isFlipping = true;
-        Debug.Log("card.belowCards.Count: " + card.name + "______" + belowCards.Count);
+       // Debug.Log("card.belowCards.Count: " + card.name + "______" + belowCards.Count);
         //Debug.Log("isFlipping: " + isFlipping);
         //if (isFlipping) return;
         //if (isFaceUp) return; 
@@ -518,7 +513,7 @@ public class Card : MonoBehaviour
                         if (CardManager.instance.allFaceUpCards.Contains(card) && slotManager.goingBack)
                             CardManager.instance.allFaceUpCards.Remove(card);
 
-                        Debug.Log("___Card flipped: " + slotManager.goingBack);
+                        //Debug.Log("___Card flipped: " + slotManager.goingBack);
                         //rectTransform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.15f).SetLoops(2, LoopType.Yoyo);
                     });
             });
@@ -687,7 +682,7 @@ public class Card : MonoBehaviour
 
     public void DisableClick()
     {
-        Debug.Log("Click disabled");
+        ///Debug.Log("Click disabled");
         if (FBPlayerData.instance.CURRENT_LEVEL == 11)
         {
             gameObject.GetComponent<Button>().enabled = false;
@@ -695,7 +690,7 @@ public class Card : MonoBehaviour
     }
     public void EnableClick()
     {
-        Debug.Log("Click enabled");
+        //Debug.Log("Click enabled");
         gameObject.GetComponent<Button>().enabled = true;
     }
 
@@ -736,14 +731,14 @@ public class Card : MonoBehaviour
                 continue;
 
             int otherIndex = otherCard.Level;
-            Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+           // Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
             if (otherIndex > targetIndex)
             {
                 Rect otherRect = GetWorldRect(otherCard.rectTransform);
 
                 if (IsSignificantOverlap(targetRect, otherRect, 5f))
                 {
-                    Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+                   // Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
                     return true;
                 }
             }
@@ -765,14 +760,14 @@ public class Card : MonoBehaviour
                 continue;
 
             int otherIndex = otherCard.Level;
-            Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+          //  Debug.Log($" 1 ❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
             if (otherIndex > targetIndex && !otherCard.isMoving)
             {
                 Rect otherRect = GetWorldRect(otherCard.rectTransform);
 
                 if (IsSignificantOverlap(targetRect, otherRect, 5f))
                 {
-                    Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
+                   // Debug.Log($" 2❌ {targetCard.name} BLOCKED by {otherCard.name} (index {otherIndex})");
                     return true;
                 }
             }

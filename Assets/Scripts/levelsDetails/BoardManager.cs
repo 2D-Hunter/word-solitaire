@@ -221,14 +221,14 @@ public class BoardManager : MonoBehaviour
         bool RequestCompteted = false;
         bool isError = false;
         GameLevelData loadedLevelData = null;
-        Debug.LogError(url);
+       // Debug.LogError(url);
         WordServiceContainer.NetworkService.GetGameData(url, (issucess, data) =>
         {
             if (issucess)
             {
               
                 isError = false;
-                Debug.LogError(data);
+                //Debug.LogError(data);
                 loadedLevelData  = JsonUtility.FromJson<GameLevelData>(data);
                 if (loadedLevelData == null)
                 {
@@ -337,7 +337,7 @@ public class BoardManager : MonoBehaviour
                     else
                     {
                         var letter = WordLetterGenerationSystem.Instance.GenerateLetter(difficulty, BagType.StandardLetterBag);
-                        Debug.Log("letter "+ letter);
+                       // Debug.Log("letter "+ letter);
                         if (letter == "*")
                         {
                             card.cardData.valueText.text = "4";

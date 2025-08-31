@@ -93,7 +93,7 @@ public class HintService : IHintService
                 cardsChars += cardtext;
             }
         }
-        Debug.Log("cardsChars >>>>>>>>>>>>>>>>>> " + cardsChars);
+       // Debug.Log("cardsChars >>>>>>>>>>>>>>>>>> " + cardsChars);
         var matchWords =    WordServiceContainer.DictionaryService.FindMatches(cardsChars);
         if(matchWords != null && matchWords.Count>0)
         {

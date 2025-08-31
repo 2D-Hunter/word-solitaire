@@ -194,7 +194,7 @@ public class SlotManager : MonoBehaviour
             {
                 card.sortingOrder_RightSideExtraCard = card.GetComponent<Canvas>().sortingOrder;
             }
-            Debug.Log("OnCardClicked inside else if: ");
+          //  Debug.Log("OnCardClicked inside else if: ");
             FBPlayerData.instance.VibrationEffect();
             var sorting = card.GetComponent<CardSorting>();
             if (sorting != null)
@@ -315,11 +315,12 @@ public class SlotManager : MonoBehaviour
         
         float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
         Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
-
+        Vector2 midPosition = cardRect.parent.TransformPoint(new Vector2(targetPosition.x, apexY));
+        midPosition.x = targetPosition.x;
         Vector3[] pathPoints = new Vector3[]
         {
         cardRect.parent.TransformPoint(startPos),                  // Start
-        cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)), // Apex
+        midPosition, // Apex
         targetPosition                                             // End (slot)
         };
 
@@ -467,7 +468,7 @@ public class SlotManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log("____________String: " + slotString);
+       // Debug.Log("____________String: " + slotString);
         return slotString;
     }
     

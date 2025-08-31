@@ -297,8 +297,8 @@ public class GameManager : MonoBehaviour
                 newCard.cardData.cardValue = 4;
                 newCard.isWildCard = true;
                 newCard.isFaceUp = false;
-                newCard.transform.GetChild(2).gameObject.SetActive(false);
-                newCard.transform.GetChild(3).gameObject.SetActive(true);
+                newCard.transform.GetChild(2).gameObject.SetActive(true);
+                newCard.transform.GetChild(3).gameObject.SetActive(false);
             }
             else
             {
@@ -306,12 +306,12 @@ public class GameManager : MonoBehaviour
                 newCard.cardData.valueText.text = cardValue.ToString();
                 newCard.cardData.cardValue = cardValue;
                 newCard.cardData.letterText.text = letter;
-                //newCard.transform.GetChild(2).gameObject.SetActive(true);
-                //newCard.transform.GetChild(3).gameObject.SetActive(false);
+                newCard.isWildCard = false;
+                newCard.isFaceUp = false;
+                newCard.transform.GetChild(2).gameObject.SetActive(true);
+                newCard.transform.GetChild(3).gameObject.SetActive(false);
             }
-            //newCard.transform.GetChild(0).GetComponent<TMP_Text>().text = letter;
-            //newCard.transform.GetChild(1).GetComponent<TMP_Text>().text = newCard.GetComponent<CardData>().GetCardValue(letter[0]).ToString();
-            //newCard.GetComponent<CardData>().cardValue = newCard.GetComponent<CardData>().GetCardValue(letter[0]);
+
 
 
             CardManager.instance.extraCards.Add(newCard);
@@ -351,28 +351,6 @@ public class GameManager : MonoBehaviour
     public void TapMoreCards()
     {
         PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
-//        if(GameUtils.IsFacebookBuild())
-//        {
-//#if UNITY_EDITOR
-//            FBPlayerData.instance.Get5CardsAfterVideoAd();
-//            return;
-//#endif
-//            Application.ExternalCall("ShowAd_Reward", "MoreCards");
-//        }
-//        else
-//        {
-//            //if (FBPlayerData.instance.TOTAL_COINS >= 150)
-//            //{
-//            //    InitManager.instance.buyMoreCardsCntr++;
-//            //    HideMoreCardsToBuy();
-//            //    CoinManager.instance.SpendCoins(InitManager.instance.moreCardsPrice);
-//            //    SpawnCards();
-//            //}
-//            //else
-//            //{
-//            //    PopupManager.instance.ToggleShop();
-//            //}
-//        }
         
     }
     public void Get5CardsAfterVideoAd()
@@ -382,12 +360,7 @@ public class GameManager : MonoBehaviour
     }
     public void TapWildCardBtn()
     {
-        //if(FBPlayerData.instance.TOTAL_WILD_CARD >= 1)
-        //{
-        //    FBPlayerData.instance.TOTAL_WILD_CARD--;
-        //    numberOfWildCard.UpdateWildCard();
-        //    FBPlayerData.instance.SavePlayerData();
-        //}
+        
         if(boosterTutorial.activeSelf)
         {
             FindObjectOfType<BoosterTutorial>().StopHandAnim();

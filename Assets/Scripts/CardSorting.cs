@@ -16,13 +16,13 @@ public class CardSorting : MonoBehaviour
 
     public void BringToFront(int newOrder = 9999)
     {
-        //if(card.tag != "ExtraCard")
+        if(card.tag != "ExtraCard")
             canvas.sortingOrder = newOrder;
     }
 
     public void ResetOrder()
     {
-        Debug.Log("ResetOrder111");
+       // Debug.Log("ResetOrder111");
         if (FBPlayerData.instance.CURRENT_LEVEL < 4)
         {
             canvas.sortingOrder = originalOrder;

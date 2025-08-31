@@ -157,7 +157,7 @@ public class NetworkService : INetworkService
             }
             else
             {
-                Debug.Log("Received Data: " + request.downloadHandler.text);
+               // Debug.Log("Received Data: " + request.downloadHandler.text);
                 callBack.Invoke(true, request.downloadHandler.text);
             }
         }

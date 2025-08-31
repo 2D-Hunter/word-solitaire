@@ -74,33 +74,11 @@ public class CardData : MonoBehaviour
             }
             else
             {
-                //int index = cardIndex >= 0 ? cardIndex : GetCardIndexFromName(gameObject.name);
-                //if (index < 0)
-                //{
-                //    Debug.LogWarning("Invalid card index from name: " + gameObject.name);
-                //    return;
-                //}
-
-                //int batchSize = (letterBatches.Count == 0) ? 10 : 5; // 10 for first batch, 5 for the rest
-                //int batchIndex = index / batchSize;
-                //int localIndex = index % batchSize;
-
-                // Ensure enough batches exist
-                //while (letterBatches.Count <= batchIndex)
-                //{
-                //    List<char> newBatch = GenerateHelpfulLetters(batchSize);
-                //    letterBatches.Add(newBatch);
-                //    Debug.Log($"Generated batch {letterBatches.Count - 1}: " + string.Join(", ", newBatch));
-                //}
-
-                //List<char> targetBatch = letterBatches[batchIndex];
-
-                //if (localIndex >= 0 && localIndex < targetBatch.Count)
-                //{
+               
                 Debug.Log("BoardManager.instance.levelDifficulty::: " + BoardManager.instance.levelDifficulty);
                     string letter = WordLetterGenerationSystem.Instance.GenerateLetter(BoardManager.instance.levelDifficulty, BagType.DrawPileLetterBag);//targetBatch[localIndex];
                 var card = GetComponent<Card>();
-                if (letter == "*")
+                    if (letter == "*")
                     {
                         valueText.text = "4";
                         cardValue = 4;
