@@ -202,6 +202,7 @@ public class WildCardPopup : MonoBehaviour
     }
     public void OnTapUse()
     {
+        FBPlayerData.instance.VibrationEffect();
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis1);
         popup.DOFade(0, 0.4f).SetEase(Ease.InBack);
         popupRectTransform.DOAnchorPosY(0, 0.4f).SetEase(Ease.InBack);

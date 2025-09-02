@@ -15,6 +15,9 @@ public class Menu : MonoBehaviour
     public TextMeshProUGUI currentLevel;
     public TextMeshProUGUI currentLevelShadow;
 
+    public TextMeshProUGUI nextLocationTxt;
+    public TextMeshProUGUI nextLocationTxtShadow;
+
     public GameObject fortuneWheel = null;
     public bool isFortuneWheelOpened = false;
     //public TextMeshProUGUI giftBoxCountText;
@@ -78,10 +81,20 @@ public class Menu : MonoBehaviour
         // Optional: also nudge the next-location text (safe even if BM hasn’t bound yet;
         // OnSceneLoaded in BackgroundManager will update it again)
         if (BackgroundManager.instance)
+        {
             BackgroundManager.instance.UpdateNextLocationText(FBPlayerData.instance.CURRENT_LEVEL);
+            if(InitManager.instance.nextMilestone != -1)
+                nextLocationTxt.text = nextLocationTxtShadow.text = "Next Location at " + InitManager.instance.nextMilestone.ToString();
+            else
+                nextLocationTxt.text = nextLocationTxtShadow.text = "Final Location Reached";
+
+        }
     }
     private void Start()
     {
+        var bg = GameObject.Find("BG").GetComponent<Image>();
+        BackgroundManager.instance.RegisterBackground(bg);
+
         InitManager.instance.ShowLoadingTxtForJSON = false;
         MultiplayerEventHandler.Instance.isMultiplayer = false;
         PopupManager.instance.AssignUIContainer();

@@ -107,6 +107,10 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        if(CardManager.instance.rightSideCards[0].isWildCard)
+        {
+            CardManager.instance.rightSideCards[0].isFaceUp = true;
+        }
         SetLeftOffset(FBPlayerData.instance.CURRENT_LEVEL);
         if(InitManager.instance.isReplay)
             AnalyticsManager.Instance.TrackLevelStart(FBPlayerData.instance.CURRENT_LEVEL-1);
@@ -270,6 +274,7 @@ public class GameManager : MonoBehaviour
     public void TapEndGame()
     {
         isEndGamePressed = true;
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.quitPopup);
     }
     
@@ -308,8 +313,7 @@ public class GameManager : MonoBehaviour
                 newCard.cardData.letterText.text = letter;
                 newCard.isWildCard = false;
                 newCard.isFaceUp = false;
-                newCard.transform.GetChild(2).gameObject.SetActive(true);
-                newCard.transform.GetChild(3).gameObject.SetActive(false);
+                
             }
 
 
@@ -340,7 +344,7 @@ public class GameManager : MonoBehaviour
                          .SetEase(Ease.OutExpo)
                          .SetDelay(delay);
 
-            DOVirtual.DelayedCall(delay, () => PlayCardShuffleSound());
+            DOVirtual.DelayedCall(delay/2, () => PlayCardShuffleSound());
         }
     }
     void PlayCardShuffleSound()
@@ -350,6 +354,7 @@ public class GameManager : MonoBehaviour
     }
     public void TapMoreCards()
     {
+        FBPlayerData.instance.VibrationEffect();
         PopupManager.instance.TogglePopup(PopupManager.instance.moreCardsPopup);
         
     }
@@ -360,8 +365,8 @@ public class GameManager : MonoBehaviour
     }
     public void TapWildCardBtn()
     {
-        
-        if(boosterTutorial.activeSelf)
+        FBPlayerData.instance.VibrationEffect();
+        if (boosterTutorial.activeSelf)
         {
             FindObjectOfType<BoosterTutorial>().StopHandAnim();
             boosterTutorial.SetActive(false);

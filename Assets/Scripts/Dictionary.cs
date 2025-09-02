@@ -104,7 +104,7 @@ public class Dictionary : MonoBehaviour
     public void ClosePopup()
     {
         isClosing = true; // mark for cancellation
-
+        FBPlayerData.instance.VibrationEffect();
         if (InitManager.instance.CurrentScene == "Levelup")
             Invoke("BringStars", 0.3f);
         bg.DOFade(0f, 0.6f).SetEase(Ease.InBack).OnComplete(RemoveThis);
@@ -198,6 +198,7 @@ public class Dictionary : MonoBehaviour
         if (GameManager.instance.currentIndex < currentDisplayWords.Count - 1)
         {
             GameManager.instance.currentIndex++;
+            FBPlayerData.instance.VibrationEffect();
             UpdatePopup();
         }
     }
@@ -207,6 +208,7 @@ public class Dictionary : MonoBehaviour
         if (GameManager.instance.currentIndex > 0)
         {
             GameManager.instance.currentIndex--;
+            FBPlayerData.instance.VibrationEffect();
             UpdatePopup();
         }
     }

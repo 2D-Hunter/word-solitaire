@@ -318,6 +318,7 @@ public class GoalPopup : MonoBehaviour
         
         if (InitManager.instance.CurrentScene == "Levelup")
         {
+            FBPlayerData.instance.VibrationEffect();
             InitManager.instance.isReplay = true;
             Initiate.Fade("Game", Color.black, 1f);
         }

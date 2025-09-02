@@ -11,9 +11,10 @@ public class Splash : MonoBehaviour
         Debug.Log("Splash: " + FBPlayerData.instance.TOTAL_HEARTS);
 
 #if UNITY_EDITOR
-        FBPlayerData.instance.CURRENT_LEVEL = 11; // very hard-94, hard-35
-#endif
+        FBPlayerData.instance.CURRENT_LEVEL = 1; // very hard-94, hard-35
         StartCoroutine(LoadSceneRoutine());
+#endif
+
     }
 
     public IEnumerator LoadSceneRoutine()

@@ -386,14 +386,26 @@ public class Card : MonoBehaviour
         {
             GameManager.instance.ShowMoreCardsToBuy();
         }
+        float delay = 0;
+        if (FBPlayerData.instance.DeviceType == "Android")
+            delay = 0.1f;
+        else
+            delay = 0;
+        if (eCard != null)
+        {
+            DOVirtual.DelayedCall(delay, () =>
+            {
+                Debug.Log("CardTurnSound");
+                SoundManager.instance.PlaySFX("CardTurn", 0.3f);
+            });
+        }
         rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
         .OnComplete(() =>
         {
             Debug.Log("Half flip: "+ eCard);
                 //isFaceUp = true;
                 UpdateCardFlipping(true, eCard);
-            Invoke("CardTurnSound", 0.05f);
-            
+
             rectTransform.DORotate(new Vector3(0, 90, 0), flipDuration / 2, RotateMode.LocalAxisAdd)
                 .OnComplete(() =>
                 {
@@ -404,8 +416,9 @@ public class Card : MonoBehaviour
         });
 
     }
-    void CardTurnSound()
+    IEnumerator CardTurnSound(float delay)
     {
+        yield return new WaitForSeconds(delay);
         Debug.Log("CardTurnSound");
         SoundManager.instance.PlaySFX("CardTurn", 0.3f);
     }

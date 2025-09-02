@@ -66,10 +66,12 @@ public class PopupManager : MonoBehaviour
     {
         if(currentPopup == null)
         {
-            if(InitManager.instance.CurrentScene != "Levelup")
-                SoundManager.instance.PlaySFX("PopupAppear");
+            
             currentPopup = Instantiate(prefab, uiContainer);
             AnalyticsManager.Instance.TrackPopupOpened(prefab.name +" Popup Opened");
+            Debug.Log("currentPopup.name: " + currentPopup.name);
+            if (InitManager.instance.CurrentScene != "Levelup" && currentPopup.name != "LoadingPopup(Clone)")
+                SoundManager.instance.PlaySFX("PopupAppear");
         }
         else
         {

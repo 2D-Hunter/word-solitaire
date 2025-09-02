@@ -277,14 +277,7 @@ public class SlotManager : MonoBehaviour
         yield return new WaitForSeconds(animDuration);
     }
 
-    public void AnimateCardToSlot(
-    Card card,
-    RectTransform cardRect,
-    Vector2 targetPosition,
-    float animDuration,
-    Vector3 startScale,
-    Vector3 endScale,
-    Vector3 endScale_ExtraCard)
+    public void AnimateCardToSlot(Card card, RectTransform cardRect, Vector2 targetPosition, float animDuration, Vector3 startScale, Vector3 endScale, Vector3 endScale_ExtraCard)
     {
         Vector2 startPos = cardRect.anchoredPosition;
         float apexHeight;
@@ -315,13 +308,13 @@ public class SlotManager : MonoBehaviour
         
         float apexY = Mathf.Max(startPos.y, targetPosition.y) + apexHeight;
         Vector3 targetScale = (cardRect.tag == "ExtraCard") ? endScale_ExtraCard : endScale;
-        Vector2 midPosition = cardRect.parent.TransformPoint(new Vector2(targetPosition.x, apexY));
-        midPosition.x = targetPosition.x;
+        //Vector2 midPosition = cardRect.parent.TransformPoint(new Vector2(targetPosition.x, apexY));
+        //midPosition.x = targetPosition.x;
         Vector3[] pathPoints = new Vector3[]
         {
-        cardRect.parent.TransformPoint(startPos),                  // Start
-        midPosition, // Apex
-        targetPosition                                             // End (slot)
+        cardRect.parent.TransformPoint(startPos),                 // Start point
+        cardRect.parent.TransformPoint(new Vector2(startPos.x, apexY)),  // Apex point
+        targetPosition                                             // End point (slot position, world space)
         };
 
         cardRect.localRotation = Quaternion.identity;
@@ -331,13 +324,17 @@ public class SlotManager : MonoBehaviour
 
         // Arc motion
         motionSequence.Append(cardRect.DOMove(pathPoints[1], animDuration / 2).SetEase(Ease.OutQuad));
-        motionSequence.Append(
-            cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.InQuad)
-                .OnComplete(() => PlayCardPlacedSound()) // 🎯 Play SFX right when card lands
-        );
+        motionSequence.Append(cardRect.DOMove(pathPoints[2], animDuration).SetEase(Ease.InQuad));
 
         // Rotation while moving
         motionSequence.Join(cardRect.DORotate(new Vector3(0, 0, 360), animDuration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+        float delay = 0;
+        if (FBPlayerData.instance.DeviceType == "Android")
+            delay = 0.1f;
+        else
+            delay = 0;
+        StartCoroutine(PlayCardPlacedSound(delay));
+        
 
         // Smooth scale to target
         motionSequence.Join(cardRect.DOScale(targetScale, animDuration).SetEase(Ease.InOutQuad));
@@ -404,8 +401,9 @@ public class SlotManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         TrailEffectPool.Instance.ReturnTrailEffect(trailObj);
     }
-    void PlayCardPlacedSound()
+    IEnumerator PlayCardPlacedSound(float delay)
     {
+        yield return new WaitForSeconds(delay);
         SoundManager.instance.PlaySFX("CardPlaced");
         Invoke("PlayCardTakeSound", 0.5f);
     }
@@ -821,7 +819,12 @@ public class SlotManager : MonoBehaviour
     private IEnumerator ShowLevelup(float delay)
     {
         if (!InitManager.instance.isReplay)
+        {
+            if(FBPlayerData.instance.CURRENT_LEVEL == 3)
+                AdTimerHandler.Instance.shouldShowAd = true;
             FBPlayerData.instance.CURRENT_LEVEL++;
+        }
+
         Debug.Log("ShowLevelup");
         yield return new WaitForSeconds(delay);
         InitManager.instance.CurrentScene = "Levelup";

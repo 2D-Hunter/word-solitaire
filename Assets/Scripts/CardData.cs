@@ -74,37 +74,51 @@ public class CardData : MonoBehaviour
             }
             else
             {
-               
                 Debug.Log("BoardManager.instance.levelDifficulty::: " + BoardManager.instance.levelDifficulty);
-                    string letter = WordLetterGenerationSystem.Instance.GenerateLetter(BoardManager.instance.levelDifficulty, BagType.DrawPileLetterBag);//targetBatch[localIndex];
-                var card = GetComponent<Card>();
-                    if (letter == "*")
+
+                string letter = WordLetterGenerationSystem.Instance.GenerateLetter(
+                    BoardManager.instance.levelDifficulty,
+                    BagType.DrawPileLetterBag
+                );
+                Debug.Log("Letter on the card: " + letter);
+                // ✅ Prevent wildcards before level 15
+                if (letter == "*" && FBPlayerData.instance.CURRENT_LEVEL < 15)
+                {
+                    // Re-roll until it's not "*"
+                    do
                     {
-                        valueText.text = "4";
-                        cardValue = 4;
-                        card.isWildCard = true;
-                        card.isFaceUp = false;
+                        letter = WordLetterGenerationSystem.Instance.GenerateLetter(
+                            BoardManager.instance.levelDifficulty,
+                            BagType.DrawPileLetterBag
+                        );
+                    } while (letter == "*");
+                }
+
+                var card = GetComponent<Card>();
+
+                if (letter == "*")
+                {
+                    valueText.text = "4";
+                    cardValue = 4;
+                    card.isWildCard = true;
+                    card.isFaceUp = false;
+                    card.transform.GetChild(2).gameObject.SetActive(true);
+                    card.transform.GetChild(3).gameObject.SetActive(false);
+
+                    if (CardManager.instance.rightSideCards.Count > 0)
+                    {
+                        CardManager.instance.rightSideCards[0].isFaceUp = true;
                         card.transform.GetChild(2).gameObject.SetActive(false);
                         card.transform.GetChild(3).gameObject.SetActive(true);
                     }
-                    else
-                    {
-                        int tmpCardValue = GetCardValue(letter[0]);
-                        valueText.text = cardValue.ToString();
-                        cardValue = tmpCardValue;
-                        letterText.text = letter;
-                        //card.transform.GetChild(2).gameObject.SetActive(true);
-                        //card.transform.GetChild(3).gameObject.SetActive(false);
-                    }
-
-                //letterText.text = letter.ToString();
-                //    valueText.text = GetCardValue(letter[0]).ToString();
-                //    cardValue = GetCardValue(letter[0]);
-                //}
-                //else
-                //{
-                //    Debug.LogWarning($"Invalid local index {localIndex} for batch {batchIndex}");
-                //}
+                }
+                else
+                {
+                    int tmpCardValue = GetCardValue(letter[0]);
+                    cardValue = tmpCardValue;
+                    valueText.text = cardValue.ToString(); // 🔥 fix: use cardValue not default 0
+                    letterText.text = letter;
+                }
             }
 
         }

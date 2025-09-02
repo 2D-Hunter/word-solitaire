@@ -74,6 +74,7 @@ public class FBPlayerData : MonoBehaviour
 
     string priceOfProducts;
     string currencyCode;
+    
 
 
     //worddict
