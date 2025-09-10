@@ -336,7 +336,7 @@ public class BoardManager : MonoBehaviour
                     }
                     else
                     {
-                        var letter = WordLetterGenerationSystem.Instance.GenerateLetter(difficulty, BagType.StandardLetterBag);
+                        var letter = WordLetterGenerationSystem.Instance.GenerateLetterV2(difficulty, BagType.StandardLetterBag);
                        // Debug.Log("letter "+ letter);
                         if (letter == "*")
                         {
